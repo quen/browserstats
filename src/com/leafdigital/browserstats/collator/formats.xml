@@ -1,0 +1,6 @@
+<formats>
+<format name="tomcat" ip="1" date="3" time="4" agent="5" 
+	dateformat="dd/MMM/yyyy" timeformat="HH:mm:ss">
+^(.*?) (.*?)\[(.*?):(.*?) .*"([^"]*)"$
+</format>
+</formats>
