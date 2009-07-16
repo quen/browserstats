@@ -9,7 +9,6 @@ import com.leafdigital.util.xml.XML;
 class AgentData
 {
 	int count;
-	private HashSet<String> ipAddresses = new HashSet<String>();
 	private HashMap<Category,Integer> categories = new HashMap<Category, Integer>();
 	
 	/**
@@ -20,7 +19,6 @@ class AgentData
 	void count(String ip, Category c)
 	{
 		count++;
-		ipAddresses.add(ip);
 		if(!c.equals(Category.NONE))
 		{
 			Integer i = categories.get(c);
@@ -46,8 +44,6 @@ class AgentData
 	{
 		StringBuilder builder = new StringBuilder("<agent count='");
 		builder.append(count);
-		builder.append("' unique='");
-		builder.append(ipAddresses.size());
 		builder.append("'");
 		for(Category c : categoryList)
 		{

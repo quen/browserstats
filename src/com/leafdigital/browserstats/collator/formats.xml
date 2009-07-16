@@ -1,6 +1,7 @@
 <formats>
-<format name="tomcat" ip="1" date="3" time="4" agent="5" 
+<!-- 203.6.203.75 - - [11/Jan/2009:00:00:09 +0000] "GET /robots.txt HTTP/1.0" 404 985 "null" "CatchBot/1.0; +http://www.catchbot.com" -->
+<format name="tomcat" ip="1" date="3" time="4" path="5" agent="6" 
 	dateformat="dd/MMM/yyyy" timeformat="HH:mm:ss">
-^(.*?) (.*?)\[(.*?):(.*?) .*"([^"]*)"$
+^(.*?) (.*?)\[(.*?):(.*?) .*?] "[A-Z]+ (.*?) .*"([^"]*)"$
 </format>
 </formats>

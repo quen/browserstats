@@ -156,6 +156,12 @@ public class LogReader implements Iterable<LogLine>
 		return processedLines;
 	}
 	
+	/** @return Total lines handled, including those skipped */
+	public int getTotalLines()
+	{
+		return processedLines + invalidLines + wrongTimeLines;
+	}
+	
 	/** @return IO exception that terminated reading, or null if none) */
 	public IOException getException()
 	{

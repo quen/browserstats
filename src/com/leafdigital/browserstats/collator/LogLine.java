@@ -1,25 +1,78 @@
 package com.leafdigital.browserstats.collator;
 
+import java.util.EnumSet;
+
 /** A single line of log data. */
 public class LogLine
 {
-	private String userAgent, isoDate, isoTime, ip;
+	/** Field available within the line */
+	public enum Field
+	{
+		/** User-agent string */
+		AGENT("agent"), 
+		/** Date in ISO format 2009-07-16 */
+		DATE("date"), 
+		/** Time in ISO format 20:17:46 */
+		TIME("time"), 
+		/** IP address string */
+		IP("ip"), 
+		/** Entire line */
+		LINE("line"),
+		/** Request path */
+		PATH("path");
+		
+		private String name;
+		Field(String name)
+		{
+			this.name = name;
+		}
+		
+		static Field get(String name)
+		{
+			for(Field field : EnumSet.allOf(Field.class))
+			{
+				if(field.name.equals(name))
+				{
+					return field;
+				}
+			}
+			throw new IllegalArgumentException("No such field name: " + name);
+		}
+	}
+
+	private String line, userAgent, isoDate, isoTime, ip, path;
 	private Category category;
 
 	/**
+	 * @param line Entire line
 	 * @param userAgent User-agent string
 	 * @param isoDate Date in ISO YYYY-MM-DD format
 	 * @param isoTime Time in ISO HH:mm:ss format
 	 * @param ip IP address (or other unique identifier)
-	 * @param category Category (may be Category.NONE)
+	 * @param path Path
 	 */
-	LogLine(String userAgent, String isoDate, String isoTime, String ip, Category category)
+	LogLine(String line, String userAgent, String isoDate, String isoTime, 
+		String ip, String path)
 	{
+		this.line = line;
 		this.userAgent = userAgent;
 		this.isoDate = isoDate;
 		this.isoTime = isoTime;
 		this.ip = ip;
-		this.category = category;
+		this.path = path;
+	}
+	
+	/**
+	 * Sets the category of the line. May only be called once.
+	 * @param c Category (may be Category.NONE)
+	 */
+	void initCategory(Category c)
+	{
+		if(category!=null)
+		{
+			throw new IllegalStateException("Cannot set category more than once");
+		}
+		this.category = c;
 	}
 
 	/** @return User-agent string */
@@ -46,15 +99,65 @@ public class LogLine
 		return ip;
 	}
 	
+	/** @return Request path */
+	public String getPath()
+	{
+		return path;
+	}
+	
 	/** @return Category (may be Category.NONE) */
 	public Category getCategory()
 	{
 		return category;
 	}
 	
+	/** @return Entire line */
+	public String getLine()
+	{
+		return line;
+	}
+
+	/**
+	 * Gets the specified field from this line.
+	 * @param field Field
+	 * @return Value of field
+	 */
+	public String get(Field field)
+	{
+		switch(field)
+		{
+		case AGENT:
+			return userAgent;
+		case DATE:
+			return isoDate;
+		case TIME:
+			return isoTime;
+		case IP:
+			return ip;
+		case PATH:
+			return path;
+		default:
+			return line;
+		}
+	}
+	
 	@Override
 	public String toString()
 	{
-		return getIsoDate() + ":" + getIp() + ":" + category + ":" + getUserAgent();
+		return line;
+	}
+	
+	/**
+	 * @return Multi-line string showing all fields of the line
+	 */
+	public String getDescription()
+	{
+		StringBuilder result = new StringBuilder();
+		for(Field f : EnumSet.allOf(Field.class))
+		{
+			result.append(f + ": [" + get(f) + "]\n");
+		}
+		result.append("Category: " + category);
+		return result.toString();
 	}
 }

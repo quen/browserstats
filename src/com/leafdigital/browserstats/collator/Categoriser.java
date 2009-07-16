@@ -13,18 +13,14 @@ public class Categoriser
 	}
 
 	/**
-	 * @param line Entire line
-	 * @param agent User agent
-	 * @param isoDate ISO format date e.g. 2009-07-20
-	 * @param isoTime ISO format time e.g. 23:00:14
-	 * @param ip IP address
-	 * @return Category for line (may be null if none match)
+	 * @param line Log line
+	 * @return Category for line (Category.NONE if none match)
 	 */
-	public Category categorise(String line, String agent, String isoDate, String isoTime, String ip)
+	public Category categorise(LogLine line)
 	{
 		for(Category c : categories)
 		{
-			if(c.match(line, agent, isoDate, isoTime, ip))
+			if(c.match(line))
 			{
 				return c;
 			}

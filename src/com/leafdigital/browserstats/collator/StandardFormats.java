@@ -30,6 +30,7 @@ public class StandardFormats
 						XML.getRequiredAttribute(child, "date"),
 						XML.getRequiredAttribute(child, "time"),
 						XML.getRequiredAttribute(child, "agent"),
+						XML.getRequiredAttribute(child, "path"),
 						XML.getRequiredAttribute(child, "dateformat"),
 						XML.getRequiredAttribute(child, "timeformat")));
 			}

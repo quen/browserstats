@@ -1,7 +1,8 @@
 package com.leafdigital.browserstats.collator;
 
-import java.util.EnumSet;
 import java.util.regex.*;
+
+import com.leafdigital.browserstats.collator.LogLine.Field;
 
 /** Category assigned to a line. */
 public class Category
@@ -14,29 +15,6 @@ public class Category
 	private String name;
 	private Field field;
 	private Pattern regex;
-	
-	private enum Field
-	{
-		AGENT("agent"), DATE("date"), TIME("time"), IP("ip"), LINE("line");
-		
-		private String name;
-		Field(String name)
-		{
-			this.name = name;
-		}
-		
-		static Field get(String name)
-		{
-			for(Field field : EnumSet.allOf(Field.class))
-			{
-				if(field.name.equals(name))
-				{
-					return field;
-				}
-			}
-			throw new IllegalArgumentException("No such field name: " + name);
-		}
-	};
 	
 	/**
 	 * @param name Category name
@@ -72,37 +50,12 @@ public class Category
 	}
 
 	/**
-	 * @param line Full line
-	 * @param agent User agent
-	 * @param isoDate ISO format date e.g. 2009-07-20
-	 * @param isoTime ISO format time e.g. 23:00:14
-	 * @param ip IP address
+	 * @param line Log line
 	 * @return True if the given line falls into this category
 	 */
-	public boolean match(String line, String agent, String isoDate, 
-		String isoTime, String ip)
+	public boolean match(LogLine line)
 	{
-		String compare;
-		switch(field)
-		{
-		case AGENT:
-			compare = agent;
-			break;
-		case DATE:
-			compare = isoDate;
-			break;
-		case TIME:
-			compare = isoTime;
-			break;
-		case IP:
-			compare = ip;
-			break;
-		default:
-			compare = line;
-			break;
-		}
-		
-		return regex.matcher(compare).find();
+		return regex.matcher(line.get(field)).find();
 	}
 	
 	@Override
