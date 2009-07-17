@@ -16,6 +16,7 @@ public class AgentCounter
 	private TimePeriod period;
 	private boolean unordered, overwrite;
 	private Category[] categories;
+	private boolean stdout;
 	
 	private HashMap<String, AgentCount> counts = new HashMap<String, AgentCount>();
 	private HashSet<String> past = new HashSet<String>();
@@ -27,9 +28,10 @@ public class AgentCounter
 	 * @param unordered True if input lines may be unordered
 	 * @param overwrite True if it's OK to overwrite existing files
 	 * @param categories List of categories
+	 * @param stdout Write to stdout instead of file
 	 */
 	public AgentCounter(File folder, String prefix, TimePeriod period,
-		boolean unordered, boolean overwrite, Category[] categories)
+		boolean unordered, boolean overwrite, Category[] categories, boolean stdout)
 	{
 		this.folder = folder;
 		this.prefix = prefix;
@@ -37,6 +39,7 @@ public class AgentCounter
 		this.unordered = unordered;
 		this.overwrite = overwrite;
 		this.categories = categories;
+		this.stdout = stdout;
 	}
 
 	/**
@@ -91,8 +94,11 @@ public class AgentCounter
 		// Create new data if required
 		if(count==null)
 		{
-			System.err.print("\n" + 
-				(currentPeriod == null ? "Output" : currentPeriod) + ":");
+			if(!stdout)
+			{
+				System.err.print("\n" + 
+					(currentPeriod == null ? "Output" : currentPeriod) + ":");
+			}
 			count = new AgentCount();
 			counts.put(currentPeriod, count);
 		}
@@ -126,14 +132,21 @@ public class AgentCounter
 	private void flush(String timePeriod) throws IOException
 	{
 		AgentCount count = counts.get(timePeriod);
-		File target = new File(folder, prefix + 
-			(timePeriod == null ? "" : "." + timePeriod) + ".useragents");
-		if (target.exists() && !overwrite)
+		if(stdout)
 		{
-			throw new IOException("Would overwrite " + target 
-				+ ", aborting. (Use -overwrite to allow.)");
+			count.write(null, timePeriod, categories);
 		}
-		count.write(target, timePeriod, categories);
+		else
+		{
+			File target = new File(folder, prefix + 
+				(timePeriod == null ? "" : "." + timePeriod) + ".useragents");
+			if (target.exists() && !overwrite)
+			{
+				throw new IOException("Would overwrite " + target 
+					+ ", aborting. (Use -overwrite to allow.)");
+			}
+			count.write(target, timePeriod, categories);
+		}
 		past.add(timePeriod);
 	}
 	
@@ -147,7 +160,10 @@ public class AgentCounter
   	{
   		flush(period);
   	}
-  	System.err.println("\n");
+  	if(!stdout)
+  	{
+  		System.err.println("\n");
+  	}
   }
 
 }

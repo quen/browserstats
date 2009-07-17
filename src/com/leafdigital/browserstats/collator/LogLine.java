@@ -19,7 +19,9 @@ public class LogLine
 		/** Entire line */
 		LINE("line"),
 		/** Request path */
-		PATH("path");
+		PATH("path"),
+		/** HTTP status code */
+		STATUS("status");
 		
 		private String name;
 		Field(String name)
@@ -40,7 +42,7 @@ public class LogLine
 		}
 	}
 
-	private String line, userAgent, isoDate, isoTime, ip, path;
+	private String line, userAgent, isoDate, isoTime, ip, path, status;
 	private Category category;
 
 	/**
@@ -50,9 +52,10 @@ public class LogLine
 	 * @param isoTime Time in ISO HH:mm:ss format
 	 * @param ip IP address (or other unique identifier)
 	 * @param path Path
+	 * @param status Status code
 	 */
 	LogLine(String line, String userAgent, String isoDate, String isoTime, 
-		String ip, String path)
+		String ip, String path, String status)
 	{
 		this.line = line;
 		this.userAgent = userAgent;
@@ -60,6 +63,7 @@ public class LogLine
 		this.isoTime = isoTime;
 		this.ip = ip;
 		this.path = path;
+		this.status = status;
 	}
 	
 	/**
@@ -116,6 +120,12 @@ public class LogLine
 	{
 		return line;
 	}
+	
+	/** @return HTTP status code */
+	public String getStatus()
+	{
+		return status;
+	}
 
 	/**
 	 * Gets the specified field from this line.
@@ -136,6 +146,8 @@ public class LogLine
 			return ip;
 		case PATH:
 			return path;
+		case STATUS:
+			return status;
 		default:
 			return line;
 		}

@@ -2,67 +2,13 @@ package com.leafdigital.browserstats.collator;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.regex.*;
+
+import com.leafdigital.browserstats.collator.LogLine.Field;
 
 /** 
  * Main class for collator utility which processes server log files. 
- * <p>
- * Command-line arguments: [options] [input file(s)]
- * <p>
- * Input options:
- * <ul>
- * <li><strong>-stdin</strong>: Read data from stdin instead of files.</li>
- * <li><strong>-lenient</strong>: Ignore log lines that don't match.</li>
- * <li><strong>-encoding {encoding}</strong>: Specify input encoding (default
- *   is UTF-8).</li>
- * <li><strong>-format {format}</strong>: Specify input format. Available formats
- *   are: tomcat, ?</li>
- * <li><strong>-customformat {regex} {ip field} {date field} {time field}
- *   {agent field} {path field} {date format} {time format}</strong>: Specify 
- *   an arbitrary regular expression that should match lines in the input 
- *   logfile; which bracketed sections correspond to the user agent, user's IP, 
- *   and date; and the format (Java SimpleDateFormat) of the date and time 
- *   fields.</li>
- * <li><strong>-category {name} {field} {regex}</strong>: Specify an expression
- *   which, if it matches lines, defines them as belonging to a category. 
- *   Multiple categories may be specified; the first to match will be used.
- *   The field must be either 'agent' 'ip' 'date' (match is against ISO format)
- *   'time' (ditto), 'path', or 'line' (whole line).</li>
- * <li><strong>-include {field} {regex}</strong>: Includes only lines which match
- *   the regular expression (field and regex as above)</li>
- * <li><strong>-exclude {field} {regex}</strong>: Excludes lines which match
- *   the regular expression (field and regex as above). Default includes
- *   common image and resource formats.</li>
- * <li><strong>-from {date}</strong>: Include only lines beginning from the
- *   specified date in ISO format, e.g. 2009-07-01.</li>
- * <li><strong>-to {date}</strong>: Include only lines up to the
- *   specified date (inclusive) in ISO format, e.g. 2009-07-31.</li>
- * <li><strong>-unordered</strong>: Indicates that input files may not be
- *   supplied in date order; increases memory consumption. (Without specifying
- *   this option, if the input files are unordered, the software attempts to
- *   detect that fact and gives an error.)</li>
- * <li><strong>--</strong> Indicate that this is the end of the options section
- *   (required if the first input file starts with a -).</strong></li>
- * </ul>
- * Output options:
- * <ul>
- * <li><strong>-folder {path}</strong>: Write output files to specified folder
- *   (default: current folder).</li>
- * <li><strong>-prefix {prefix}</strong>: Use the given prefix on output files.
- *   Default prefix is <tt>useragents</tt></li>
- * <li><strong>-daily</strong>: Write one output file per calendar day.</li>
- * <li><strong>-monthly</strong>: Write one output file per calendar month.</li>
- * <li><strong>-single</strong>: Write only one output file (default).</li>
- * <li><strong>-overwrite</strong>: Overwrite existing output files. (Without
- *   specifying this option, if the system would overwrite an existing file,
- *   it exits with an error.)</li>
- * </ul>
- * It is also possible to specify a file that contains command-line arguments.
- * This file may contain blank lines and comment lines beginning with #. All
- * other lines must be single arguments (for example, if specifying "-format
- * tomcat", there must be a line break between those two words). To specify this
- * file, use @{file}. You can combine command-line arguments with
  */
 public class Collator
 {
@@ -79,19 +25,60 @@ public class Collator
 		/** Single output file */
 		ALL
 	};
-	
+
+	/** Special test constants to check options. */
 	public enum TestType
 	{
-		PARSE
+		/** Show a single parsed server log line */
+		PARSE(0),
+		/** Show all included paths */
+		SHOWINCLUDES(1),
+		/** Show all excluded paths */
+		SHOWEXCLUDES(1);
+		
+		private int params;
+		TestType(int params)
+		{
+			this.params = params;
+		}
+		
+		/** @return Number of parameters required by the option */
+		public int getParams()
+		{
+			return params;
+		}
 	};
 	
+	private static class LineMatcher
+	{
+		private LogLine.Field field;
+		private Pattern regex;
+		
+		private LineMatcher(Field field, Pattern regex)
+		{
+			this.field = field;
+			this.regex = regex;
+		}
+		
+		private boolean match(LogLine line)
+		{
+			return regex.matcher(line.get(field)).find();
+		}
+	}
+	
+	private final static LineMatcher DEFAULTEXCLUDE = new LineMatcher(
+		LogLine.Field.PATH, Pattern.compile("(jpg|jpeg|png|gif|css|js|ico)(\\?|$)"));
+	private final static LineMatcher DEFAULTINCLUDE = new LineMatcher(
+		LogLine.Field.STATUS, Pattern.compile("200"));
+
+
 	private StandardFormats formats;
 	private LinkedList<File> inputFileList = new LinkedList<File>();
 
 	private File folder = new File(".");
 	private String prefix = "log";
 	private TimePeriod period = TimePeriod.ALL;
-	private boolean stdin = false;
+	private boolean stdin = false, stdout = false;
 	private boolean lenient = false;
 	private String encoding = "UTF-8";
 	private String from = null, to = null;
@@ -100,11 +87,12 @@ public class Collator
 	private Categoriser categoriser = new Categoriser();
 	private boolean unordered = false;
 	private boolean overwrite = false;
-	private boolean verbose = false;
-	private Pattern include = null, exclude = Pattern.compile(
-		"(jpg|jpeg|png|gif|css|js)(\\?|$)");
-	private LogLine.Field includeField, excludeField=LogLine.Field.PATH;
+	private boolean verbose = false;	
+	private LinkedList<LineMatcher> includes = null, excludes = null;
 	private TestType test = null;
+	private String[] testParams = null;
+	
+	private boolean showHelp = false;
 	
 	/**
 	 * @param args Command-line arguments
@@ -176,6 +164,12 @@ public class Collator
 	private void processArgs(String[] args, boolean commandLine) 
 		throws IllegalArgumentException
 	{
+		if(args.length==0 && commandLine)
+		{
+			showHelp = true;
+			return;			
+		}
+		
 		int i=0;
 		for(; i<args.length; i++)
 		{
@@ -248,6 +242,11 @@ public class Collator
 				period = TimePeriod.DAILY;
 				continue;
 			}
+			if(args[i].equals("-help"))
+			{
+				showHelp = true;
+				return;
+			}
 			if(args[i].equals("-monthly"))
 			{
 				period = TimePeriod.MONTHLY;
@@ -266,6 +265,11 @@ public class Collator
 			if(args[i].equals("-stdin"))
 			{
 				stdin = true;
+				continue;
+			}
+			if(args[i].equals("-stdout"))
+			{
+				stdout = true;
 				continue;
 			}
 			if(args[i].equals("-lenient"))
@@ -314,14 +318,21 @@ public class Collator
 					throw new IllegalArgumentException(
 						"Unrecognised test type: " + args[i+1]);
 				}
-				i++;
+				checkArgs(args, i, 1+test.getParams());
+				testParams = new String[test.getParams()];
+				for(int j=0; j<test.getParams(); j++)
+				{
+					testParams[j] = args[i+2+j];
+				}
+				
+				i += 1+test.getParams();
 				continue;
 			}
 			if(args[i].equals("-customformat"))
 			{
 				checkArgs(args, i, 7);
 				format = new LogFormat(args[i+1], args[i+2], args[i+3], args[i+4],
-					args[i+5], args[i+6], args[i+7], args[i+8]);
+					args[i+5], args[i+6], args[i+7], args[i+8], args[i+9]);
 				i+=7;
 				continue;
 			}
@@ -338,8 +349,13 @@ public class Collator
 				checkArgs(args, i, 2);
 				try
 				{
-					includeField = LogLine.Field.get(args[i+1]);
-					include = Pattern.compile(args[i+2]);
+					LineMatcher matcher = new LineMatcher(
+						LogLine.Field.get(args[i+1]),Pattern.compile(args[i+2]));
+					if(includes==null)
+					{
+						includes = new LinkedList<LineMatcher>();
+					}
+					includes.add(matcher);						
 				}
 				catch(PatternSyntaxException e)
 				{
@@ -359,8 +375,13 @@ public class Collator
 				checkArgs(args, i, 2);
 				try
 				{
-					excludeField = LogLine.Field.get(args[i+1]);
-					exclude = Pattern.compile(args[i+2]);
+					LineMatcher matcher = new LineMatcher(
+						LogLine.Field.get(args[i+1]),Pattern.compile(args[i+2]));
+					if(excludes==null)
+					{
+						excludes = new LinkedList<LineMatcher>();
+					}
+					excludes.add(matcher);						
 				}
 				catch(PatternSyntaxException e)
 				{
@@ -419,7 +440,49 @@ public class Collator
 			{
 				inputFiles = null;
 			}
+			
+			if(stdout && period!=TimePeriod.ALL)
+			{
+				throw new IllegalArgumentException(
+					"Cannot specify -stdout with -daily or -monthly");
+			}
+			
+			if(includes==null)
+			{
+				includes = new LinkedList<LineMatcher>();
+				includes.add(DEFAULTINCLUDE);
+			}
+			if(excludes==null)
+			{
+				excludes = new LinkedList<LineMatcher>();
+				excludes.add(DEFAULTEXCLUDE);
+			}
 		}
+	}
+	
+	private boolean include(LogLine line)
+	{
+		boolean include = false;
+		for(LineMatcher matcher : includes)
+		{
+			if(matcher.match(line))					
+			{
+				include = true;
+				break;
+			}
+		}
+		if(!include)
+		{
+			return false;
+		}
+		for(LineMatcher matcher : excludes)
+		{
+			if(matcher.match(line))
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	private static void checkArgs(String[] args, int i, int required)
@@ -434,9 +497,15 @@ public class Collator
 	
 	private void go()
 	{
+		if(showHelp)
+		{
+			showHelp();
+			return;
+		}
+		
 		// Construct counter
 		AgentCounter counter = new AgentCounter(folder, prefix, period, 
-			unordered, overwrite, categoriser.getCategories());
+			unordered, overwrite, categoriser.getCategories(), stdout);
 		
 		long maxRam = 0;
 		int count = 0;
@@ -453,21 +522,20 @@ public class Collator
 				{
 				case PARSE:
 					testParse(reader);
+					break;
+				case SHOWINCLUDES:
+					testIncludes(reader, true);
+					break;
+				case SHOWEXCLUDES:
+					testIncludes(reader, false);
+					break;
 				}
 				return;
 			}
 
 			for(LogLine line : reader)
 			{
-				boolean filter = false;
-				if(include!=null && !include.matcher(line.get(includeField)).find())					
-				{
-					filter = true;
-				}
-				if(exclude!=null && exclude.matcher(line.get(excludeField)).find())
-				{
-					filter = true;
-				}
+				boolean filter = !include(line);
 				if(filter)
 				{
 					filtered++;
@@ -509,23 +577,26 @@ public class Collator
 			}
 			
 			// Output information
-			System.err.println("Total lines read: " + reader.getTotalLines());
-			if(reader.getInvalidLines() > 0)
+			if(!stdout)
 			{
-				System.err.println("Skipped (invalid): " + reader.getInvalidLines());
-			}
-			if(reader.getWrongTimeLines() > 0)
-			{
-				System.err.println("Skipped (date out of range): " + reader.getWrongTimeLines());
-			}
-			if(filtered > 0)
-			{
-				System.err.println("Skipped (include/exclude): " + filtered);
-			}
-			if(verbose)
-			{
-				System.err.println();
-				System.err.println("Max RAM usage: " + ((maxRam+(512*1024))/(1024*1024)) + " MB");
+				System.err.println("Total lines read: " + reader.getTotalLines());
+				if(reader.getInvalidLines() > 0)
+				{
+					System.err.println("Skipped (invalid): " + reader.getInvalidLines());
+				}
+				if(reader.getWrongTimeLines() > 0)
+				{
+					System.err.println("Skipped (date out of range): " + reader.getWrongTimeLines());
+				}
+				if(filtered > 0)
+				{
+					System.err.println("Skipped (include/exclude): " + filtered);
+				}
+				if(verbose)
+				{
+					System.err.println();
+					System.err.println("Max RAM usage: " + ((maxRam+(512*1024))/(1024*1024)) + " MB");
+				}
 			}
 		}
 		catch(IOException e)
@@ -535,12 +606,53 @@ public class Collator
 		}
 	}
 	
+	private void showHelp()
+	{
+		try
+		{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+				Collator.class.getResourceAsStream("commandline.txt"), "UTF-8"));
+			while(true)
+			{
+				String line = reader.readLine();
+				if(line==null)
+				{
+					break;
+				}
+				System.out.println(line);
+			}
+		}
+		catch(IOException e)
+		{
+			// Come on
+			throw new Error("Cannot load command-line help");
+		}
+	}
+	
 	private void testParse(LogReader reader)
 	{
 		for(LogLine line : reader)
 		{
 			System.err.println(line.getDescription());
 			return;
+		}
+	}
+	
+	private void testIncludes(LogReader reader, boolean includes)
+	{
+		LogLine.Field field = LogLine.Field.valueOf(testParams[0].toUpperCase());
+		
+		HashSet<String> values = new HashSet<String>();
+		for(LogLine line : reader)
+		{
+			if(include(line) == includes)
+			{
+				String value = line.get(field);
+				if(values.add(value))
+				{
+					System.out.println(value);
+				}
+			}
 		}
 	}
 }

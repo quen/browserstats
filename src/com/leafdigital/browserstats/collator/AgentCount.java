@@ -34,15 +34,23 @@ public class AgentCount
 	
 	/**
 	 * Writes this out as XML.
-	 * @param f Target file
+	 * @param f Target file or null to write to stdout
 	 * @param period Time period (null if in ALL mode)
 	 * @param categories Category list
 	 * @throws IOException Any error writing file
 	 */
 	void write(File f, String period, Category[] categories) throws IOException
 	{
-		Writer w = new BufferedWriter(new OutputStreamWriter(
-			new FileOutputStream(f), "UTF-8"));
+		Writer w;
+		if(f==null)
+		{
+			w = new OutputStreamWriter(System.out, "UTF-8");
+		}
+		else
+		{
+			w = new BufferedWriter(new OutputStreamWriter(
+				new FileOutputStream(f), "UTF-8"));
+		}
 		String periodAttribute = "";
 		if(period != null)
 		{

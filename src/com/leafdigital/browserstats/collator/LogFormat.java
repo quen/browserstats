@@ -7,7 +7,7 @@ import java.util.regex.*;
 public class LogFormat
 {
 	private Pattern regex;
-	private int ipField, dateField, timeField, agentField, pathField;
+	private int ipField, dateField, timeField, agentField, pathField, statusField;
 	private SimpleDateFormat dateFormat, timeFormat, isoDateFormat, isoTimeFormat;
 	
 	/**
@@ -18,12 +18,13 @@ public class LogFormat
 	 * @param timeField Index of field that contains time
 	 * @param agentField Index of field that contains user agent
 	 * @param pathField Index of field that contains path
+	 * @param statusField Index of field that contains HTTP status code
 	 * @param dateFormat Format for date (SimpleDateFormat style)
 	 * @param timeFormat Format for time (SimpleDateFormat style)
 	 * @throws IllegalArgumentException If any of the arguments are invalid
 	 */
 	LogFormat(String regex, String ipField, String dateField, String timeField, 
-		String agentField, String pathField, String dateFormat, String timeFormat) 
+		String agentField, String pathField, String statusField, String dateFormat, String timeFormat) 
 		throws IllegalArgumentException
 	{
 		try
@@ -65,6 +66,12 @@ public class LogFormat
 		{
 			throw new IllegalArgumentException("Path field index out of range: " 
 				+ this.pathField);
+		}
+		this.statusField = parseInt(statusField, "Invalid status field index");
+		if(this.statusField <= 0 || this.statusField > groups)
+		{
+			throw new IllegalArgumentException("Status field index out of range: " 
+				+ this.statusField);
 		}
 		try
 		{
@@ -138,7 +145,8 @@ public class LogFormat
 		String agent = m.group(agentField);
 		String ip = m.group(ipField);
 		String path = m.group(pathField);
-		LogLine result = new LogLine(line, agent, isoDate, isoTime, ip, path);
+		String status = m.group(statusField);
+		LogLine result = new LogLine(line, agent, isoDate, isoTime, ip, path, status);
 		result.initCategory(c.categorise(result));
 		return result;
 	}
