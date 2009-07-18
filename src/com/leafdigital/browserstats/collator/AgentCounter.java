@@ -3,7 +3,7 @@ package com.leafdigital.browserstats.collator;
 import java.io.*;
 import java.util.*;
 
-import com.leafdigital.browserstats.collator.Collator.TimePeriod;
+import com.leafdigital.browserstats.collator.Collate.TimePeriod;
 
 /** 
  * Counts user agents in one or a number of date categories and outputs

@@ -62,7 +62,7 @@ Input options
   will be excluded.
   
   If you don't specify any, the default is to exclude common image and resource
-  formats. 
+  formats, along with lines that report a blank useragent or the word "null".
   
   TESTING: "-test showexcludes {field}" will list all values of the field (e.g.
     path) for which lines are excluded, after both -include and -exclude are
