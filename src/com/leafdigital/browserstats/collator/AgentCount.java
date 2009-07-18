@@ -65,6 +65,9 @@ public class AgentCount
 		}
 		
 		w.write("</useragents>\n");
-		w.close();
+		if(f!=null)
+		{
+			w.close();
+		}
 	}
 }

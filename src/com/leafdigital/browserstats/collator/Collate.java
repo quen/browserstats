@@ -28,7 +28,7 @@ public class Collate extends CommandLineTool
 	};
 
 	/** Special test constants to check options. */
-	public enum TestType
+	private enum TestType
 	{
 		/** Show a single parsed server log line */
 		PARSE(0),
@@ -44,7 +44,7 @@ public class Collate extends CommandLineTool
 		}
 		
 		/** @return Number of parameters required by the option */
-		public int getParams()
+		int getParams()
 		{
 			return params;
 		}
@@ -111,7 +111,7 @@ public class Collate extends CommandLineTool
 		catch(IOException e)
 		{
 			System.err.println("Error loading standard formats:\n\n" + e.getMessage());
-			return;
+			failed();
 		}
 		format = formats.getFormat("apache");		
 	}

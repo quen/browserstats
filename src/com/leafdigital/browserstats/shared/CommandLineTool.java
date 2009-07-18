@@ -6,6 +6,8 @@ import java.util.LinkedList;
 /** Base class for command-line tools. */
 public abstract class CommandLineTool
 {
+	private boolean failed = false;
+
 	private LinkedList<File> inputFileList = new LinkedList<File>();
 	private boolean showHelp = false;	
 	private boolean stdin = false;
@@ -24,6 +26,12 @@ public abstract class CommandLineTool
 	 */
 	protected void run(String[] args)
 	{
+		// Already showed error
+		if(failed)
+		{
+			return;
+		}
+		
 		// Process arguments
 		try
 		{
@@ -43,6 +51,15 @@ public abstract class CommandLineTool
 		}
 		// Do task
 		go();
+	}
+	
+	/**
+	 * Indicates that initialisation (e.g. constructor) has failed and 
+	 * program should quit
+	 */
+	protected void failed()
+	{
+		failed = true;
 	}
 	
 	/**
@@ -97,7 +114,7 @@ public abstract class CommandLineTool
 		if(i+required >= args.length)
 		{
 			throw new IllegalArgumentException("Option " + args[i] + " requires " +
-				required + "parameters");
+				required + " parameter(s)");
 		}
 	}
 
@@ -197,7 +214,7 @@ public abstract class CommandLineTool
 				throw new IllegalArgumentException(
 					"Cannot specify both input files and -stdin");
 			}
-			if(inputFiles.length == 0 && !stdin)
+			if(inputFiles.length == 0 && !stdin && requiresInput())
 			{
 				throw new IllegalArgumentException(
 					"Must specify either -stdin or input file(s)");
@@ -212,14 +229,28 @@ public abstract class CommandLineTool
 	}
 	
 	/**
+	 * Adjust if input files are not required (e.g. for a -test option)
+	 * @return False if files aren't required, default is true
+	 */
+	protected boolean requiresInput()	
+	{
+		return true;
+	}
+	
+	/**
 	 * Shows help from a file called commandline.txt in same folder as class.
 	 */
 	private void showHelp()
 	{
 		try
 		{
+			InputStream stream = getClass().getResourceAsStream("commandline.txt");
+			if(stream==null)
+			{
+				throw new IOException("Helpfile missing");
+			}
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-				getClass().getResourceAsStream("commandline.txt"), "UTF-8"));
+				stream, "UTF-8"));
 			while(true)
 			{
 				String line = reader.readLine();
@@ -233,7 +264,7 @@ public abstract class CommandLineTool
 		catch(IOException e)
 		{
 			// Come on
-			throw new Error("Cannot load command-line help");
+			System.err.println("Cannot load command-line help.");
 		}
 	}		
 	
