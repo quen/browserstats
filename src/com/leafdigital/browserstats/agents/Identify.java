@@ -1,6 +1,8 @@
 package com.leafdigital.browserstats.agents;
 
 import java.io.*;
+import java.util.HashSet;
+import java.util.regex.*;
 
 import com.leafdigital.browserstats.shared.CommandLineTool;
 import com.leafdigital.util.xml.XMLException;
@@ -28,7 +30,11 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		/** Run the agent list self-test */
 		SELFTEST(0),
 		/** Show all unmatched user agents with counts above the parameter */
-		UNMATCHED(1);
+		UNMATCHED(1),
+		/** Show all user-agents matching the given type, engine, name, version, os */
+		SHOWAGENT(5),
+		/** Identify an agent given on command line */
+		IDENTIFY(1);
 		
 		private int params;
 		TestType(int params)
@@ -124,8 +130,11 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 	@Override
 	protected boolean requiresInput()
 	{
-		return test != TestType.SELFTEST;
+		return test != TestType.SELFTEST && test != TestType.IDENTIFY;
 	}
+	
+	private Pattern selectType, selectEngine, selectName, selectVersion, selectOs;
+	private HashSet<String> selectMatches;
 
 	@Override
 	protected void go()
@@ -143,6 +152,10 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			// Continue with remaining processing if any
 			break;
 			
+		case IDENTIFY:
+			System.out.println(list.match(testParams[0]));
+			break;
+			
 		case UNMATCHED:
 			try
 			{
@@ -151,9 +164,27 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			catch(NumberFormatException e)
 			{
 				System.err.println("-test unmatched requires integer parameter");
+				return;
 			}
 			// Continue with processing; we will handle the rest inside doFile
 			break;
+			
+		case SHOWAGENT:
+			try
+			{
+				selectType = Pattern.compile(testParams[0]);
+				selectEngine = Pattern.compile(testParams[1]);
+				selectName = Pattern.compile(testParams[2]);
+				selectVersion = Pattern.compile(testParams[3]);
+				selectOs = Pattern.compile(testParams[4]);
+				selectMatches = new HashSet<String>();
+			}
+			catch(PatternSyntaxException e)
+			{
+				System.err.println("-test agent regular expression not valid: " + e.getPattern());
+				return;
+			}
+			break;			
 		}
 		
 		try
@@ -208,6 +239,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		switch(test)
 		{
 		case UNMATCHED:
+		case SHOWAGENT:
 			return;
 		}
 		
@@ -257,8 +289,9 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		Agent match = list.match(agent);
 		
 		// Handle test option
-		if(test==TestType.UNMATCHED)
-		{
+		switch(test)
+		{ 
+		case UNMATCHED:
 			if(match==null)
 			{
 				unmatched++;
@@ -274,6 +307,21 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 				matched++;
 				matchedCount += count;
 			}			
+			break;
+			
+		case SHOWAGENT:
+			if(match!=null && selectType.matcher(match.getType()).find() 
+				&& selectEngine.matcher(match.getEngine()).find() 
+				&& selectName.matcher(match.getName()).find() 
+				&& selectVersion.matcher(match.getVersion()).find() 
+				&& selectOs.matcher(match.getOs()).find() )
+			{
+				if(selectMatches.add(agent))
+				{
+					System.out.println(agent);
+				}
+			}
+			break;
 		}
 		
 		results.addCounts(match, count, categoryCounts);

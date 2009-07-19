@@ -11,7 +11,30 @@ Input options
   Read data from stdin instead of files. (Implies -stdout.)
 
 -test selftest
+  [Does not require log files. If logfiles are supplied, normal processing
+  continues after the test.]
+  
   Tests that the internal user-agent list is internally consistent.
+  
+-test unmatched {count}
+  Prints list of all user-agents that didn't match any known agent, and were
+  involved in at least the specified number of requests. Shows agents along
+  with the count of requests for that agent, and a summary of the number and
+  percentage of matched/unmatched agents and counts.
+  
+-test showagent {type} {engine} {name} {version} {os}
+  Shows user-agent strings for all agents that were matched according to the
+  specified values, which are regular expressions; use "" if you don't care
+  about any value. Useful for testing that matching is working as expected,
+  for example for common agents such as IE 6; some other agents produce
+  strings that look like these browsers.
+  
+-test identify {agent}
+  [Does not require log files.]
+  
+  Shows how the given user-agent string would be matched. (On the command line,
+  you will need to put quotes around the user-agent string so that it is
+  treated as a single argument.)
 
 -- 
   Indicate that this is the end of the options section (required if the first 
