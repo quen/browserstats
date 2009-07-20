@@ -165,8 +165,18 @@
    	<agent name="gais">
    	  <regex>^Gaisbot/</regex>
    	  <sample>Gaisbot/3.0+(robot06@gais.cs.ccu.edu.tw;+http://gais.cs.ccu.edu.tw/robot.php)</sample>
-   	</agent>
-   	
+   	</agent>   	
+  </group>
+  
+  <group type="internalsearch" os="" engine="" version="">
+    <agent name="ultraseek">
+      <regex>^Ultraseek</regex>
+      <sample>Ultraseek</sample>
+    </agent>
+    <agent name="exalead">
+      <regex>^NG/2\.0</regex>
+      <sample>NG/2.0</sample>
+    </agent>
   </group>
   
   <!-- 
@@ -586,6 +596,10 @@
    <agent name="python">
      <regex>^Python-urllib/</regex>
      <sample>Python-urllib/1.17</sample>
+   </agent>
+   <agent name="dotnet">
+     <regex>MS Web Services Client Protocol</regex>
+     <sample>Mozilla/4.0 (compatible; MSIE 6.0; MS Web Services Client Protocol 2.0.50727.42)</sample>
    </agent>
   </group>
   
