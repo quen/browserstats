@@ -22,12 +22,19 @@ Input options
   regex = Regular expression that should match lines in the input logfile
   ip, date, time, agent, path, status fields = Which bracketed sections within
     the regex (1 = first) corresponds to the user's IP, date, time,
-    user agent, path, HTTP status
+    user agent, path, HTTP status. In the case of agent (only) the field number
+    may be followed by a + symbol, indicating that the field should be 
+    URL-decoded and have + symbols converted to spaces.
+    
   date format, time format = the format (Java SimpleDateFormat) of date and 
     time fields.
     
   TESTING: "-test parse" shows the first line from the log parsed into its
     constituent fields, so you can check the regular expression is correct.
+
+-customskip {regex}
+  For use only after -customformat. Sets the (single) regular expression which
+  matches lines in the format that should be entirely skipped (e.g. comments).
     
 -category {name} {field} {regex}
   Specifies an expression which, if it matches lines, defines them as 

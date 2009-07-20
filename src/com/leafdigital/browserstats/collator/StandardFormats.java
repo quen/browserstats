@@ -24,16 +24,20 @@ public class StandardFormats
 			Document doc = XML.parse(StandardFormats.class, "formats.xml");		
 			for(Element child : XML.getChildren(doc.getDocumentElement()))
 			{
-				formats.put(XML.getRequiredAttribute(child, "name"),
-					new LogFormat(XML.getText(child), 
-						XML.getRequiredAttribute(child, "ip"),
-						XML.getRequiredAttribute(child, "date"),
-						XML.getRequiredAttribute(child, "time"),
-						XML.getRequiredAttribute(child, "agent"),
-						XML.getRequiredAttribute(child, "path"),
-						XML.getRequiredAttribute(child, "status"),
-						XML.getRequiredAttribute(child, "dateformat"),
-						XML.getRequiredAttribute(child, "timeformat")));
+				LogFormat format = new LogFormat(XML.getChildText(child, "line", false), 
+					XML.getRequiredAttribute(child, "ip"),
+					XML.getRequiredAttribute(child, "date"),
+					XML.getRequiredAttribute(child, "time"),
+					XML.getRequiredAttribute(child, "agent"),
+					XML.getRequiredAttribute(child, "path"),
+					XML.getRequiredAttribute(child, "status"),
+					XML.getRequiredAttribute(child, "dateformat"),
+					XML.getRequiredAttribute(child, "timeformat"));
+				if(XML.hasChild(child, "skip"))
+				{
+					format.setSkip(XML.getChildText(child, "skip", false));
+				}
+				formats.put(XML.getRequiredAttribute(child, "name"), format);
 			}
 		}
 		catch(Exception e)

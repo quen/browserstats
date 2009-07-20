@@ -16,12 +16,12 @@ public class LogLine
 		TIME("time"), 
 		/** IP address string */
 		IP("ip"), 
-		/** Entire line */
-		LINE("line"),
 		/** Request path */
 		PATH("path"),
 		/** HTTP status code */
-		STATUS("status");
+		STATUS("status"),
+		/** Entire line */
+		LINE("line");
 		
 		private String name;
 		Field(String name)

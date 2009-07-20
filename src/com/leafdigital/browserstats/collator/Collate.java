@@ -35,7 +35,9 @@ public class Collate extends CommandLineTool
 		/** Show all included paths */
 		SHOWINCLUDES(1),
 		/** Show all excluded paths */
-		SHOWEXCLUDES(1);
+		SHOWEXCLUDES(1),
+		/** Test matching a line */
+		LINE(1);
 		
 		private int params;
 		TestType(int params)
@@ -91,6 +93,7 @@ public class Collate extends CommandLineTool
 	private LinkedList<LineMatcher> includes = null, excludes = null;
 	private TestType test = null;
 	private String[] testParams = null;
+	private boolean customFormat = false;
 	
 	/**
 	 * @param args Command-line arguments
@@ -238,7 +241,19 @@ public class Collate extends CommandLineTool
 			checkArgs(args, i, 7);
 			format = new LogFormat(args[i+1], args[i+2], args[i+3], args[i+4],
 				args[i+5], args[i+6], args[i+7], args[i+8], args[i+9]);
+			customFormat = true;
 			return 8;
+		}
+		if(args[i].equals("-customskip"))
+		{
+			checkArgs(args, i, 1);
+			if(!customFormat)
+			{
+				throw new IllegalArgumentException(
+					"Cannot use -customskip except with -customformat");
+			}
+			format.setSkip(args[i+1]);
+			return 2;
 		}
 		if(args[i].equals("-category"))
 		{
@@ -350,6 +365,15 @@ public class Collate extends CommandLineTool
 	@Override
 	protected void go()
 	{
+		if(test!=null)
+		{
+			switch(test)
+			{
+			case LINE:
+				testLine();
+				return;
+			}
+		}
 		// Construct counter
 		AgentCounter counter = new AgentCounter(folder, prefix, period, 
 			unordered, overwrite, categoriser.getCategories(), stdout);
@@ -477,6 +501,31 @@ public class Collate extends CommandLineTool
 					System.out.println(value);
 				}
 			}
+		}
+	}
+	
+	private void testLine()
+	{
+		System.out.println("Line:");
+		System.out.println(testParams[0]);
+		System.out.println();
+		try
+		{
+			LogLine line = format.parse(testParams[0], categoriser);
+			if(line==null)
+			{
+				System.out.println("Match: skip.");
+			}
+			else
+			{
+				System.out.println("Match.");
+				System.out.println();
+				System.out.println(line.getDescription());
+			}
+		}
+		catch(IllegalArgumentException e)
+		{
+			System.out.println("No match.");
 		}
 	}
 }

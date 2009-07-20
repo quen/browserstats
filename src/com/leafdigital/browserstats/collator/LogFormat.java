@@ -1,14 +1,17 @@
 package com.leafdigital.browserstats.collator;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.*;
 import java.util.regex.*;
 
 /** Format describing method of reading log lines. */
 public class LogFormat
 {
-	private Pattern regex;
+	private Pattern regex, skip;
 	private int ipField, dateField, timeField, agentField, pathField, statusField;
 	private SimpleDateFormat dateFormat, timeFormat, isoDateFormat, isoTimeFormat;
+	private boolean decodeAgent;
 	
 	/**
 	 * @param regex Regular expression to parse line
@@ -33,7 +36,7 @@ public class LogFormat
 		}
 		catch(PatternSyntaxException e)
 		{
-			throw new IllegalArgumentException("Invalid log format: " + 
+			throw new IllegalArgumentException("Invalid log format <line>: " + 
 				e.getDescription());
 		}
 		int groups = this.regex.matcher("").groupCount();
@@ -54,6 +57,11 @@ public class LogFormat
 		{
 			throw new IllegalArgumentException("Time field index out of range: " 
 				+ this.timeField);
+		}
+		if(agentField.endsWith("+"))
+		{
+			decodeAgent = true;
+			agentField = agentField.substring(0, agentField.length()-1);
 		}
 		this.agentField = parseInt(agentField, "Invalid agent field index");
 		if(this.agentField <= 0 || this.agentField > groups)
@@ -104,21 +112,44 @@ public class LogFormat
 			throw new IllegalArgumentException(message + ": " + field);
 		}
 	}
+	
+	/**
+	 * Sets the pattern used for lines to skip.
+	 * @param skip Regular expression
+	 * @throws IllegalArgumentException If the pattern isn't valid
+	 */
+	void setSkip(String skip) throws IllegalArgumentException
+	{
+		try
+		{
+			this.skip = Pattern.compile(skip);
+		}
+		catch(PatternSyntaxException e)
+		{
+			throw new IllegalArgumentException("Invalid log format <skip>: " + 
+				e.getDescription());
+		}		
+	}
 
 	/**
 	 * Parses a single line from the log file.
 	 * @param line Line text
 	 * @param c Categoriser used to assign categories
-	 * @return Line in processed form
+	 * @return Line in processed form, or null if the line is to be skipped
 	 * @throws IllegalArgumentException If the input line does not match
 	 *   the specified format
 	 */
 	LogLine parse(String line, Categoriser c) throws IllegalArgumentException
 	{
-		Matcher m = regex.matcher(line);
-		if(!m.matches())
+		if(skip!=null && skip.matcher(line).find())
 		{
-			throw new IllegalArgumentException("Invalid input line");
+			return null;
+		}
+		
+		Matcher m = regex.matcher(line);
+		if(!m.find())
+		{
+			throw new IllegalArgumentException("Doesn't match <line> regex");
 		}
 		
 		String isoDate;
@@ -143,6 +174,18 @@ public class LogFormat
 		}
 		
 		String agent = m.group(agentField);
+		if(decodeAgent)
+		{
+			try
+			{
+				agent = URLDecoder.decode(agent, "UTF-8");
+				agent = agent.replace('+', ' ');
+			}
+			catch(UnsupportedEncodingException e)
+			{
+				throw new Error("Come on, UTF-8 is always supported");
+			}
+		}
 		String ip = m.group(ipField);
 		String path = m.group(pathField);
 		String status = m.group(statusField);

@@ -77,6 +77,11 @@ public class LogReader implements Iterable<LogLine>
 			try
 			{
 				result = format.parse(line, categoriser);
+				if(result==null)
+				{
+					// Format wants to skip this line
+					continue;
+				}
 			}
 			catch(IllegalArgumentException e)
 			{
@@ -88,7 +93,7 @@ public class LogReader implements Iterable<LogLine>
 				else
 				{
 					throw new IOException("Invalid input line (" + e.getMessage() + 
-						")\n" + line);
+						")\n[" + line + "]");
 				}
 			}
 			
