@@ -34,8 +34,9 @@ public class LogReader implements Iterable<LogLine>
 	 * @param to ISO date to skip lines after (null if none)
 	 * @throws IOException If there is a problem opening data
 	 */
-	LogReader(LogFormat format, String encoding, boolean lenient, File[] files,
-		Categoriser categoriser, String from, String to)
+	LogReader(LogFormat format, String encoding, boolean lenient,
+		File[] files, Categoriser categoriser, String from,
+		String to)
 		throws IOException
 	{
 		this.format = format;
@@ -88,6 +89,9 @@ public class LogReader implements Iterable<LogLine>
 				if(lenient)
 				{
 					invalidLines++;
+					// Print out invalid line (with a few extra spaces)
+					System.err.println("\n\nSkipping invalid input line (" + e.getMessage()
+						+ "):\n[" + line + "]\n");
 					continue;
 				}
 				else

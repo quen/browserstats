@@ -1,7 +1,5 @@
 package com.leafdigital.browserstats.collator;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.text.*;
 import java.util.regex.*;
 
@@ -176,15 +174,7 @@ public class LogFormat
 		String agent = m.group(agentField);
 		if(decodeAgent)
 		{
-			try
-			{
-				agent = URLDecoder.decode(agent, "UTF-8");
-				agent = agent.replace('+', ' ');
-			}
-			catch(UnsupportedEncodingException e)
-			{
-				throw new Error("Come on, UTF-8 is always supported");
-			}
+			agent = agent.replace('+', ' ');
 		}
 		String ip = m.group(ipField);
 		String path = m.group(pathField);

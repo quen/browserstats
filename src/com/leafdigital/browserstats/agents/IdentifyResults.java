@@ -90,10 +90,23 @@ class IdentifyResults
 				new FileOutputStream(f), "UTF-8"));
 		}
 		String categoryAttributes = "";
-		for(int i=0; i<categories.length; i++)			
+		if(categories.length > 0)
 		{
-			categoryAttributes += " total" + categories[i] + 
-				"='" + totalCategoryCounts[i] + "'";
+			for(String name : categories)
+			{
+				if(categoryAttributes.length()>0)
+				{
+					categoryAttributes += ",";
+				}
+				categoryAttributes += name;
+			}
+			categoryAttributes = " categories='" + categoryAttributes + "'";
+
+			for(int i=0; i<categories.length; i++)
+			{
+				categoryAttributes += " total" + categories[i] +
+					"='" + totalCategoryCounts[i] + "'";
+			}
 		}
 		
 		w.write("<?xml version='1.0' encoding='UTF-8'?>\n" +

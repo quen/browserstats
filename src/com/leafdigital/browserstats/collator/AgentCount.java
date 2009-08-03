@@ -56,8 +56,21 @@ public class AgentCount
 		{
 			periodAttribute = " date='" + period + "'";
 		}
+		String categoryAttribute = "";
+		if(categories.length > 0)
+		{
+			for(Category c : categories)
+			{
+				if(categoryAttribute.length() > 0)
+				{
+					categoryAttribute += ",";
+				}
+				categoryAttribute += c.getName();
+			}
+			categoryAttribute = " categories='" + categoryAttribute + "'";
+		}
 		w.write("<?xml version='1.0' encoding='UTF-8'?>\n" +
-			"<useragents" + periodAttribute + ">\n");
+			"<useragents" + periodAttribute + categoryAttribute + ">\n");
 		
 		for(Map.Entry<String, AgentData> data : agents.entrySet())
 		{

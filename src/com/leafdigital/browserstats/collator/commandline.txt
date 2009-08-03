@@ -7,14 +7,16 @@ Input options
   Read data from stdin instead of files.
 
 -lenient
-  Ignore log lines that don't match.
+  Continue after encountering a log line that doesn't match the specified
+  input format (line will be displayed to standard error).
 
 -encoding {encoding}
   Specify input encoding (default is UTF-8).
 
 -format {format}
   Specify input format. Available formats are: 
-  tomcat - Tomcat 6.x
+  apache - Apache default, Tomcat default, other servers
+  netscaler - Netscaler
   
 -customformat {regex} {ip field} {date field} {time field}
   {agent field} {path field} {status field} {date format} {time format}
@@ -134,3 +136,6 @@ Output options
   Overwrite existing output files. (Without specifying this option, if the 
   system would otherwise overwrite an existing file, it exits with an error.)
 
+-verbose
+  Displays additional information to standard error, currently just memory
+  consumption.

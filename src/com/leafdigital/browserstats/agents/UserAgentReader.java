@@ -90,30 +90,25 @@ public class UserAgentReader extends DefaultHandler
 	public void startElement(String uri, String localName, String name,
 		Attributes attributes) throws SAXException
 	{
+		// Main tag includes category list
+		if(name.equals("useragents"))
+		{
+			// Setup categories list
+			String categoryList = attributes.getValue("categories");
+			if(categoryList==null)
+			{
+				categories = new String[0];
+			}
+			else
+			{
+				categories = categoryList.split(",");
+			}
+			h.agentCategories(categories);
+		}
+
+		// Agent tag includes counts
 		if(name.equals("agent"))
 		{
-			// Setup categories if not done yet
-		  if(categories == null)
-		  {
-		  	int count = attributes.getLength();
-		  	categories = new String[count-1];
-		  	int index = 0;
-		  	for(int i=0; i<count; i++)
-		  	{
-		  		String category = attributes.getQName(i);
-		  		if(category.equals("count"))
-		  		{
-		  			continue;
-		  		}
-		  		if(index == categories.length)
-		  		{
-		  			throw new SAXException("<agent> must include count=. " + getLocation());
-		  		}
-		  		categories[index++] = category;
-		  	}
-		  	h.agentCategories(categories);
-		  }
-		  
 		  // Get all values
 			currentCount = getCount(attributes, "count");
 			// Create a new array so that the array values can be stored directly
