@@ -145,6 +145,10 @@ public abstract class CommandLineTool
 					argFileName = args[i+1];
 					i+=2;
 				}
+				else
+				{
+					i++;
+				}
 				File argFile = new File(argFileName);
 				if(!argFile.exists())
 				{
