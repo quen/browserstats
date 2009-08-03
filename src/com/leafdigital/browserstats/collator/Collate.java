@@ -70,11 +70,13 @@ public class Collate extends CommandLineTool
 	}
 	
 	private final static LineMatcher DEFAULTEXCLUDE = new LineMatcher(
-		LogLine.Field.PATH, Pattern.compile("(jpg|jpeg|png|gif|css|js|ico)(\\?|$)"));
+		LogLine.Field.PATH, Pattern.compile("(?:j(?:s|pe?g)|png|gif|css|ico)(?:\\?|$)"));
+
 	private final static LineMatcher DEFAULTEXCLUDE2 = new LineMatcher(
-		LogLine.Field.AGENT, Pattern.compile("^(null|-)?$"));
+		LogLine.Field.AGENT, Pattern.compile("^(?:null|-)?$"));
+
 	private final static LineMatcher DEFAULTINCLUDE = new LineMatcher(
-		LogLine.Field.STATUS, Pattern.compile("200"));
+		LogLine.Field.STATUS, Pattern.compile("^200$"));
 
 	private StandardFormats formats;
 
@@ -110,13 +112,13 @@ public class Collate extends CommandLineTool
 		try
 		{
 			formats = new StandardFormats();
+			format = formats.getFormat("apache");
 		}
 		catch(IOException e)
 		{
 			System.err.println("Error loading standard formats:\n\n" + e.getMessage());
 			failed();
 		}
-		format = formats.getFormat("apache");		
 	}
 	
 	@Override
@@ -381,55 +383,63 @@ public class Collate extends CommandLineTool
 		long maxRam = 0;
 		int count = 0;
 		int filtered = 0;
+		long startTime = System.currentTimeMillis();
 		
 		try
 		{
 			// Process files
 			LogReader reader = new LogReader(
 				format, encoding, lenient, getInputFiles(), categoriser, from, to);
-			if(test!=null)
+			try
 			{
-				switch(test)
+				if(test!=null)
 				{
-				case PARSE:
-					testParse(reader);
-					break;
-				case SHOWINCLUDES:
-					testIncludes(reader, true);
-					break;
-				case SHOWEXCLUDES:
-					testIncludes(reader, false);
-					break;
+					switch(test)
+					{
+					case PARSE:
+						testParse(reader);
+						break;
+					case SHOWINCLUDES:
+						testIncludes(reader, true);
+						break;
+					case SHOWEXCLUDES:
+						testIncludes(reader, false);
+						break;
+					}
+					return;
 				}
-				return;
-			}
 
-			for(LogLine line : reader)
+				for(LogLine line : reader)
+				{
+					boolean filter = !include(line);
+					if(filter)
+					{
+						filtered++;
+					}
+					else
+					{
+						try
+						{
+							counter.process(line);
+						}
+						catch(IOException e)
+						{
+							System.err.println("\n\nError writing output:\n\n" + e.getMessage());
+							return;
+						}
+					}
+					// About every 1024 lines, check RAM
+					if((count & 0x3ff) == 0)
+					{
+						maxRam = Math.max(maxRam, Runtime.getRuntime().totalMemory()
+							- Runtime.getRuntime().freeMemory());
+					}
+					count++;
+				}
+			}
+			finally
 			{
-				boolean filter = !include(line);
-				if(filter)
-				{
-					filtered++;
-				}
-				else
-				{
-					try
-					{
-						counter.process(line);
-					}
-					catch(IOException e)
-					{
-						System.err.println("\n\nError writing output:\n\n" + e.getMessage());
-						return;
-					}
-				}
-				// About every 1024 lines, check RAM
-				if((count & 0x3ff) == 0)
-				{
-					maxRam = Math.max(maxRam, Runtime.getRuntime().totalMemory() 
-						- Runtime.getRuntime().freeMemory());
-				}
-				count++;
+				reader.close();
 			}
 			if(reader.getException() != null)
 			{
@@ -466,6 +476,11 @@ public class Collate extends CommandLineTool
 				if(verbose)
 				{
 					System.err.println();
+					System.err.println("Total time: " + (System.currentTimeMillis()-startTime) + " ms");
+					System.err.println("I/O blocks (processing waits for I/O): "
+						+ reader.getIoBlockTime() + "ms");
+					System.err.println("I/O idles (I/O waits for processing): "
+						+ reader.getIoIdleTime() + "ms");
 					System.err.println("Max RAM usage: " + ((maxRam+(512*1024))/(1024*1024)) + " MB");
 				}
 			}

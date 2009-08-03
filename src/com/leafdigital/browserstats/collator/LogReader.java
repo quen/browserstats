@@ -8,8 +8,10 @@ public class LogReader implements Iterable<LogLine>
 {
 	private int fileIndex = -1;
 	private BufferedReader reader = null;
+	private ThreadedInputStream stream;
 	
 	private int invalidLines = 0, wrongTimeLines = 0, processedLines = 0;
+	private long ioIdleTime=0, ioBlockTime=0;
 		
 	private LogFormat format;
 	private String encoding;
@@ -47,9 +49,22 @@ public class LogReader implements Iterable<LogLine>
 		this.from = from;
 		this.to = to;
 		
-		openNext();
-		nextLine = readLine();		
-		iterator = new LogIterator();
+		try
+		{
+			openNext();
+			nextLine = readLine();
+			iterator = new LogIterator();
+		}
+		catch(IOException e)
+		{
+			close();
+			throw e;
+		}
+		catch(RuntimeException e)
+		{
+			close();
+			throw e;
+		}
 	}
 	
 	private LogLine readLine() throws IOException
@@ -121,10 +136,7 @@ public class LogReader implements Iterable<LogLine>
 	 */
 	private boolean openNext() throws IOException
 	{
-		if(reader!=null)
-		{
-			reader.close();
-		}
+		closeReader();
 		
 		fileIndex++;
 		if(files==null)
@@ -132,8 +144,8 @@ public class LogReader implements Iterable<LogLine>
 			if(fileIndex > 0)
 			{
 				return false;
-			}			
-			reader = new BufferedReader(new InputStreamReader(System.in, encoding));
+			}
+			stream = new ThreadedInputStream(System.in);
 		}
 		else
 		{
@@ -141,9 +153,9 @@ public class LogReader implements Iterable<LogLine>
 			{
 				return false;
 			}
-			reader = new BufferedReader(new InputStreamReader(
-				new FileInputStream(files[fileIndex]), encoding));
+			stream = new ThreadedInputStream(new FileInputStream(files[fileIndex]));
 		}
+		reader = new BufferedReader(new InputStreamReader(stream, encoding));
 		return true;
 	}
 
@@ -171,6 +183,19 @@ public class LogReader implements Iterable<LogLine>
 		return processedLines + invalidLines + wrongTimeLines;
 	}
 	
+	/** @return Time in milliseconds that IO was idle (waiting for main thread
+	 * to use up existing buffers) */
+	public long getIoIdleTime()
+	{
+		return ioIdleTime;
+	}
+
+	/** @return Time in milliseconds that IO blocked */
+	public long getIoBlockTime()
+	{
+		return ioBlockTime;
+	}
+
 	/** @return IO exception that terminated reading, or null if none) */
 	public IOException getException()
 	{
@@ -218,6 +243,34 @@ public class LogReader implements Iterable<LogLine>
 	public Iterator<LogLine> iterator()
 	{
 		return iterator;
+	}
+
+	/**
+	 * Closes the reader if necessary (can be called midway through iterating).
+	 */
+	public void close()
+	{
+		closeReader();
+	}
+
+	private void closeReader()
+	{
+		if(reader==null)
+		{
+			return;
+		}
+		try
+		{
+			ioIdleTime += stream.getIdleTime();
+			ioBlockTime += stream.getBlockTime();
+			reader.close();
+			reader = null;
+			stream = null;
+		}
+		catch(IOException e)
+		{
+		}
+		reader = null;
 	}
 }
 

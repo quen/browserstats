@@ -137,5 +137,6 @@ Output options
   system would otherwise overwrite an existing file, it exits with an error.)
 
 -verbose
-  Displays additional information to standard error, currently just memory
-  consumption.
+  Displays additional information to standard error (memory consumption and 
+  certain timings). The timing information may be useful if trying to optimise
+  a regular expression for use on large log files.
