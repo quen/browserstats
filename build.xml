@@ -1,0 +1,58 @@
+<project name="browserstats" default="all" basedir=".">
+
+	<description>
+		Builds jar file for browser stats project.
+	</description>
+
+	<!-- Build folder (will be deleted on run!) -->
+	<property name="build" location="${java.io.tmpdir}/build/browserstats" />
+	
+	<!-- Where to put the jar when it's built -->
+	<property name="jarfolder" location="${user.home}/Desktop" />
+
+	<!-- Get date in format used for build version -->
+	<target name="timestamp">
+		<tstamp>
+			<format property="build-date" pattern="yyyy-MM-dd HH:mm"/>
+		</tstamp>
+	</target>
+
+	<!-- Init build folders -->
+	<target name="init" depends="timestamp">
+		<delete dir="${build}" />
+		<mkdir dir="${build}" />
+	</target>
+
+	<!-- Compile Java source and write the version file -->
+	<target name="compile" depends="init">
+		<mkdir dir="${build}/classes" />
+		<javac destdir="${build}/classes"
+			source="1.6" target="1.6" encoding="UTF-8" debug="true">
+			<src>
+			  <pathelement path="src"/>
+			</src>
+		</javac>
+		<copy todir="${build}/classes">
+		  <fileset dir="src">
+		  	<exclude name="**/*.java" />
+		  </fileset>
+		</copy>
+		<echo message="${build-date}"
+			file="${build}/classes/com/leafdigital/browserstats/shared/version.txt" />
+	</target>
+
+	<!-- Build jar files -->
+	<target name="jar" depends="compile">
+		<mkdir dir="${build}/output" />
+		<jar jarfile="${build}/output/browserstats.jar" basedir="${build}/classes"
+			level="9" />
+	</target>
+
+	<!-- Run JUnit tests -->
+	<target name="all" depends="jar">
+		<!-- Delete and recopy jar file -->
+		<delete file="${jarfolder}/browserstats.jar"/>
+		<copy file="${build}/output/browserstats.jar" todir="${jarfolder}" />
+	</target>
+	
+</project>
