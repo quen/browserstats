@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.agents;
 
 import java.io.*;
@@ -11,22 +29,22 @@ import com.leafdigital.util.xml.XMLException;
 public class Identify extends CommandLineTool implements UserAgentReader.Handler
 {
 	private AgentList list;
-	
+
 	private File folder = null;
 	private boolean overwrite, stdout;
-	
+
 	private TestType test = TestType.NONE;
 	private String[] testParams = null;
 	private int minCount, matched, unmatched, matchedCount, unmatchedCount;
 
 	private IdentifyResults results;
-	
+
 	/** Special test constants to check options. */
 	private enum TestType
 	{
 		/** No test */
 		NONE(-1),
-		
+
 		/** Run the agent list self-test */
 		SELFTEST(0),
 		/** Show all unmatched user agents with counts above the parameter */
@@ -35,20 +53,20 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		SHOWAGENT(5),
 		/** Identify an agent given on command line */
 		IDENTIFY(1);
-		
+
 		private int params;
 		TestType(int params)
 		{
 			this.params = params;
 		}
-		
+
 		/** @return Number of parameters required by the option */
 		int getParams()
 		{
 			return params;
 		}
 	};
-	
+
 	/**
 	 * @param args Command-line arguments
 	 */
@@ -56,7 +74,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 	{
 		(new Identify()).run(args);
 	}
-	
+
 	private Identify()
 	{
 		try
@@ -74,7 +92,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			failed();
 		}
 	}
-	
+
 	@Override
 	protected int processArg(String[] args, int i)
 	{
@@ -91,7 +109,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		if(args[i].equals("-overwrite"))
 		{
 			overwrite = true;
-			return 1; 
+			return 1;
 		}
 		if(args[i].equals("-stdout"))
 		{
@@ -116,23 +134,23 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			{
 				testParams[j] = args[i+2+j];
 			}
-			
+
 			return 2+test.getParams();
 		}
 		return 0;
 	}
-	
+
 	@Override
 	protected void validateArgs() throws IllegalArgumentException
-	{		
+	{
 	}
-	
+
 	@Override
 	protected boolean requiresInput()
 	{
 		return test != TestType.SELFTEST && test != TestType.IDENTIFY;
 	}
-	
+
 	private Pattern selectType, selectEngine, selectName, selectVersion, selectOs;
 	private HashSet<String> selectMatches;
 
@@ -148,14 +166,14 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 				return;
 			}
 			System.out.println();
-			
+
 			// Continue with remaining processing if any
 			break;
-			
+
 		case IDENTIFY:
 			System.out.println(list.match(testParams[0]));
 			break;
-			
+
 		case UNMATCHED:
 			try
 			{
@@ -168,7 +186,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			}
 			// Continue with processing; we will handle the rest inside doFile
 			break;
-			
+
 		case SHOWAGENT:
 			try
 			{
@@ -184,9 +202,9 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 				System.err.println("-test agent regular expression not valid: " + e.getPattern());
 				return;
 			}
-			break;			
+			break;
 		}
-		
+
 		try
 		{
 			File[] input = getInputFiles();
@@ -200,8 +218,8 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 				{
 					doFile(f);
 				}
-			}		
-			
+			}
+
 			switch(test)
 			{
 			case UNMATCHED:
@@ -209,7 +227,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 				System.err.println();
 				System.err.println("Summary results");
 				System.err.println("---------------");
-				System.err.println();			
+				System.err.println();
 				System.err.println("    Matched agents: " + matched + " (" + ((matched*100)/(matched+unmatched)) + "%)");
 				System.err.println("  Unmatched agents: " + unmatched);
 				System.err.println("  Matched requests: " + matchedCount + " (" + ((matchedCount*100)/(matchedCount+unmatchedCount)) + "%)");
@@ -222,7 +240,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			System.err.println(e.getMessage());
 		}
 	}
-	
+
 	private void doFile(File f) throws IOException
 	{
 		// Read data
@@ -233,8 +251,8 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		catch(IOException e)
 		{
 			throw new IOException("Error processing input:\n\n" + e.getMessage());
-		}		
-		
+		}
+
 		// Some test types don't write result
 		switch(test)
 		{
@@ -242,7 +260,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		case SHOWAGENT:
 			return;
 		}
-		
+
 		// Get target file for result
 		File target;
 		if(f==null || stdout)
@@ -255,18 +273,18 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			if(targetName.endsWith(".useragents"))
 			{
 				targetName = targetName.substring(
-					0, targetName.length()-".useragents".length());				
+					0, targetName.length()-".useragents".length());
 			}
 			targetName += ".knownagents";
 			if(folder!=null)
 			{
-				target = new File(folder, targetName);				
+				target = new File(folder, targetName);
 			}
 			else
 			{
 				target = new File(f.getParentFile(), targetName);
 			}
-			
+
 			if(!overwrite && target.exists())
 			{
 				throw new IOException("Target file already exists: " + target);
@@ -276,7 +294,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		// Write results to file
 		results.write(target);
 	}
-	
+
 	@Override
 	public void agentCategories(String[] categories)
 	{
@@ -287,18 +305,18 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 	public void agentCounts(String agent, int count, int[] categoryCounts)
 	{
 		Agent match = list.match(agent);
-		
+
 		// Handle test option
 		switch(test)
-		{ 
+		{
 		case UNMATCHED:
 			if(match==null)
 			{
 				unmatched++;
 				unmatchedCount += count;
-				
+
 				if(count > minCount)
-				{					
+				{
 					System.out.printf("%5d: %s\n", count, agent);
 				}
 			}
@@ -306,14 +324,14 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			{
 				matched++;
 				matchedCount += count;
-			}			
+			}
 			break;
-			
+
 		case SHOWAGENT:
-			if(match!=null && selectType.matcher(match.getType()).find() 
-				&& selectEngine.matcher(match.getEngine()).find() 
-				&& selectName.matcher(match.getName()).find() 
-				&& selectVersion.matcher(match.getVersion()).find() 
+			if(match!=null && selectType.matcher(match.getType()).find()
+				&& selectEngine.matcher(match.getEngine()).find()
+				&& selectName.matcher(match.getName()).find()
+				&& selectVersion.matcher(match.getVersion()).find()
 				&& selectOs.matcher(match.getOs()).find() )
 			{
 				if(selectMatches.add(agent))
@@ -323,7 +341,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			}
 			break;
 		}
-		
+
 		results.addCounts(match, count, categoryCounts);
 	}
 }

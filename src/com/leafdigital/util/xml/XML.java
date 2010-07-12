@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.util.xml;
 
 import java.io.*;
@@ -38,7 +56,7 @@ public abstract class XML
 	public static Document parse(File f) throws XMLException
 	{
 		return parse(null,f);
-	}	
+	}
 	/**
 	 * Parses a document from a string.
 	 * @param s String of well-formed XML
@@ -55,9 +73,9 @@ public abstract class XML
 		{
 			throw new XMLException("UTF-8 is always supported, this can't happen",uee);
 		}
-	}	
+	}
 	/**
-	 * Parses a document from a class resource. This is a shortcut for 
+	 * Parses a document from a class resource. This is a shortcut for
 	 * parse(c.getResourceAsStream(resource)) with some extra error checking.
 	 * @param c Class
 	 * @param resource Filename of resource relative to class
@@ -77,7 +95,7 @@ public abstract class XML
 		}
 		catch(IOException ioe)
 		{
-			throw new XMLException("Error closing class data stream, this can't happen",ioe);			
+			throw new XMLException("Error closing class data stream, this can't happen",ioe);
 		}
 	}
 	/**
@@ -90,10 +108,10 @@ public abstract class XML
 	private synchronized static Document parse(InputStream is,File f) throws XMLException
 	{
 		checkStatics();
-		
+
 		try
 		{
-			if(is!=null) 
+			if(is!=null)
 				return db.parse(is);
 			if(f!=null)
 			  return db.parse(f);
@@ -114,24 +132,24 @@ public abstract class XML
 			throw new XMLException("Error reading XML data",e);
 		}
 	}
-	
+
 	/**
 	 * Creates a new XML document.
 	 * @param documentElement Name for document element (root tag)
 	 * @return Document object
-	 * @throws XMLException 
+	 * @throws XMLException
 	 */
 	public synchronized static Document newDocument(String documentElement) throws XMLException
 	{
 		Document d=newDocument();
-		d.appendChild(d.createElement(documentElement));		
+		d.appendChild(d.createElement(documentElement));
 		return d;
 	}
 
 	/**
 	 * Creates a new empty XML document.
 	 * @return Document object
-	 * @throws XMLException 
+	 * @throws XMLException
 	 */
 	public synchronized static Document newDocument() throws XMLException
 	{
@@ -152,18 +170,18 @@ public abstract class XML
 			dbf=DocumentBuilderFactory.newInstance();
 			db=dbf.newDocumentBuilder();
 			tf=TransformerFactory.newInstance();
-			tBlank=tf.newTransformer();		
+			tBlank=tf.newTransformer();
 		}
 		catch(ParserConfigurationException pce)
 		{
-			throw new XMLException(pce);			
-		} 
+			throw new XMLException(pce);
+		}
 		catch (TransformerConfigurationException tce)
 		{
-			throw new XMLException(tce);			
+			throw new XMLException(tce);
 		}
 	}
-	
+
 	/**
 	 * Obtains the value of a required attribute.
 	 * @param e Element
@@ -176,7 +194,7 @@ public abstract class XML
 		if(!e.hasAttribute(name)) throw new XMLException("<"+e.getTagName()+">: Missing attribute "+name+"=");
 		return e.getAttribute(name);
 	}
-	
+
 	/**
 	 * Obtains the value of a required attribute which must be an integer
 	 * @param e Element
@@ -195,7 +213,7 @@ public abstract class XML
 			throw new XMLException("<"+e.getTagName()+">: Invalid attribute "+name+"=, expecting integer");
 		}
 	}
-	
+
 	/**
 	 * Returns child element of given tag name.
 	 * @param parent Parent
@@ -203,7 +221,7 @@ public abstract class XML
 	 * @return Element
 	 * @throws XMLException If one doesn't exist
 	 */
-	public static Element getChild(Node parent,String name) 
+	public static Element getChild(Node parent,String name)
 	  throws XMLException
 	{
 		for(Node n=parent.getFirstChild();n!=null;n=n.getNextSibling())
@@ -216,13 +234,13 @@ public abstract class XML
 		}
 		throw new XMLException("Element "+name+" not found");
 	}
-	
+
 	/**
 	 * @param parent Parent
 	 * @param name Desired tag name
 	 * @return True if child of that name exists
 	 */
-	public static boolean hasChild(Node parent,String name) 
+	public static boolean hasChild(Node parent,String name)
 	{
 		for(Node n=parent.getFirstChild();n!=null;n=n.getNextSibling())
 		{
@@ -234,14 +252,14 @@ public abstract class XML
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns child elements of given tag name.
 	 * @param parent Parent
 	 * @param name Desired tag name
 	 * @return Elements
 	 */
-	public static Element[] getChildren(Node parent,String name) 
+	public static Element[] getChildren(Node parent,String name)
 	{
 		List<Element> l=new LinkedList<Element>();
 		for(Node n=parent.getFirstChild();n!=null;n=n.getNextSibling())
@@ -260,7 +278,7 @@ public abstract class XML
 	 * @param parent Parent
 	 * @return Elements
 	 */
-	public static Element[] getChildren(Node parent) 
+	public static Element[] getChildren(Node parent)
 	{
 		List<Element> l=new LinkedList<Element>();
 		for(Node n=parent.getFirstChild();n!=null;n=n.getNextSibling())
@@ -269,12 +287,12 @@ public abstract class XML
 		}
 		return l.toArray(new Element[0]);
 	}
-	
+
 	/**
 	 * Gets text from within a named child element.
 	 * @param parent Parent node
 	 * @param element Element to look for
-	 * @return Text within that element, trimmed and whitespace-converted; 
+	 * @return Text within that element, trimmed and whitespace-converted;
 	 *   "" if there is no text
 	 * @throws XMLException If the element does not exist
 	 */
@@ -282,7 +300,7 @@ public abstract class XML
 	{
 		return getChildText(parent,element,true);
 	}
-	
+
 	/**
 	 * Gets text from within a named child element.
 	 * @param parent Parent node
@@ -296,7 +314,7 @@ public abstract class XML
 		Element e=getChild(parent,element);
 		return getText(e,fixText);
 	}
-	
+
 	/**
 	 * Gets text from within named child elements.
 	 * @param parent Parent node
@@ -308,23 +326,23 @@ public abstract class XML
 		Element[] ae=getChildren(parent,element);
 		String[] as=new String[ae.length];
 		for (int i= 0; i < as.length; i++)
-		{	
+		{
 			as[i]=getText(ae[i]);
 		}
 		return as;
 	}
-	
+
 	/**
 	 * Gets text from within a node.
 	 * @param parent Node containing text
-	 * @return Text within that node, trimmed and whitespace-converted; 
+	 * @return Text within that node, trimmed and whitespace-converted;
 	 *   "" if there is no text
 	 */
 	public static String getText(Node parent)
 	{
 		return getText(parent,true);
 	}
-	
+
 	/**
 	 * Gets text from within a node.
 	 * @param parent Node containing text
@@ -343,9 +361,9 @@ public abstract class XML
 		else
 			return sb.toString();
 	}
-	
+
 	/**
-	 * Removes whitespace at beginning and end of string; runs of whitespace in the 
+	 * Removes whitespace at beginning and end of string; runs of whitespace in the
 	 * middle are converted to a single space. See also {@link #normaliseText(String)}.
 	 * @param s Text
 	 * @return Text trimmed and whitespace-converted
@@ -354,8 +372,8 @@ public abstract class XML
 	{
 		s=s.trim();
 		boolean bLastWhitespace=false;
-		
-		StringBuffer sb=new StringBuffer();		
+
+		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<s.length();i++)
 		{
 			char c=s.charAt(i);
@@ -365,7 +383,7 @@ public abstract class XML
 				{
 					sb.append(' ');
 					bLastWhitespace=true;
-				}				
+				}
 			}
 			else
 			{
@@ -375,12 +393,12 @@ public abstract class XML
 		}
 		return sb.toString();
 	}
-	
+
 	/** XML mode */
 	public final static int MODE_XML=0;
 	/** XHTML mode */
 	public final static int MODE_XHTML=1;
-	
+
 	/**
 	 * Saves using string writes.
 	 * @param mode MODE_xx constant
@@ -397,13 +415,13 @@ public abstract class XML
 		}
 		fastSave(mode,d.getDocumentElement(),w);
 	}
-	
+
 	private final static Set<String> XHTMLMINIMISETAGS=new HashSet<String>(
-		Arrays.asList(new String[] 
+		Arrays.asList(new String[]
 	{
 		"br","img","meta","link","input"
 	}));
-	
+
 	/**
 	 * Saves using string writes.
 	 * @param mode MODE_xx constant
@@ -432,7 +450,7 @@ public abstract class XML
 			sb.append(" xmlns=\"http://www.w3.org/1999/xhtml\"");
 		}
 		NodeList children=e.getChildNodes();
-		if(children.getLength()==0 && 
+		if(children.getLength()==0 &&
 			(mode==MODE_XML || XHTMLMINIMISETAGS.contains(tag)))
 		{
 			sb.append(" />");
@@ -445,13 +463,13 @@ public abstract class XML
 		fastSaveInner(mode,e,w);
 		w.write("</"+tag+">");
 	}
-	
+
 	/**
 	 * Writes the contents of an element (not including the element tag itself)
 	 * to the given writer.
 	 * @param mode MODE_xx constant
 	 * @param e Element to write contents of
-	 * @param w Writer 
+	 * @param w Writer
 	 * @throws IOException Any error writing
 	 */
 	public static void fastSaveInner(int mode,Element e,Writer w) throws IOException
@@ -465,14 +483,14 @@ public abstract class XML
 				fastSave(mode,(Element)n,w);
 			}
 			else if(n instanceof Text)
-			{				
+			{
 				String data=((Text)n).getData();
 				if(data!=null) w.write(esc(data,false));
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Saves an XML document to a file.
 	 * @param f File target
@@ -483,7 +501,7 @@ public abstract class XML
 	{
 		checkStatics();
 		try
-		{			
+		{
 			OutputStreamWriter osw=new OutputStreamWriter(new FileOutputStream(f),"UTF-8");
 			tBlank.transform(new DOMSource(d),new StreamResult(osw));
 			osw.close();
@@ -491,13 +509,13 @@ public abstract class XML
 		catch (TransformerException te)
 		{
 			throw new XMLException(te);
-		} 
+		}
 		catch(IOException e)
 		{
 			throw new XMLException(e);
 		}
 	}
-	
+
 	/**
 	 * Saves an XML document into a string.
 	 * @param d Document to save
@@ -515,7 +533,7 @@ public abstract class XML
 		catch (TransformerException te)
 		{
 			throw new XMLException(te);
-		} 
+		}
 		return sw.toString();
 	}
 
@@ -531,10 +549,10 @@ public abstract class XML
 		for(int i=nl.getLength()-1;i>=0;i--)
 		{
 			e.removeChild(nl.item(i));
-		}		
-		e.appendChild(e.getOwnerDocument().createTextNode(text));		
+		}
+		e.appendChild(e.getOwnerDocument().createTextNode(text));
 	}
-	
+
 	/**
 	 * @param e Element for which attributes will be examined
 	 * @return Names of all attributes set on the element
@@ -550,8 +568,8 @@ public abstract class XML
 		}
 		return l.toArray(new String[0]);
 	}
-	
-	/** 
+
+	/**
 	 * Trims text as per standard HTML processing, for example removes double-spaces.
 	 * Leaves spaces at the beginning and end.
 	 * @param s Text to trim
@@ -584,7 +602,7 @@ public abstract class XML
 
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Escapes special characters in a string (angle brackets, ampersands, both
 	 * types of quote) so that it can be included in the text of an XML element
@@ -592,7 +610,7 @@ public abstract class XML
 	 * @param s String to escape
 	 * @return XML-escaped version of string
 	 */
-	public static String esc(String s)	
+	public static String esc(String s)
 	{
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<s.length();i++)
@@ -619,7 +637,7 @@ public abstract class XML
 	 * @param quotes If true, escapes quotes, otherwise leaves them alone
 	 * @return XML-escaped version of string
 	 */
-	public static String esc(String s,boolean quotes)	
+	public static String esc(String s,boolean quotes)
 	{
 		if(quotes) return esc(s);
 		StringBuffer sb=new StringBuffer();
@@ -636,9 +654,9 @@ public abstract class XML
 		}
 		return sb.toString();
 	}
-	
+
 	/**
-	 * Converts multiple spaces to non-breaking spaces so that they will be 
+	 * Converts multiple spaces to non-breaking spaces so that they will be
 	 * retained in some forms of XML display.
 	 * @param s String to convert
 	 * @return Each space after first is converted to Unicode 160
@@ -659,9 +677,9 @@ public abstract class XML
 		Document d=parent instanceof Document ? (Document)parent : parent.getOwnerDocument();
 		Element eNew=d.createElement(tagName);
 		parent.appendChild(eNew);
-		return eNew;		
+		return eNew;
 	}
-	
+
 	/**
 	 * Create new element with text inside.
 	 * @param parent Parent
@@ -675,9 +693,9 @@ public abstract class XML
 		Element eNew=d.createElement(tagName);
 		eNew.appendChild(d.createTextNode(text));
 		parent.appendChild(eNew);
-		return eNew;		
+		return eNew;
 	}
-	
+
 	/**
 	 * Removes a node from the document.
 	 * @param old Node to get rid of

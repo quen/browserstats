@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.collator;
 
 import java.io.*;
@@ -8,21 +26,21 @@ import java.util.regex.*;
 import com.leafdigital.browserstats.collator.LogLine.Field;
 import com.leafdigital.browserstats.shared.CommandLineTool;
 
-/** 
- * Main class for collator utility which processes server log files. 
+/**
+ * Main class for collator utility which processes server log files.
  */
 public class Collate extends CommandLineTool
 {
-	private final static Pattern REGEX_ISO_DATE = 
+	private final static Pattern REGEX_ISO_DATE =
 		Pattern.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}");
-	
+
 	/** Time periods for output. */
 	public enum TimePeriod
 	{
 		/** One output file per day */
-		DAILY, 
+		DAILY,
 		/** One output file per month */
-		MONTHLY, 
+		MONTHLY,
 		/** Single output file */
 		ALL
 	};
@@ -38,37 +56,37 @@ public class Collate extends CommandLineTool
 		SHOWEXCLUDES(1),
 		/** Test matching a line */
 		LINE(1);
-		
+
 		private int params;
 		TestType(int params)
 		{
 			this.params = params;
 		}
-		
+
 		/** @return Number of parameters required by the option */
 		int getParams()
 		{
 			return params;
 		}
 	};
-	
+
 	private static class LineMatcher
 	{
 		private LogLine.Field field;
 		private Pattern regex;
-		
+
 		private LineMatcher(Field field, Pattern regex)
 		{
 			this.field = field;
 			this.regex = regex;
 		}
-		
+
 		private boolean match(LogLine line)
 		{
 			return regex.matcher(line.get(field)).find();
 		}
 	}
-	
+
 	private final static LineMatcher DEFAULTEXCLUDE = new LineMatcher(
 		LogLine.Field.PATH, Pattern.compile("(?:j(?:s|pe?g)|png|gif|css|ico)(?:\\?|$)"));
 
@@ -87,16 +105,16 @@ public class Collate extends CommandLineTool
 	private boolean lenient = false;
 	private String encoding = "UTF-8";
 	private String from = null, to = null;
-	private LogFormat format;		
+	private LogFormat format;
 	private Categoriser categoriser = new Categoriser();
 	private boolean unordered = false;
 	private boolean overwrite = false;
-	private boolean verbose = false;	
+	private boolean verbose = false;
 	private LinkedList<LineMatcher> includes = null, excludes = null;
 	private TestType test = null;
 	private String[] testParams = null;
 	private boolean customFormat = false;
-	
+
 	/**
 	 * @param args Command-line arguments
 	 */
@@ -105,7 +123,7 @@ public class Collate extends CommandLineTool
 		Collate c = new Collate();
 		c.run(args);
 	}
-	
+
 	private Collate()
 	{
 		// Load standard formats
@@ -120,7 +138,7 @@ public class Collate extends CommandLineTool
 			failed();
 		}
 	}
-	
+
 	@Override
 	protected int processArg(String[] args, int i)
 	{
@@ -178,7 +196,7 @@ public class Collate extends CommandLineTool
 		if(args[i].equals("-overwrite"))
 		{
 			overwrite = true;
-			return 1; 
+			return 1;
 		}
 		if(args[i].equals("-stdout"))
 		{
@@ -235,7 +253,7 @@ public class Collate extends CommandLineTool
 			{
 				testParams[j] = args[i+2+j];
 			}
-			
+
 			return 2+test.getParams();
 		}
 		if(args[i].equals("-customformat"))
@@ -275,7 +293,7 @@ public class Collate extends CommandLineTool
 				{
 					includes = new LinkedList<LineMatcher>();
 				}
-				includes.add(matcher);						
+				includes.add(matcher);
 			}
 			catch(PatternSyntaxException e)
 			{
@@ -300,7 +318,7 @@ public class Collate extends CommandLineTool
 				{
 					excludes = new LinkedList<LineMatcher>();
 				}
-				excludes.add(matcher);						
+				excludes.add(matcher);
 			}
 			catch(PatternSyntaxException e)
 			{
@@ -316,16 +334,16 @@ public class Collate extends CommandLineTool
 		}
 		return 0;
 	}
-	
+
 	@Override
 	protected void validateArgs() throws IllegalArgumentException
-	{		
+	{
 		if(stdout && period!=TimePeriod.ALL)
 		{
 			throw new IllegalArgumentException(
 				"Cannot specify -stdout with -daily or -monthly");
 		}
-		
+
 		if(includes==null)
 		{
 			includes = new LinkedList<LineMatcher>();
@@ -338,13 +356,13 @@ public class Collate extends CommandLineTool
 			excludes.add(DEFAULTEXCLUDE2);
 		}
 	}
-	
+
 	private boolean include(LogLine line)
 	{
 		boolean include = false;
 		for(LineMatcher matcher : includes)
 		{
-			if(matcher.match(line))					
+			if(matcher.match(line))
 			{
 				include = true;
 				break;
@@ -363,7 +381,7 @@ public class Collate extends CommandLineTool
 		}
 		return true;
 	}
-	
+
 	@Override
 	protected void go()
 	{
@@ -377,14 +395,14 @@ public class Collate extends CommandLineTool
 			}
 		}
 		// Construct counter
-		AgentCounter counter = new AgentCounter(folder, prefix, period, 
+		AgentCounter counter = new AgentCounter(folder, prefix, period,
 			unordered, overwrite, categoriser.getCategories(), stdout);
-		
+
 		long maxRam = 0;
 		int count = 0;
 		int filtered = 0;
 		long startTime = System.currentTimeMillis();
-		
+
 		try
 		{
 			// Process files
@@ -456,7 +474,7 @@ public class Collate extends CommandLineTool
 				System.err.println("\n\nError writing output:\n\n" + e.getMessage());
 				return;
 			}
-			
+
 			// Output information
 			if(!stdout)
 			{
@@ -491,7 +509,7 @@ public class Collate extends CommandLineTool
 			return;
 		}
 	}
-	
+
 	private void testParse(LogReader reader)
 	{
 		for(LogLine line : reader)
@@ -500,11 +518,11 @@ public class Collate extends CommandLineTool
 			return;
 		}
 	}
-	
+
 	private void testIncludes(LogReader reader, boolean includes)
 	{
 		LogLine.Field field = LogLine.Field.valueOf(testParams[0].toUpperCase());
-		
+
 		HashSet<String> values = new HashSet<String>();
 		for(LogLine line : reader)
 		{
@@ -518,7 +536,7 @@ public class Collate extends CommandLineTool
 			}
 		}
 	}
-	
+
 	private void testLine()
 	{
 		System.out.println("Line:");

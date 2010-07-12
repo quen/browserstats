@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.agents;
 
 import java.io.*;
@@ -20,7 +38,7 @@ public class UserAgentReader extends DefaultHandler
 	private String currentAgent;
 	private int currentCount;
 	private int[] currentCounts;
-	
+
 	/**
 	 * Class that handles user-agent information read from file.
 	 */
@@ -31,10 +49,10 @@ public class UserAgentReader extends DefaultHandler
 		 * @param categories Category names
 		 */
 		public void agentCategories(String[] categories);
-		
+
 		/**
 		 * Called each time a new agent is read.
-		 * @param agent User-agent string 
+		 * @param agent User-agent string
 		 * @param count Total number of requests with this agent
 		 * @param categoryCounts Number of requests from each category to this agent
 		 */
@@ -52,7 +70,7 @@ public class UserAgentReader extends DefaultHandler
 		this.input = input;
 		this.h = h;
 		SAXParserFactory factory = SAXParserFactory.newInstance();
-	  try 
+	  try
 	  {
       SAXParser saxParser = factory.newSAXParser();
       if(input==null)
@@ -64,7 +82,7 @@ public class UserAgentReader extends DefaultHandler
       {
       	saxParser.parse(input, this);
       }
-	  } 
+	  }
 		catch(ParserConfigurationException e)
 		{
 			throw new IOException("Problem with Java XML system", e);
@@ -74,18 +92,18 @@ public class UserAgentReader extends DefaultHandler
 			throw new IOException("Invalid user-agent data: " + e.getMessage());
 		}
 	}
-	
+
 	@Override
 	public void setDocumentLocator(Locator locator)
 	{
 		this.locator = locator;
 	}
-	
+
 	private String getLocation()
 	{
 		return input.getName()+ (locator==null ? "" : ":"+locator.getLineNumber());
 	}
-	
+
 	@Override
 	public void startElement(String uri, String localName, String name,
 		Attributes attributes) throws SAXException
@@ -117,16 +135,16 @@ public class UserAgentReader extends DefaultHandler
 			{
 				currentCounts[i] = getCount(attributes, categories[i]);
 			}
-		  
+
 		}
 	}
-	
+
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException
 	{
-		currentAgent = new String(ch, start, length);		
+		currentAgent = new String(ch, start, length);
 	}
-	
+
 	@Override
 	public void endElement(String uri, String localName, String name)
 		throws SAXException
@@ -149,7 +167,7 @@ public class UserAgentReader extends DefaultHandler
 	  String value = currentAttributes.getValue(name);
 	  if(value==null)
 	  {
-	  	throw new SAXException("<agent> missing required attribute " + name 
+	  	throw new SAXException("<agent> missing required attribute " + name
 	  		+ "=. " + getLocation());
 	  }
 	  try

@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.agents;
 
 import java.util.LinkedList;
@@ -8,14 +26,14 @@ import org.w3c.dom.Element;
 import com.leafdigital.util.xml.*;
 
 /** Information required to detect a group of browsers. */
-public abstract class MatchElement 
+public abstract class MatchElement
 {
 	private String type, engine, name, version, os;
 	private Pattern[] regexes;
 	private MatchElement parent;
-	
+
 	private LinkedList<MatchElement> children;
-	
+
 	/**
 	 * Constructs from XML.
 	 * @param parent Parent match element, or null if none (root)
@@ -24,7 +42,7 @@ public abstract class MatchElement
 	{
 		this.parent = parent;
 	}
-	
+
 	/**
 	 * Initialises options that belong to this individual element.
 	 * @param e Browser element
@@ -32,7 +50,7 @@ public abstract class MatchElement
 	 */
 	protected void initSelf(Element e) throws InvalidElementException
 	{
-		type = e.hasAttribute("type") ? e.getAttribute("type") : null; 
+		type = e.hasAttribute("type") ? e.getAttribute("type") : null;
 		engine = e.hasAttribute("engine") ? e.getAttribute("engine") : null;
 		name = e.hasAttribute("name") ? e.getAttribute("name") : null;
 		version = e.hasAttribute("version") ? e.getAttribute("version") : null;
@@ -63,7 +81,7 @@ public abstract class MatchElement
 	{
 		children = new LinkedList<MatchElement>();
 		Element[] childElements = XML.getChildren(e);
-		for(Element child : childElements)				
+		for(Element child : childElements)
 		{
 			if(child.getTagName().equals("agent"))
 			{
@@ -79,7 +97,7 @@ public abstract class MatchElement
 			throw new InvalidElementException(e, "No children for group");
 		}
 	}
-	
+
 	/**
 	 * Lists all browsers within this element.
 	 * @param browsers List that receives browsers
@@ -91,7 +109,7 @@ public abstract class MatchElement
 			child.listBrowsers(browsers);
 		}
 	}
-	
+
 	/** @return Identifier describing type of agent (browser, feedreader, etc) */
 	public String getType()
 	{
@@ -104,7 +122,7 @@ public abstract class MatchElement
 			return type;
 		}
 	}
-	
+
 	/** @return Browser engine identifier */
 	public String getEngine()
 	{
@@ -117,7 +135,7 @@ public abstract class MatchElement
 			return engine;
 		}
 	}
-	
+
 	/** @return Browser identifier */
 	public String getName()
 	{
@@ -130,7 +148,7 @@ public abstract class MatchElement
 			return name;
 		}
 	}
-	
+
 	/** @return Browser version */
 	public String getVersion()
 	{
@@ -143,7 +161,7 @@ public abstract class MatchElement
 			return version;
 		}
 	}
-	
+
 	/** @return Operating system identifier */
 	public String getOs()
 	{
@@ -156,7 +174,7 @@ public abstract class MatchElement
 			return os;
 		}
 	}
-	
+
 	/**
 	 * @param agent User-agent string
 	 * @return True if this browser matches the given agent
@@ -167,7 +185,7 @@ public abstract class MatchElement
 		{
 			return true;
 		}
-		
+
 		for(Pattern regex : regexes)
 		{
 			if(regex.matcher(agent).find())
@@ -177,7 +195,7 @@ public abstract class MatchElement
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns the browser that matches the given agent.
 	 * @param agent User-agent string
@@ -201,5 +219,5 @@ public abstract class MatchElement
 			}
 		}
 		return null;
-	}	
+	}
 }

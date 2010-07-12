@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.collator;
 
 import java.text.*;
@@ -10,7 +28,7 @@ public class LogFormat
 	private int ipField, dateField, timeField, agentField, pathField, statusField;
 	private SimpleDateFormat dateFormat, timeFormat, isoDateFormat, isoTimeFormat;
 	private boolean decodeAgent;
-	
+
 	/**
 	 * @param regex Regular expression to parse line
 	 * @param ipField Index of field that contains IP address or other unique
@@ -24,36 +42,36 @@ public class LogFormat
 	 * @param timeFormat Format for time (SimpleDateFormat style)
 	 * @throws IllegalArgumentException If any of the arguments are invalid
 	 */
-	LogFormat(String regex, String ipField, String dateField, String timeField, 
-		String agentField, String pathField, String statusField, String dateFormat, String timeFormat) 
+	LogFormat(String regex, String ipField, String dateField, String timeField,
+		String agentField, String pathField, String statusField, String dateFormat, String timeFormat)
 		throws IllegalArgumentException
 	{
 		try
 		{
-			this.regex = Pattern.compile(regex);		
+			this.regex = Pattern.compile(regex);
 		}
 		catch(PatternSyntaxException e)
 		{
-			throw new IllegalArgumentException("Invalid log format <line>: " + 
+			throw new IllegalArgumentException("Invalid log format <line>: " +
 				e.getDescription());
 		}
 		int groups = this.regex.matcher("").groupCount();
 		this.ipField = parseInt(ipField, "Invalid IP field index");
 		if(this.ipField <= 0 || this.ipField > groups)
 		{
-			throw new IllegalArgumentException("IP field index out of range: " 
+			throw new IllegalArgumentException("IP field index out of range: "
 				+ this.ipField);
 		}
 		this.dateField = parseInt(dateField, "Invalid date field index");
 		if(this.dateField <= 0 || this.dateField > groups)
 		{
-			throw new IllegalArgumentException("Date field index out of range: " 
+			throw new IllegalArgumentException("Date field index out of range: "
 				+ this.dateField);
 		}
 		this.timeField = parseInt(timeField, "Invalid time field index");
 		if(this.timeField <= 0 || this.timeField > groups)
 		{
-			throw new IllegalArgumentException("Time field index out of range: " 
+			throw new IllegalArgumentException("Time field index out of range: "
 				+ this.timeField);
 		}
 		if(agentField.endsWith("+"))
@@ -64,26 +82,26 @@ public class LogFormat
 		this.agentField = parseInt(agentField, "Invalid agent field index");
 		if(this.agentField <= 0 || this.agentField > groups)
 		{
-			throw new IllegalArgumentException("Agent field index out of range: " 
+			throw new IllegalArgumentException("Agent field index out of range: "
 				+ this.agentField);
 		}
 		this.pathField = parseInt(pathField, "Invalid path field index");
 		if(this.pathField <= 0 || this.pathField > groups)
 		{
-			throw new IllegalArgumentException("Path field index out of range: " 
+			throw new IllegalArgumentException("Path field index out of range: "
 				+ this.pathField);
 		}
 		this.statusField = parseInt(statusField, "Invalid status field index");
 		if(this.statusField <= 0 || this.statusField > groups)
 		{
-			throw new IllegalArgumentException("Status field index out of range: " 
+			throw new IllegalArgumentException("Status field index out of range: "
 				+ this.statusField);
 		}
 		try
 		{
 			this.dateFormat = new SimpleDateFormat(dateFormat);
 		}
-		catch(IllegalArgumentException e)		
+		catch(IllegalArgumentException e)
 		{
 			throw new IllegalArgumentException("Invalid date format: " + dateFormat);
 		}
@@ -91,14 +109,14 @@ public class LogFormat
 		{
 			this.timeFormat = new SimpleDateFormat(timeFormat);
 		}
-		catch(IllegalArgumentException e)		
+		catch(IllegalArgumentException e)
 		{
 			throw new IllegalArgumentException("Invalid time format: " + timeFormat);
 		}
 		isoDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		isoTimeFormat = new SimpleDateFormat("HH:mm:ss");
 	}
-	
+
 	private static int parseInt(String field, String message)
 	{
 		try
@@ -110,7 +128,7 @@ public class LogFormat
 			throw new IllegalArgumentException(message + ": " + field);
 		}
 	}
-	
+
 	/**
 	 * Sets the pattern used for lines to skip.
 	 * @param skip Regular expression
@@ -124,9 +142,9 @@ public class LogFormat
 		}
 		catch(PatternSyntaxException e)
 		{
-			throw new IllegalArgumentException("Invalid log format <skip>: " + 
+			throw new IllegalArgumentException("Invalid log format <skip>: " +
 				e.getDescription());
-		}		
+		}
 	}
 
 	/**
@@ -143,13 +161,13 @@ public class LogFormat
 		{
 			return null;
 		}
-		
+
 		Matcher m = regex.matcher(line);
 		if(!m.find())
 		{
 			throw new IllegalArgumentException("Doesn't match <line> regex");
 		}
-		
+
 		String isoDate;
 		try
 		{
@@ -170,7 +188,7 @@ public class LogFormat
 			throw new IllegalArgumentException("Invalid time format: " +
 				m.group(timeField));
 		}
-		
+
 		String agent = m.group(agentField);
 		if(decodeAgent)
 		{
@@ -183,6 +201,6 @@ public class LogFormat
 		result.initCategory(c.categorise(result));
 		return result;
 	}
-	
+
 
 }

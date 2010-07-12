@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.collator;
 
 import java.io.*;
@@ -9,24 +27,24 @@ public class LogReader implements Iterable<LogLine>
 	private int fileIndex = -1;
 	private BufferedReader reader = null;
 	private ThreadedInputStream stream;
-	
+
 	private int invalidLines = 0, wrongTimeLines = 0, processedLines = 0;
 	private long ioIdleTime=0, ioBlockTime=0;
-		
+
 	private LogFormat format;
 	private String encoding;
 	private boolean lenient;
 	private File[] files;
 	private Categoriser categoriser;
 	private String from, to;
-	
+
 	private LogLine nextLine;
 	private IOException ioException;
-	
+
 	private Iterator<LogLine> iterator;
-	
+
 	/**
-	 * 
+	 *
 	 * @param format Format of log lines
 	 * @param encoding Character encoding
 	 * @param lenient True to ignore malformed lines
@@ -48,7 +66,7 @@ public class LogReader implements Iterable<LogLine>
 		this.categoriser = categoriser;
 		this.from = from;
 		this.to = to;
-		
+
 		try
 		{
 			openNext();
@@ -66,14 +84,14 @@ public class LogReader implements Iterable<LogLine>
 			throw e;
 		}
 	}
-	
+
 	private LogLine readLine() throws IOException
 	{
 		while(true)
 		{
 			// Try to read a line
 			String line = reader.readLine();
-			
+
 			// If EOF, try next file
 			if(line==null)
 			{
@@ -81,13 +99,13 @@ public class LogReader implements Iterable<LogLine>
 				if(!openNext()) return null;
 				continue;
 			}
-			
+
 			// If line is empty, skip it
 			if(line.trim().equals(""))
 			{
 				continue;
 			}
-			
+
 			// Parse line
 			LogLine result;
 			try
@@ -111,11 +129,11 @@ public class LogReader implements Iterable<LogLine>
 				}
 				else
 				{
-					throw new IOException("Invalid input line (" + e.getMessage() + 
+					throw new IOException("Invalid input line (" + e.getMessage() +
 						")\n[" + line + "]");
 				}
 			}
-			
+
 			// Skip lines outside date range
 			if( (from!=null && result.getIsoDate().compareTo(from) < 0)
 				|| (to!=null && result.getIsoDate().compareTo(to) > 0))
@@ -123,12 +141,12 @@ public class LogReader implements Iterable<LogLine>
 				wrongTimeLines++;
 				continue;
 			}
-			
+
 			processedLines++;
 			return result;
 		}
 	}
-	
+
 	/**
 	 * Opens the next file/input stream.
 	 * @return True if the next stream has been opened, false otherwise
@@ -137,7 +155,7 @@ public class LogReader implements Iterable<LogLine>
 	private boolean openNext() throws IOException
 	{
 		closeReader();
-		
+
 		fileIndex++;
 		if(files==null)
 		{
@@ -164,25 +182,25 @@ public class LogReader implements Iterable<LogLine>
 	{
 		return invalidLines;
 	}
-	
+
 	/** @return Number of lines that were outside the date range (if date range given) */
 	public int getWrongTimeLines()
 	{
 		return wrongTimeLines;
 	}
-	
+
 	/** @return Number of lines processed */
 	public int getProcessedLines()
 	{
 		return processedLines;
 	}
-	
+
 	/** @return Total lines handled, including those skipped */
 	public int getTotalLines()
 	{
 		return processedLines + invalidLines + wrongTimeLines;
 	}
-	
+
 	/** @return Time in milliseconds that IO was idle (waiting for main thread
 	 * to use up existing buffers) */
 	public long getIoIdleTime()
@@ -201,7 +219,7 @@ public class LogReader implements Iterable<LogLine>
 	{
 		return ioException;
 	}
-	
+
 	private class LogIterator implements Iterator<LogLine>
 	{
 		@Override
@@ -218,7 +236,7 @@ public class LogReader implements Iterable<LogLine>
 				throw new NoSuchElementException();
 			}
 			LogLine result = nextLine;
-			
+
 			try
 			{
 				nextLine = readLine();
@@ -228,7 +246,7 @@ public class LogReader implements Iterable<LogLine>
 				ioException = e;
 				nextLine = null;
 			}
-			
+
 			return result;
 		}
 
@@ -238,7 +256,7 @@ public class LogReader implements Iterable<LogLine>
 			throw new UnsupportedOperationException();
 		}
 	}
-	
+
 	@Override
 	public Iterator<LogLine> iterator()
 	{
@@ -274,4 +292,3 @@ public class LogReader implements Iterable<LogLine>
 	}
 }
 
-	

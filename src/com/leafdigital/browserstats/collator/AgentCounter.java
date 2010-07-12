@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.collator;
 
 import java.io.*;
@@ -5,9 +23,9 @@ import java.util.*;
 
 import com.leafdigital.browserstats.collator.Collate.TimePeriod;
 
-/** 
+/**
  * Counts user agents in one or a number of date categories and outputs
- * the result to files. 
+ * the result to files.
  */
 public class AgentCounter
 {
@@ -17,7 +35,7 @@ public class AgentCounter
 	private boolean unordered, overwrite;
 	private Category[] categories;
 	private boolean stdout;
-	
+
 	private HashMap<String, AgentCount> counts = new HashMap<String, AgentCount>();
 	private HashSet<String> past = new HashSet<String>();
 
@@ -51,14 +69,14 @@ public class AgentCounter
 	{
 		AgentCount count = null;
 		String currentPeriod = null;
-		
+
 		switch(period)
 		{
 		case ALL :
 		{
 			count = counts.get(null);
 		}	break;
-			
+
 		case MONTHLY :
 		{
 			currentPeriod = line.getIsoDate().substring(0, 7);
@@ -69,12 +87,12 @@ public class AgentCounter
 				// Give an error if that's because this month is in the past
 				if(past.contains(currentPeriod))
 				{
-					throw new IOException("Line out of sequence (try -unordered):\n" 
+					throw new IOException("Line out of sequence (try -unordered):\n"
 						+ line);
 				}
 			}
 		} break;
-		
+
 		case DAILY :
 		{
 			currentPeriod = line.getIsoDate();
@@ -83,12 +101,12 @@ public class AgentCounter
 			{
 				if(past.contains(currentPeriod))
 				{
-					throw new IOException("Line out of sequence (try -unordered):\n" 
+					throw new IOException("Line out of sequence (try -unordered):\n"
 						+ line);
 				}
 			}
 		} break;
-			
+
 		}
 
 		// Create new data if required
@@ -96,15 +114,15 @@ public class AgentCounter
 		{
 			if(!stdout)
 			{
-				System.err.print("\n" + 
+				System.err.print("\n" +
 					(currentPeriod == null ? "Output" : currentPeriod) + ":");
 			}
 			count = new AgentCount();
 			counts.put(currentPeriod, count);
 		}
-		
+
 		// Flush out older data after 1am on the next day
-		if(!unordered && counts.size() > 1 
+		if(!unordered && counts.size() > 1
 			&& line.getIsoTime().compareTo("01:00:00") > 0)
 		{
 			for(Iterator<String> i=counts.keySet().iterator(); i.hasNext();)
@@ -119,11 +137,11 @@ public class AgentCounter
 				}
 			}
 		}
-		
+
 		// Actually count data
 		count.count(line.getUserAgent(), line.getIp(), line.getCategory());
 	}
-	
+
 	/**
 	 * Flushes a single disk file. Does not actually remove from list.
 	 * @param timePeriod Time period
@@ -138,23 +156,23 @@ public class AgentCounter
 		}
 		else
 		{
-			File target = new File(folder, prefix + 
+			File target = new File(folder, prefix +
 				(timePeriod == null ? "" : "." + timePeriod) + ".useragents");
 			if (target.exists() && !overwrite)
 			{
-				throw new IOException("Would overwrite " + target 
+				throw new IOException("Would overwrite " + target
 					+ ", aborting. (Use -overwrite to allow.)");
 			}
 			count.write(target, timePeriod, categories);
 		}
 		past.add(timePeriod);
 	}
-	
+
 	/**
 	 * Flushes all data to disk. Used at end of process.
 	 * @throws IOException If any I/O error occurs
 	 */
-  void flush() throws IOException  
+  void flush() throws IOException
   {
   	for(String period : counts.keySet())
   	{

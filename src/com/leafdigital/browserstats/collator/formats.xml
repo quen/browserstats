@@ -1,3 +1,28 @@
+<!-- 
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+
+
+This file lists built-in format support. Each format contains one or more
+sample log lines, followed by the actual format specification which defines
+a regular expression, which field corresponds to which piece of data, and
+formats used for date and time fields.
+-->
+
 <formats>
 <!-- Apache 2 (normal request) -->
 <!-- 11.111.111.111 - - [01/Jan/2009:00:02:52 -0500] "GET /NakedElves/ HTTP/1.1" 200 10623 "http://www.google.com/search?q=elf+porn&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:en-US:official&client=firefox-a" "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5" -->

@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.collator;
 
 import java.io.*;
@@ -8,7 +26,7 @@ public class AgentCount
 {
 	private int lines = 0;
 	private TreeMap<String, AgentData> agents = new TreeMap<String, AgentData>();
-	
+
 	/**
 	 * Counts a log line into this count object.
 	 * @param agent User-agent
@@ -24,14 +42,14 @@ public class AgentCount
 			agents.put(agent, data);
 		}
 		data.count(ip, c);
-		
+
 		lines++;
 		if((lines & 0x3fff)==0)
 		{
 			System.err.print(".");
 		}
 	}
-	
+
 	/**
 	 * Writes this out as XML.
 	 * @param f Target file or null to write to stdout
@@ -71,12 +89,12 @@ public class AgentCount
 		}
 		w.write("<?xml version='1.0' encoding='UTF-8'?>\n" +
 			"<useragents" + periodAttribute + categoryAttribute + ">\n");
-		
+
 		for(Map.Entry<String, AgentData> data : agents.entrySet())
 		{
 			data.getValue().write(w, data.getKey(), categories);
 		}
-		
+
 		w.write("</useragents>\n");
 		if(f!=null)
 		{

@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.collator;
 
 import java.util.EnumSet;
@@ -9,26 +27,26 @@ public class LogLine
 	public enum Field
 	{
 		/** User-agent string */
-		AGENT("agent"), 
+		AGENT("agent"),
 		/** Date in ISO format 2009-07-16 */
-		DATE("date"), 
+		DATE("date"),
 		/** Time in ISO format 20:17:46 */
-		TIME("time"), 
+		TIME("time"),
 		/** IP address string */
-		IP("ip"), 
+		IP("ip"),
 		/** Request path */
 		PATH("path"),
 		/** HTTP status code */
 		STATUS("status"),
 		/** Entire line */
 		LINE("line");
-		
+
 		private String name;
 		Field(String name)
 		{
 			this.name = name;
 		}
-		
+
 		static Field get(String name)
 		{
 			for(Field field : EnumSet.allOf(Field.class))
@@ -54,7 +72,7 @@ public class LogLine
 	 * @param path Path
 	 * @param status Status code
 	 */
-	LogLine(String line, String userAgent, String isoDate, String isoTime, 
+	LogLine(String line, String userAgent, String isoDate, String isoTime,
 		String ip, String path, String status)
 	{
 		this.line = line;
@@ -65,7 +83,7 @@ public class LogLine
 		this.path = path;
 		this.status = status;
 	}
-	
+
 	/**
 	 * Sets the category of the line. May only be called once.
 	 * @param c Category (may be Category.NONE)
@@ -90,7 +108,7 @@ public class LogLine
 	{
 		return isoDate;
 	}
-	
+
 	/** @return Time in ISO HH:mm:ss format */
 	public String getIsoTime()
 	{
@@ -102,25 +120,25 @@ public class LogLine
 	{
 		return ip;
 	}
-	
+
 	/** @return Request path */
 	public String getPath()
 	{
 		return path;
 	}
-	
+
 	/** @return Category (may be Category.NONE) */
 	public Category getCategory()
 	{
 		return category;
 	}
-	
+
 	/** @return Entire line */
 	public String getLine()
 	{
 		return line;
 	}
-	
+
 	/** @return HTTP status code */
 	public String getStatus()
 	{
@@ -152,13 +170,13 @@ public class LogLine
 			return line;
 		}
 	}
-	
+
 	@Override
 	public String toString()
 	{
 		return line;
 	}
-	
+
 	/**
 	 * @return Multi-line string showing all fields of the line
 	 */

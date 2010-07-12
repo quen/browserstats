@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.agents;
 
 import java.io.*;
@@ -6,7 +24,7 @@ import java.util.*;
 /** Tracks data found in the identify process so that it can be written out. */
 class IdentifyResults
 {
-	private String[] categories;	
+	private String[] categories;
 	private TreeMap<Agent, Counts> agents = new TreeMap<Agent, Counts>();
 	private Counts unmatched;
 	private int totalCount;
@@ -38,7 +56,7 @@ class IdentifyResults
 				this.categoryCounts[i] += categoryCounts[i];
 			}
 		}
-		
+
 		void write(Writer w) throws IOException
 		{
 			w.write("count='" + count +"'");
@@ -68,10 +86,10 @@ class IdentifyResults
 		{
 			counts = new Counts();
 			agents.put(agent, counts);
-		}		
+		}
 		counts.add(count, categoryCounts);
 	}
-	
+
 	/**
 	 * Writes out results.
 	 * @param f Target file (null = stdout)
@@ -108,19 +126,19 @@ class IdentifyResults
 					"='" + totalCategoryCounts[i] + "'";
 			}
 		}
-		
+
 		w.write("<?xml version='1.0' encoding='UTF-8'?>\n" +
 			"<knownagents totalcount='" + totalCount + "'" + categoryAttributes + ">\n");
-		
+
 		w.write("<agent type='unknown' ");
 		unmatched.write(w);
-		
+
 		for(Map.Entry<Agent, Counts> entry : agents.entrySet())
 		{
 			entry.getKey().writeAgentTagStart(w);
 			entry.getValue().write(w);
 		}
-		
+
 		w.write("</knownagents>\n");
 		if(f!=null)
 		{

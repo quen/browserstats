@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.collator;
 
 import java.io.IOException;
@@ -11,20 +29,20 @@ import com.leafdigital.util.xml.*;
 public class StandardFormats
 {
 	private HashMap<String, LogFormat> formats = new HashMap<String, LogFormat>();
-	
-	/** 
-	 * Initialises formats. 
-	 * @throws IOException 
+
+	/**
+	 * Initialises formats.
+	 * @throws IOException
 	 */
 	StandardFormats() throws IOException
 	{
 		try
 		{
 			// Load settings
-			Document doc = XML.parse(StandardFormats.class, "formats.xml");		
+			Document doc = XML.parse(StandardFormats.class, "formats.xml");
 			for(Element child : XML.getChildren(doc.getDocumentElement()))
 			{
-				LogFormat format = new LogFormat(XML.getChildText(child, "line", false), 
+				LogFormat format = new LogFormat(XML.getChildText(child, "line", false),
 					XML.getRequiredAttribute(child, "ip"),
 					XML.getRequiredAttribute(child, "date"),
 					XML.getRequiredAttribute(child, "time"),
@@ -45,7 +63,7 @@ public class StandardFormats
 			throw new IOException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Obtains a standard log format.
 	 * @param name Name of format
@@ -55,7 +73,7 @@ public class StandardFormats
 	LogFormat getFormat(String name) throws IllegalArgumentException
 	{
 		LogFormat result = formats.get(name);
-		if(result == null)			
+		if(result == null)
 		{
 			throw new IllegalArgumentException("Unknown log format: " + name);
 		}

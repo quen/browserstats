@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.collator;
 
 import java.io.*;
@@ -6,30 +24,30 @@ import java.io.*;
 public class ThreadedInputStream extends InputStream implements Runnable
 {
 	private final static int NUMBUFFERS = 64, BUFFERSIZE = 65536;
-	
+
 	private InputStream input;
-	
+
 	private byte[][] buffers = new byte[NUMBUFFERS][BUFFERSIZE];
-	
+
 	// readXX variables may only be accessed by the reading thread
 	private int readEndBuffer = -999, readEndBufferSize = -1;
-	private int readCurrentBuffer = -1, readCurrentPos = BUFFERSIZE, 
+	private int readCurrentBuffer = -1, readCurrentPos = BUFFERSIZE,
 		readLastSafeBuffer = -1;
-	
+
 	private Object synch = new Object();
-	
+
 	// writeXX variables can be accessed by both threads, but only when
 	// synchronized
 	private boolean writeGotData = false;
-	private int writeLastBuffer = -1, writeLastSafeBuffer = NUMBUFFERS-1, 
+	private int writeLastBuffer = -1, writeLastSafeBuffer = NUMBUFFERS-1,
 		writeEndBufferSize=-1;
-	
+
 	private boolean close, closed;
-	
+
 	private IOException exception = null;
-	
+
 	private long blockTime = 0, idleTime = 0;
-	
+
 	/**
 	 * @param input Input stream that this class buffers
 	 * @throws UnsupportedEncodingException If the encoding is unknown
@@ -37,10 +55,10 @@ public class ThreadedInputStream extends InputStream implements Runnable
 	public ThreadedInputStream(InputStream input) throws UnsupportedEncodingException
 	{
 		this.input = input;
-		
+
 		(new Thread(this, "ThreadedInputStream")).start();
 	}
-	
+
 	@Override
 	public void run()
 	{
@@ -61,13 +79,13 @@ public class ThreadedInputStream extends InputStream implements Runnable
 							synch.notifyAll();
 						}
 					}
-					
+
 					// Wait until we have a buffer available to fill
 					while(writeLastBuffer == writeLastSafeBuffer && !close)
 					{
 						long before = System.currentTimeMillis();
 						synch.wait();
-						idleTime += System.currentTimeMillis() - before;						
+						idleTime += System.currentTimeMillis() - before;
 					}
 					if(close)
 					{
@@ -79,7 +97,7 @@ public class ThreadedInputStream extends InputStream implements Runnable
 						writeBuffer = 0;
 					}
 				}
-				
+
 				// Read from stream into that buffer
 				int pos = 0;
 				while(pos < BUFFERSIZE)
@@ -130,7 +148,7 @@ public class ThreadedInputStream extends InputStream implements Runnable
 			}
 		}
 	}
-	
+
 	@Override
 	public void close() throws IOException
 	{
@@ -151,7 +169,7 @@ public class ThreadedInputStream extends InputStream implements Runnable
 		}
 		input.close();
 	}
-	
+
 	private boolean moveReadBuffer() throws IOException
 	{
 		// Unusual (buffer-end) operation, so synchronize
@@ -165,7 +183,7 @@ public class ThreadedInputStream extends InputStream implements Runnable
 					readEndBuffer = writeLastBuffer;
 					readEndBufferSize = writeEndBufferSize;
 				}
-				
+
 				// OK, are we at the end of file?
 				if(readCurrentBuffer == readEndBuffer)
 				{
@@ -175,7 +193,7 @@ public class ThreadedInputStream extends InputStream implements Runnable
 					}
 					return false;
 				}
-				
+
 				// Update last-safe write buffer (to the one before the one we just finished)
 				if(readCurrentBuffer != -1)
 				{
@@ -186,14 +204,14 @@ public class ThreadedInputStream extends InputStream implements Runnable
 					}
 					synch.notifyAll();
 				}
-				
+
 				// See if there are new buffers available from the writing thread
 				if(writeGotData)
 				{
 					readLastSafeBuffer = writeLastBuffer;
 					writeGotData = false;
 				}
-				
+
 				// Now, do we have a new buffer?
 				if(readCurrentBuffer != readLastSafeBuffer)
 				{
@@ -205,7 +223,7 @@ public class ThreadedInputStream extends InputStream implements Runnable
 					readCurrentPos = 0;
 					return true;
 				}
-				
+
 				// No? Damnit, we need to block
 				while(!writeGotData)
 				{
@@ -238,7 +256,7 @@ public class ThreadedInputStream extends InputStream implements Runnable
 				return -1;
 			}
 		}
-		
+
 		// Not at the end of any buffer, so just return current data
 		return buffers[readCurrentBuffer][readCurrentPos++];
 	}
@@ -248,7 +266,7 @@ public class ThreadedInputStream extends InputStream implements Runnable
 	{
 		return read(b, 0, b.length);
 	}
-	
+
 	@Override
 	public int read(byte[] b, int off, int len) throws IOException
 	{
@@ -265,12 +283,12 @@ public class ThreadedInputStream extends InputStream implements Runnable
 					return done==0 ? -1 : done;
 				}
 			}
-			
+
 			// Copy data into target
-			int available = readCurrentBuffer == readEndBuffer 
+			int available = readCurrentBuffer == readEndBuffer
 				? readEndBufferSize - readCurrentPos
 				: BUFFERSIZE - readCurrentPos;
-			
+
 			int read = Math.min(available, len);
 			System.arraycopy(buffers[readCurrentBuffer], readCurrentPos,
 				b, off, read);
@@ -289,8 +307,8 @@ public class ThreadedInputStream extends InputStream implements Runnable
 	public long getIdleTime()
 	{
 		return idleTime;
-	}	
-	
+	}
+
 	/** @return Total time (ms) spent waiting for I/O */
 	public long getBlockTime()
 	{
