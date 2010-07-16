@@ -407,6 +407,7 @@ public class Summarise extends CommandLineTool
 		{
 			if(equivalents.isOther())
 			{
+				totalCount += equivalents.getCount();
 				otherCount += equivalents.getCount();
 				for(int i=0; i<categories.length; i++)
 				{
