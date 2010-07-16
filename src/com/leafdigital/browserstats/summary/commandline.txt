@@ -74,10 +74,17 @@ Input options
 Output options
 --------------
 
+-format {csv|xml|both}
+  By default, the output file is saved in CSV format. You can also specify
+  XML format, which is used by the graph drawing tool, or both formats.
+  XML output files have the extension .summary.
+
 -category {category}
   If specified, only counts from the given category will be included in output.
   (By default, there will be one column for each category, or two if using
   percentages.)
+
+  This option has no effect on XML output, which always includes raw data.
 
 -showpercentages
   If specified, each output category will have two columns, number and
@@ -85,22 +92,30 @@ Output options
   including counts to excluded agents). Percentages are shown to 1 decimal
   place.
 
+  This option has no effect on XML output, which always includes raw data.
+
 -noheaders
   If you include this option, the header line will be omitted from the start
   of the CSV file.
+
+  This option has no effect on XML output, which always includes raw data.
 
 -nototal
   If you include this option, the total line will be omitted from the bottom
   of the CSV file.
 
+  This option has no effect on XML output, which always includes raw data.
+
 -noexcluded
   If you include this option, the excluded line will be omitted from the bottom
   of the CSV file.
 
+  This option has no effect on XML output, which always includes raw data.
+
 -suffix {suffix}
   If specified, this suffix will be included in the filename. For example,
   if you set the suffix to frog, then the output filename will end in .frog.csv
-  instead of just .csv.
+  or .frog.summary instead of just .csv or .summary.
 
 -stdout
   Write output to standard output instead of to a file. This does not need
@@ -207,7 +222,7 @@ will old versions of Firefox, Safari, Opera, and Chrome. IE will show a full
 version breakdown for each versions with at least 5% of requests, plus
 IE (Other) for other versions.
 
-Stick -test showgroups on the command line to print (to standard out) what
+Stick -test showgroups on the command line to print (to standard output) what
 agents will be included in each group.
 
 To check names used for agent type, agents, operating systems, etc., see

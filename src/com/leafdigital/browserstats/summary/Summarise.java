@@ -42,6 +42,8 @@ public class Summarise extends CommandLineTool
 	private String onlyCategory, suffix;
 	private File folder;
 
+	private boolean csv=true, xml=false;
+
 	private TestType test = TestType.NONE;
 	private String[] testParams;
 
@@ -115,6 +117,18 @@ public class Summarise extends CommandLineTool
 			Conditions parameter = new Exclude(args, i+1);
 			parameters.add(parameter);
 			return parameter.getArgsUsed() + 1;
+		}
+		if(args[i].equals("-format"))
+		{
+			checkArgs(args, i, 1);
+			String format = args[i+1];
+			csv = format.equals("csv") || format.equals("both");
+			xml = format.equals("xml") || format.equals("both");
+			if(!(csv || xml))
+			{
+				throw new IllegalArgumentException("-format unknown: " + format);
+			}
+			return 2;
 		}
 		if(args[i].equals("-group"))
 		{
@@ -212,6 +226,12 @@ public class Summarise extends CommandLineTool
 	@Override
 	protected void validateArgs() throws IllegalArgumentException
 	{
+		// Check they're not trying to do stdout with both formats
+		if(csv && xml && stdout)
+		{
+			throw new IllegalArgumentException(
+				"Cannot use -stdout together with -format both");
+		}
 		// Check the auto versioning matches a group
 		autoLoop: for(AutoVersion auto : autoVersions)
 		{
@@ -419,10 +439,11 @@ public class Summarise extends CommandLineTool
 		}
 
 		// Get target file for result
-		File target;
+		File targetCsv, targetXml;
 		if(file==null || stdout)
 		{
-			target = null;
+			targetCsv = null;
+			targetXml = null;
 		}
 		else
 		{
@@ -436,178 +457,246 @@ public class Summarise extends CommandLineTool
 			{
 				targetName += "." + suffix;
 			}
-			targetName += ".csv";
+			String
+				targetCsvName = targetName + ".csv",
+				targetXmlName = targetName + ".summary";
 			if(folder != null)
 			{
-				target = new File(folder, targetName);
+				targetCsv = new File(folder, targetCsvName);
+				targetXml = new File(folder, targetXmlName);
 			}
 			else
 			{
-				target = new File(file.getParentFile(), targetName);
+				targetCsv = new File(file.getParentFile(), targetCsvName);
+				targetXml = new File(file.getParentFile(), targetXmlName);
 			}
 
-			if(!overwrite && target.exists())
+			if(!overwrite && csv && targetCsv.exists())
 			{
-				throw new IOException("Target file already exists: " + target);
+				throw new IOException("Target file already exists: " + targetCsv);
+			}
+			if(!overwrite && xml && targetXml.exists())
+			{
+				throw new IOException("Target file already exists: " + targetXml);
 			}
 		}
 
-		// Open a writer on target file
-		Writer out;
-		if(target == null)
+		if(csv)
 		{
-			out = new BufferedWriter(new OutputStreamWriter(System.out));
-		}
-		else
-		{
-			out = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(target), "UTF-8"));
-		}
-
-		// Write headers
-		if(showHeaders)
-		{
-			// There's an empty cell here
-			if(onlyCategory == null)
+			// Open a writer on target file
+			Writer out;
+			if(targetCsv == null)
 			{
-				out.write(",Requests");
-				if(showPercentages)
+				out = new BufferedWriter(new OutputStreamWriter(System.out));
+			}
+			else
+			{
+				out = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(targetCsv), "UTF-8"));
+			}
+
+			// Write headers
+			if(showHeaders)
+			{
+				// There's an empty cell here
+				if(onlyCategory == null)
 				{
-					out.write(",%");
+					out.write(",Requests");
+					if(showPercentages)
+					{
+						out.write(",%");
+					}
 				}
+				for(String category : categories)
+				{
+					if(onlyCategory != null && !onlyCategory.equals(category))
+					{
+						continue;
+					}
+					out.write("," + category);
+					if(showPercentages)
+					{
+						out.write(",%");
+					}
+				}
+				out.write("\n");
 			}
-			for(String category : categories)
+
+			// Write all groups
+			for(Equivalents equivalents : equivalentList)
 			{
-				if(onlyCategory != null && !onlyCategory.equals(category))
+				// Skip other/excluded
+				if(equivalents.isOther() || equivalents.isExcluded())
 				{
 					continue;
 				}
-				out.write("," + category);
-				if(showPercentages)
+				out.write(equivalents.getName());
+				if(onlyCategory == null)
 				{
-					out.write(",%");
+					out.write("," + equivalents.getCount());
+					if(showPercentages)
+					{
+						out.write("," + percentage(equivalents.getCount(), totalCount));
+					}
 				}
+				int[] categoryCounts = equivalents.getCategoryCounts();
+				for(int i=0; i<categoryCounts.length; i++)
+				{
+					if(onlyCategoryIndex >= 0 && onlyCategoryIndex != i)
+					{
+						continue;
+					}
+					out.write("," + categoryCounts[i]);
+					if(showPercentages)
+					{
+						out.write("," +
+							percentage(categoryCounts[i], totalCategoryCounts[i]));
+					}
+				}
+				out.write("\n");
 			}
-			out.write("\n");
-		}
 
-		// Write all groups
-		for(Equivalents equivalents : equivalentList)
+			// Write 'other'
+			if(otherCount > 0)
+			{
+				out.write(Other.NAME);
+				if(onlyCategory == null)
+				{
+					out.write("," + otherCount);
+					if(showPercentages)
+					{
+						out.write("," + percentage(otherCount, totalCount));
+					}
+				}
+				for(int i=0; i<otherCategoryCounts.length; i++)
+				{
+					if(onlyCategoryIndex >= 0 && onlyCategoryIndex != i)
+					{
+						continue;
+					}
+					out.write("," + otherCategoryCounts[i] );
+					if(showPercentages)
+					{
+						out.write("," +
+							percentage(otherCategoryCounts[i], totalCategoryCounts[i]));
+					}
+				}
+				out.write("\n");
+			}
+
+			// Write total
+			if(showTotal)
+			{
+				out.write("Total");
+				if(onlyCategory == null)
+				{
+					out.write("," + totalCount);
+					if(showPercentages)
+					{
+						out.write(",100.0%");
+					}
+				}
+				for(int i=0; i<totalCategoryCounts.length; i++)
+				{
+					if(onlyCategoryIndex >= 0 && onlyCategoryIndex != i)
+					{
+						continue;
+					}
+					out.write("," + totalCategoryCounts[i]);
+					if(showPercentages)
+					{
+						out.write(",100.0%");
+					}
+				}
+				out.write("\n");
+			}
+
+			// Write excluded
+			if(showExcluded)
+			{
+				out.write(Exclude.NAME);
+				if(onlyCategory == null)
+				{
+					out.write("," + excludedCount);
+					if(showPercentages)
+					{
+						out.write(",");
+					}
+				}
+				for(int i=0; i<excludedCategoryCounts.length; i++)
+				{
+					if(onlyCategoryIndex >= 0 && onlyCategoryIndex != i)
+					{
+						continue;
+					}
+					out.write("," + excludedCategoryCounts[i]);
+					if(showPercentages)
+					{
+						out.write(",");
+					}
+				}
+				out.write("\n");
+			}
+
+			out.close();
+		}
+		if(xml)
 		{
-			// Skip other/excluded
-			if(equivalents.isOther() || equivalents.isExcluded())
+			// Open a writer on target file
+			Writer out;
+			if(targetXml == null)
 			{
-				continue;
+				out = new BufferedWriter(new OutputStreamWriter(System.out));
 			}
-			out.write(equivalents.getName());
-			if(onlyCategory == null)
+			else
 			{
-				out.write("," + equivalents.getCount());
-				if(showPercentages)
-				{
-					out.write("," + percentage(equivalents.getCount(), totalCount));
-				}
+				out = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(targetXml), "UTF-8"));
 			}
-			int[] categoryCounts = equivalents.getCategoryCounts();
-			for(int i=0; i<categoryCounts.length; i++)
-			{
-				if(onlyCategoryIndex >= 0 && onlyCategoryIndex != i)
-				{
-					continue;
-				}
-				out.write("," + categoryCounts[i]);
-				if(showPercentages)
-				{
-					out.write("," +
-						percentage(categoryCounts[i], totalCategoryCounts[i]));
-				}
-			}
-			out.write("\n");
-		}
 
-		// Write 'other'
-		if(otherCount > 0)
-		{
-			out.write(Other.NAME);
-			if(onlyCategory == null)
+			// Do open tag and category list
+			out.write("<summary count='" + totalCount + "'");
+			if(categories.length > 0)
 			{
-				out.write("," + otherCount);
-				if(showPercentages)
+				out.write(" categories='");
+				boolean first = true;
+				for(String category : categories)
 				{
-					out.write("," + percentage(otherCount, totalCount));
+					if(first)
+					{
+						first = false;
+					}
+					else
+					{
+						out.write(",");
+					}
+					out.write(category);
+				}
+				out.write("'");
+				for(int i=0; i<categories.length; i++)
+				{
+					out.write(" " + categories[i] + "='" + totalCategoryCounts[i] + "'");
 				}
 			}
-			for(int i=0; i<otherCategoryCounts.length; i++)
-			{
-				if(onlyCategoryIndex >= 0 && onlyCategoryIndex != i)
-				{
-					continue;
-				}
-				out.write("," + otherCategoryCounts[i] );
-				if(showPercentages)
-				{
-					out.write("," +
-						percentage(otherCategoryCounts[i], totalCategoryCounts[i]));
-				}
-			}
-			out.write("\n");
-		}
+			out.write(">\n");
 
-		// Write total
-		if(showTotal)
-		{
-			out.write("Total");
-			if(onlyCategory == null)
+			// Write all groups
+			for(Equivalents equivalents : equivalentList)
 			{
-				out.write("," + totalCount);
-				if(showPercentages)
+				// All groups including other, excluded
+				out.write("<group name='" + equivalents.getName() + "' count='"
+					+ equivalents.getCount() + "'");
+				int[] categoryCounts = equivalents.getCategoryCounts();
+				for(int i=0; i<categoryCounts.length; i++)
 				{
-					out.write(",100.0%");
+					out.write(" " + categories[i] + "='" + categoryCounts[i] + "'");
 				}
+				out.write(">\n");
 			}
-			for(int i=0; i<totalCategoryCounts.length; i++)
-			{
-				if(onlyCategoryIndex >= 0 && onlyCategoryIndex != i)
-				{
-					continue;
-				}
-				out.write("," + totalCategoryCounts[i]);
-				if(showPercentages)
-				{
-					out.write(",100.0%");
-				}
-			}
-			out.write("\n");
-		}
 
-		// Write excluded
-		if(showExcluded)
-		{
-			out.write(Exclude.NAME);
-			if(onlyCategory == null)
-			{
-				out.write("," + excludedCount);
-				if(showPercentages)
-				{
-					out.write(",");
-				}
-			}
-			for(int i=0; i<excludedCategoryCounts.length; i++)
-			{
-				if(onlyCategoryIndex >= 0 && onlyCategoryIndex != i)
-				{
-					continue;
-				}
-				out.write("," + excludedCategoryCounts[i]);
-				if(showPercentages)
-				{
-					out.write(",");
-				}
-			}
-			out.write("\n");
+			out.write("</summary>\n");
+			out.close();
 		}
-
-		out.close();
 	}
 
 	/**
