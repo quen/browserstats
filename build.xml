@@ -44,15 +44,44 @@
 	<!-- Build jar files -->
 	<target name="jar" depends="compile">
 		<mkdir dir="${build}/output" />
-		<jar jarfile="${build}/output/browserstats.jar" basedir="${build}/classes"
-			level="9" />
+		<jar jarfile="${build}/output/bs.collate.jar" basedir="${build}/classes"
+			level="9">
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/collator/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
+			<manifest>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.collator.Collate"/>
+		  </manifest>
+		</jar>
+		<jar jarfile="${build}/output/bs.identify.jar" basedir="${build}/classes"
+			level="9">
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/agents/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
+			<manifest>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.agents.Identify"/>
+		  </manifest>
+		</jar>
+		<jar jarfile="${build}/output/bs.summarise.jar" basedir="${build}/classes"
+			level="9">
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/summary/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
+			<manifest>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.summary.Summarise"/>
+		  </manifest>
+		</jar>
 	</target>
 
 	<!-- Run JUnit tests -->
 	<target name="all" depends="jar">
-		<!-- Delete and recopy jar file -->
-		<delete file="${jarfolder}/browserstats.jar"/>
-		<copy file="${build}/output/browserstats.jar" todir="${jarfolder}" />
+		<!-- Delete and recopy jar files -->
+		<delete file="${jarfolder}/bs.collate.jar"/>
+		<copy file="${build}/output/bs.collate.jar" todir="${jarfolder}" />
+		<delete file="${jarfolder}/bs.identify.jar"/>
+		<copy file="${build}/output/bs.identify.jar" todir="${jarfolder}" />
+		<delete file="${jarfolder}/bs.summarise.jar"/>
+		<copy file="${build}/output/bs.summarise.jar" todir="${jarfolder}" />
 	</target>
 	
 </project>
