@@ -1,8 +1,8 @@
 Command-line arguments: [options] [input file(s)]
 
 The system writes output files with the same name as the input file, except
-with '.csv' extension. (This will replace an existing '.knownagents'
-extension if present, otherwise will be appended.)
+with '.csv' or '.summary' extension. (This will replace an existing 
+'.knownagents' extension if present, otherwise will be appended.)
 
 The output file is in UTF-8 encoding. Some spreadsheets do not support UTF-8
 format .csv files; if this is a concern, use only ASCII characters for group
