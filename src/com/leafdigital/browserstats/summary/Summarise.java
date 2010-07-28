@@ -28,6 +28,7 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import com.leafdigital.browserstats.shared.*;
+import com.leafdigital.util.xml.XML;
 
 /**
  * Summarises a .knownagents file into desired categories in order to produce
@@ -685,7 +686,7 @@ public class Summarise extends CommandLineTool
 			for(Equivalents equivalents : equivalentList)
 			{
 				// All groups including other, excluded
-				out.write("<group name='" + equivalents.getName() + "' count='"
+				out.write("<group name='" + XML.esc(equivalents.getName()) + "' count='"
 					+ equivalents.getCount() + "'");
 				int[] categoryCounts = equivalents.getCategoryCounts();
 				for(int i=0; i<categoryCounts.length; i++)
