@@ -71,6 +71,15 @@
 				<attribute name="Main-Class" value="com.leafdigital.browserstats.summary.Summarise"/>
 		  </manifest>
 		</jar>
+		<jar jarfile="${build}/output/bs.graph.jar" basedir="${build}/classes"
+			level="9">
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/graph/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
+			<manifest>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.graph.Graph"/>
+		  </manifest>
+		</jar>
 	</target>
 
 	<!-- Run JUnit tests -->
@@ -82,6 +91,8 @@
 		<copy file="${build}/output/bs.identify.jar" todir="${jarfolder}" />
 		<delete file="${jarfolder}/bs.summarise.jar"/>
 		<copy file="${build}/output/bs.summarise.jar" todir="${jarfolder}" />
+		<delete file="${jarfolder}/bs.graph.jar"/>
+		<copy file="${build}/output/bs.graph.jar" todir="${jarfolder}" />
 	</target>
 	
 </project>
