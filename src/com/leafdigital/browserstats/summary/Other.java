@@ -18,17 +18,14 @@ Copyright 2010 Samuel Marshall.
 */
 package com.leafdigital.browserstats.summary;
 
+import com.leafdigital.browserstats.shared.SpecialNames;
+
 /**
  * Represents automatically-generated 'other' entries; these are all summed
  * together to result in the 'other' total at bottom.
  */
 class Other extends Conditions
 {
-	/**
-	 * Name used for excluded data.
-	 */
-	static final String NAME = "Other";
-
 	/**
 	 * Creates generic 'other' matcher.
 	 */
@@ -50,6 +47,6 @@ class Other extends Conditions
 	@Override
 	protected String getName()
 	{
-		return NAME;
+		return SpecialNames.GROUP_OTHER;
 	}
 }

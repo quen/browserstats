@@ -27,7 +27,7 @@ import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-import com.leafdigital.browserstats.shared.CommandLineTool;
+import com.leafdigital.browserstats.shared.*;
 
 /**
  * Summarises a .knownagents file into desired categories in order to produce
@@ -134,7 +134,7 @@ public class Summarise extends CommandLineTool
 		{
 			checkArgs(args, i, 1);
 			String group = args[i+1];
-			if(group.equals(Exclude.NAME) || group.equals(Other.NAME))
+			if(group.equals(SpecialNames.GROUP_EXCLUDED) || group.equals(SpecialNames.GROUP_OTHER))
 			{
 				throw new IllegalArgumentException("-group name is reserved: " + group);
 			}
@@ -560,7 +560,7 @@ public class Summarise extends CommandLineTool
 			// Write 'other'
 			if(otherCount > 0)
 			{
-				out.write(Other.NAME);
+				out.write(SpecialNames.GROUP_OTHER);
 				if(onlyCategory == null)
 				{
 					out.write("," + otherCount);
@@ -615,7 +615,7 @@ public class Summarise extends CommandLineTool
 			// Write excluded
 			if(showExcluded)
 			{
-				out.write(Exclude.NAME);
+				out.write(SpecialNames.GROUP_EXCLUDED);
 				if(onlyCategory == null)
 				{
 					out.write("," + excludedCount);
@@ -692,7 +692,7 @@ public class Summarise extends CommandLineTool
 				{
 					out.write(" " + categories[i] + "='" + categoryCounts[i] + "'");
 				}
-				out.write(">\n");
+				out.write("/>\n");
 			}
 
 			out.write("</summary>\n");
@@ -750,7 +750,7 @@ public class Summarise extends CommandLineTool
 		 */
 		public boolean isOther()
 		{
-			return name.equals(Other.NAME);
+			return name.equals(SpecialNames.GROUP_OTHER);
 		}
 
 		/**
@@ -758,7 +758,7 @@ public class Summarise extends CommandLineTool
 		 */
 		public boolean isExcluded()
 		{
-			return name.equals(Exclude.NAME);
+			return name.equals(SpecialNames.GROUP_EXCLUDED);
 		}
 
 		/**

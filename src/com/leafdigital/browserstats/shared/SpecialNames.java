@@ -16,28 +16,20 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.browserstats.summary;
-
-import com.leafdigital.browserstats.shared.SpecialNames;
+package com.leafdigital.browserstats.shared;
 
 /**
- * Represents the -exclude command-line parameter.
+ * Stores special names used across tools.
  */
-class Exclude extends Conditions
+public class SpecialNames
 {
 	/**
-	 * Initialises conditions from command-line arguments.
-	 * @param args Arguments
-	 * @param i Position of first condition
+	 * Group name for 'Other'.
 	 */
-	protected Exclude(String[] args, int i)
-	{
-		super(args, i);
-	}
+	public static final String GROUP_OTHER = "Other";
 
-	@Override
-	protected String getName()
-	{
-		return SpecialNames.GROUP_EXCLUDED;
-	}
+	/**
+	 * Group name for 'Excluded'.
+	 */
+	public static final String GROUP_EXCLUDED = "(Excluded)";
 }

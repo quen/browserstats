@@ -18,6 +18,8 @@ Copyright 2010 Samuel Marshall.
 */
 package com.leafdigital.browserstats.summary;
 
+import com.leafdigital.browserstats.shared.SpecialNames;
+
 /**
  * Represents the -include command-line parameter.
  */
@@ -44,6 +46,6 @@ class Include extends Conditions
 	@Override
 	protected String getName()
 	{
-		return Exclude.NAME;
+		return SpecialNames.GROUP_EXCLUDED;
 	}
 }
