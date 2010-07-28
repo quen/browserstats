@@ -389,6 +389,24 @@ public class Summarise extends CommandLineTool
 			}
 		}
 
+		// Move 'Other' and 'Excluded' to end (in that order)
+		for(int i=0; i<equivalentList.size(); i++)
+		{
+			if(equivalentList.get(i).isOther())
+			{
+				equivalentList.addLast(equivalentList.remove(i));
+				break;
+			}
+		}
+		for(int i=0; i<equivalentList.size(); i++)
+		{
+			if(equivalentList.get(i).isExcluded())
+			{
+				equivalentList.addLast(equivalentList.remove(i));
+				break;
+			}
+		}
+
 		// Show groups
 		if(test == TestType.SHOWGROUPS)
 		{
