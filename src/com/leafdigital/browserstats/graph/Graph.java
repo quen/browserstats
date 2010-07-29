@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.List;
 import java.util.regex.*;
 
-import com.leafdigital.browserstats.shared.CommandLineTool;
+import com.leafdigital.browserstats.shared.*;
 
 /** Draws a graph based on .summary files. */
 public class Graph extends CommandLineTool
@@ -366,8 +366,60 @@ public class Graph extends CommandLineTool
 
 	private void pieChart(InputFile file, Canvas canvas)
 	{
-		// TODO
-		fillGroupColours(file.getGroupNames());
+		// Get all group names except excluded, also count total
+		double total = 0;
+		String[] allGroupNames = file.getGroupNames();
+		LinkedList<String> groupNamesList = new LinkedList<String>();
+		for(String groupName : allGroupNames)
+		{
+			if(SpecialNames.GROUP_EXCLUDED.equals(groupName))
+			{
+				continue;
+			}
+			groupNamesList.add(groupName);
+			total += file.getCount(groupName);
+		}
+		String[] groupNames =
+			groupNamesList.toArray(new String[groupNamesList.size()]);
+
+		// Set up colours
+		fillGroupColours(groupNames);
+
+		// Draw each group
+		double
+			middleX = (double)canvas.getWidth() / 2.0,
+			middleY = (double)canvas.getHeight() / 2.0,
+			radius = Math.min(canvas.getWidth(), canvas.getHeight()) / 2.0;
+		double angle = 0;
+		List<PieSliceDrawable> sliceList = new LinkedList<PieSliceDrawable>();
+		for(int i=0; i<groupNames.length; i++)
+		{
+			// Calculate the pie slice. We don't actually draw it yet, only the
+			// borders (for overprinting).
+			String groupName = groupNames[i];
+			double count = file.getCount(groupName);
+			double degrees = (count / total) * 360.0;
+			PieSliceDrawable slice = new PieSliceDrawable(middleX, middleY, radius,
+				angle, degrees,	groupColours.get(groupName).getMain());
+			sliceList.add(slice);
+
+			// Overprint
+			if(i == 0)
+			{
+				canvas.add(slice.getOverprintRadius(false, 2.0));
+			}
+			if(i < groupNames.length - 1)
+			{
+				canvas.add(slice.getOverprintRadius(true, 2.0));
+			}
+
+			angle += degrees;
+		}
+		// Now draw the actual slices
+		for(PieSliceDrawable slice : sliceList)
+		{
+			canvas.add(slice);
+		}
 	}
 
 	private static class Label
@@ -881,7 +933,7 @@ public class Graph extends CommandLineTool
 				{
 					LineDrawable line = new LineDrawable(0, belowY, mOverprint, colour);
 					line.lineTo(endX, belowY);
-					line.flatCurveTo(endX + mLargeCurveWidth - mOverprint/2, realBelowY);
+					line.flatCurveTo(endX + mLargeCurveWidth, realBelowY);
 					line.finish();
 					canvas.add(line);
 				}

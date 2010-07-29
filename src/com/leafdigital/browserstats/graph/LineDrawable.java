@@ -46,7 +46,7 @@ public class LineDrawable extends ShapeDrawable
 	{
 		GeneralPath path = super.getPath();
 		g.setColor(getColor());
-		g.setStroke(new BasicStroke((float)width));
+		g.setStroke(new BasicStroke((float)width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
 		g.draw(path);
 	}
 
