@@ -28,13 +28,16 @@ import java.util.LinkedList;
 class GraphWorm
 {
 	private final static int FOOTNOTE_PADDING = 4;
-	private ShapeDrawable shape;
+	private final static double OVERPRINT_PIXELS = 1;
+
 	private LinkedList<GraphWorm.Segment> segments = new LinkedList<GraphWorm.Segment>();
 	private double footnoteX = -1, footnoteY;
+	private boolean last;
 
-	private double startX, startBelowY;
+	private double startX, startAboveY, startBelowY;
+	private Color color;
 
-	private static class Segment
+	private class Segment
 	{
 		double x, aboveY, belowY;
 		boolean curve;
@@ -45,6 +48,18 @@ class GraphWorm
 			this.aboveY = aboveY;
 			this.belowY = belowY;
 			this.curve = curve;
+		}
+
+		/**
+		 * Constructs a copy of this segment for overprinting the bottom line.
+		 * @param original Original segment
+		 */
+		Segment(Segment original)
+		{
+			this.x = original.x;
+			this.aboveY = original.belowY - OVERPRINT_PIXELS/2;
+			this.belowY = original.belowY + OVERPRINT_PIXELS/2;
+			this.curve = original.curve;
 		}
 
 		void applyForward(ShapeDrawable shape, GraphWorm.Segment next, GraphWorm.Segment previous)
@@ -69,10 +84,11 @@ class GraphWorm
 
 		void applyBackward(ShapeDrawable shape, GraphWorm.Segment previous)
 		{
-			applyBackward(shape, previous.x, previous.belowY);
+			applyBackward(shape, previous.x, previous.belowY, false);
 		}
 
-		void applyBackward(ShapeDrawable shape, double previousX, double previousY)
+		void applyBackward(ShapeDrawable shape, double previousX, double previousY,
+			boolean first)
 		{
 			if(curve)
 			{
@@ -93,13 +109,16 @@ class GraphWorm
 	 * @param startBelowY Y (bottom); may be the same as aboveY if this shape
 	 *   begins from a single point
 	 * @param color Colour
+	 * @param last True if this is the last one (don't try to overprint)
 	 */
 	GraphWorm(double startX, double startAboveY, double startBelowY,
-		Color color)
+		Color color, boolean last)
 	{
-		shape = new ShapeDrawable(startX, startAboveY, color);
+		this.color = color;
 		this.startX = startX;
+		this.startAboveY = startAboveY;
 		this.startBelowY = startBelowY;
+		this.last = last;
 		if(startAboveY != startBelowY)
 		{
 			footnoteX = startX + FOOTNOTE_PADDING;
@@ -140,7 +159,32 @@ class GraphWorm
 	 */
 	void addTo(Canvas canvas)
 	{
+		// Draw main shape
+		ShapeDrawable shape = new ShapeDrawable(startX, startAboveY, color);
 		GraphWorm.Segment[] segmentArray = segments.toArray(new GraphWorm.Segment[segments.size()]);
+		draw(canvas, shape, segmentArray);
+
+		// Except for last one, do overprint shape
+		if(!last)
+		{
+			shape = new ShapeDrawable(startX, startBelowY - OVERPRINT_PIXELS/2, color);
+			Segment[] overprint = new Segment[segmentArray.length];
+			for(int i=0; i<segmentArray.length; i++)
+			{
+				overprint[i] = new Segment(segmentArray[i]);
+			}
+			draw(canvas, shape, overprint);
+		}
+	}
+
+	/**
+	 * @param canvas
+	 * @param shape
+	 * @param segmentArray
+	 */
+	private void draw(Canvas canvas, ShapeDrawable shape,
+		GraphWorm.Segment[] segmentArray)
+	{
 		for(int i=0; i<segmentArray.length; i++)
 		{
 			segmentArray[i].applyForward(shape, i==segmentArray.length - 1 ? null
@@ -150,7 +194,7 @@ class GraphWorm
 		{
 			segmentArray[i].applyBackward(shape, segmentArray[i-1]);
 		}
-		segmentArray[0].applyBackward(shape, startX, startBelowY);
+		segmentArray[0].applyBackward(shape, startX, startBelowY, true);
 		shape.finish();
 		canvas.add(shape);
 	}

@@ -640,6 +640,7 @@ public class Graph extends CommandLineTool
 		int mLabelSidePadding = 10, mLargeCurveWidth = 20, mTitleBottomPadding = 10,
 			mLargeCurvePadding = 10, mFootnoteMargin = 20, mFootnoteVerticalSpacing = 10,
 			mDateMargin = 20, mDateTopPadding = 5;
+		double mOverprint = 0.5;
 
 		// LAYOUT
 		/////////
@@ -861,12 +862,13 @@ public class Graph extends CommandLineTool
 				double endX = startLabelsMinWidth + mLabelSidePadding*2;
 				shape.lineTo(endX, aboveY);
 				shape.flatCurveTo(endX + mLargeCurveWidth, realAboveY);
-				double belowY = aboveY + label.getAllocatedHeight() + 0.1;
+				double belowY = aboveY + label.getAllocatedHeight();
 				double realBelowY = ((double)data.getValue(label.getGroup(), 0)
-					* graphHeight / data.getTotal(0)) + realAboveY + 0.1;
-				shape.lineTo(endX + mLargeCurveWidth, realBelowY);
-				shape.flatCurveTo(endX, belowY);
-				shape.lineTo(0, belowY);
+					* graphHeight / data.getTotal(0)) + realAboveY;
+				double overprint = belowY > graphY + graphHeight - mOverprint ? 0 : mOverprint;
+				shape.lineTo(endX + mLargeCurveWidth, realBelowY + overprint);
+				shape.flatCurveTo(endX, belowY + overprint);
+				shape.lineTo(0, belowY + overprint);
 				shape.finish();
 				canvas.add(shape);
 				label.addTo(canvas);
@@ -892,12 +894,13 @@ public class Graph extends CommandLineTool
 				double aboveY = label.getY();
 				shape.flatCurveTo(startX + mLargeCurveWidth, aboveY);
 				shape.lineTo(canvas.getWidth(), aboveY);
-				double belowY = aboveY + label.getAllocatedHeight() + 0.1;
-				shape.lineTo(canvas.getWidth(), belowY);
-				shape.lineTo(startX + mLargeCurveWidth, belowY);
+				double belowY = aboveY + label.getAllocatedHeight();
+				double overprint = belowY > graphY + graphHeight - mOverprint ? 0 : mOverprint;
+				shape.lineTo(canvas.getWidth(), belowY + overprint);
+				shape.lineTo(startX + mLargeCurveWidth, belowY + overprint);
 				double realBelowY = ((double)data.getValue(label.getGroup(), numPoints-1)
-					* graphHeight / data.getTotal(numPoints-1)) + realAboveY + 0.1;
-				shape.flatCurveTo(startX, realBelowY);
+					* graphHeight / data.getTotal(numPoints-1)) + realAboveY;
+				shape.flatCurveTo(startX, realBelowY + overprint);
 				shape.finish();
 				canvas.add(shape);
 				label.addTo(canvas);
@@ -935,7 +938,8 @@ public class Graph extends CommandLineTool
 					if(shape == null)
 					{
 						Color color = groupColours.get(groupNames[group]).getMain();
-						shape = new GraphWorm(position.start + graphX, aboveY, belowY, color);
+						shape = new GraphWorm(position.start + graphX, aboveY, belowY,
+							color, group==data.getNumGroups()-1);
 					}
 					// Draw curve from last to this
 					if(lastPosition != null && lastPosition.hasCurve())
