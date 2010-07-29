@@ -430,57 +430,66 @@ public class Graph extends CommandLineTool
 
 			// Left contribution (up to half required)
 			double leftContribution = 0;
-			for(int i=index-1; index>=0 ; index--)
+			if(index > 0)
 			{
-				double available = allLabels[i].allocatedHeight - minHeight;
-				double required = difference/2 - leftContribution;
-				if(available >= required)
+				for(int i=index-1; index>=0; index--)
 				{
-					allLabels[i].allocatedHeight -= required;
-					leftContribution += required;
-					break;
-				}
-				else if(available > 0)
-				{
-					allLabels[i].allocatedHeight -= available;
-					leftContribution += available;
+					double available = allLabels[i].allocatedHeight - minHeight;
+					double required = difference/2 - leftContribution;
+					if(available >= required)
+					{
+						allLabels[i].allocatedHeight -= required;
+						leftContribution += required;
+						break;
+					}
+					else if(available > 0)
+					{
+						allLabels[i].allocatedHeight -= available;
+						leftContribution += available;
+					}
 				}
 			}
 
 			// Right contribution (up to whatever's needed)
 			double rightContribution = 0;
-			for(int i=index+1; i<allLabels.length; i++)
+			if(index < allLabels.length - 1)
 			{
-				double available = allLabels[i].allocatedHeight - minHeight;
-				double required = difference - leftContribution - rightContribution;
-				if(available >= required)
+				for(int i=index+1; i<allLabels.length; i++)
 				{
-					allLabels[i].allocatedHeight -= required;
-					rightContribution += required;
-					break;
-				}
-				else if(available > 0)
-				{
-					allLabels[i].allocatedHeight -= available;
-					rightContribution += available;
+					double available = allLabels[i].allocatedHeight - minHeight;
+					double required = difference - leftContribution - rightContribution;
+					if(available >= required)
+					{
+						allLabels[i].allocatedHeight -= required;
+						rightContribution += required;
+						break;
+					}
+					else if(available > 0)
+					{
+						allLabels[i].allocatedHeight -= available;
+						rightContribution += available;
+					}
 				}
 			}
 
 			// Left contribution (if right contribution didn't pan out)
-			for(int i=index-1; index>=0 ; index--)
+			if(index > 0)
 			{
-				double available = allLabels[i].allocatedHeight - minHeight;
-				double required = difference - leftContribution - rightContribution;
-				if(available >= required)
+				for(int i=index-1; index>=0 ; index--)
 				{
-					allLabels[i].allocatedHeight -= required;
-					leftContribution += required;
-					break;
-				}
-				else if(available > 0)
-				{
-					allLabels[i].allocatedHeight -= available;
-					leftContribution += available;
+					double available = allLabels[i].allocatedHeight - minHeight;
+					double required = difference - leftContribution - rightContribution;
+					if(available >= required)
+					{
+						allLabels[i].allocatedHeight -= required;
+						leftContribution += required;
+						break;
+					}
+					else if(available > 0)
+					{
+						allLabels[i].allocatedHeight -= available;
+						leftContribution += available;
+					}
 				}
 			}
 
