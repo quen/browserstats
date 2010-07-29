@@ -31,28 +31,7 @@ import static com.leafdigital.browserstats.graph.SvgCanvas.svgRound;
  */
 public class TextDrawable extends Drawable
 {
-	/**
-	 * Text vertical alignment. (Note: Alignment is relative to an assumed piece
-	 * of text with ascenders and descenders, not to the specific text used.)
-	 */
-	public enum Alignment
-	{
-		/**
-		 * Provided Y co-ordinate is the centre of the text.
-		 */
-		CENTER,
-		/**
-		 * Provided Y co-ordinate is the top of the text.
-		 */
-		TOP,
-		/**
-		 * Provided Y co-ordinate is baseline.
-		 */
-		BASELINE;
-	}
-
 	private String text, fontName;
-	private Alignment alignment;
 	private Color color;
 	private boolean bold;
 	private double x, y;
@@ -63,20 +42,18 @@ public class TextDrawable extends Drawable
 	/**
 	 * @param text Text to draw
 	 * @param x X position
-	 * @param y Y position
-	 * @param alignment Alignment relative to Y position
+	 * @param y Y position of baseline
 	 * @param color Colour of text
 	 * @param fontName Font for text
 	 * @param bold True for bold text
 	 * @param fontSize Font size (pixels)
 	 */
-	public TextDrawable(String text, double x, double y, Alignment alignment,
+	public TextDrawable(String text, double x, double y,
 		Color color, String fontName, boolean bold, int fontSize)
 	{
 		this.text = text;
 		this.x = x;
 		this.y = y;
-		this.alignment = alignment;
 		this.color = color;
 		this.fontName = fontName;
 		this.bold = bold;
@@ -110,23 +87,6 @@ public class TextDrawable extends Drawable
 		return new Font(fontName, bold ? Font.BOLD : Font.PLAIN, fontSize);
 	}
 
-	private double getEffectiveY()
-	{
-		LineMetrics metrics =
-			getFont().getLineMetrics("AHyj", getFontRenderContext());
-		switch(alignment)
-		{
-		case TOP:
-			return y + metrics.getAscent();
-		case CENTER:
-			return y + (metrics.getAscent() - metrics.getDescent()) / 2;
-		case BASELINE:
-			return y;
-		default:
-			throw new IllegalStateException("Unexpected alignment");
-		}
-	}
-
 	/**
 	 * @return Width of this text object
 	 */
@@ -141,9 +101,50 @@ public class TextDrawable extends Drawable
 	 */
 	public double getHeight()
 	{
+		LineMetrics metrics = getLineMetrics();
+		return metrics.getAscent() + metrics.getDescent();
+	}
+
+	/**
+	 * @return Ascent of this text object (actually for any text in this font)
+	 */
+	public double getAscent()
+	{
+		return getLineMetrics().getAscent();
+	}
+
+	/**
+	 * If this text needs to be displayed in the middle of something, this returns
+	 * the Y co-ordinate.
+	 * @param aboveY Co-ordinate above
+	 * @param belowY Co-ordinate below
+	 * @return Y co-ordinate
+	 */
+	public double getVerticalMiddleY(double aboveY, double belowY)
+	{
+		double middle = (aboveY + belowY) / 2.0;
+		double top = middle - getHeight() / 2.0;
+		return top + getAscent();
+	}
+
+	/**
+	 * Sets the Y position of this text based on the co-ordinate of the top of
+	 * the text.
+	 * @param top Top co-ordinate
+	 */
+	public void setVerticalTop(double top)
+	{
+		y = top + getAscent();
+	}
+
+	/**
+	 * @return Line metrics for this font
+	 */
+	private LineMetrics getLineMetrics()
+	{
 		LineMetrics metrics =
 			getFont().getLineMetrics("AHyj", getFontRenderContext());
-		return metrics.getAscent() + metrics.getDescent();
+		return metrics;
 	}
 
 	@Override
@@ -151,20 +152,21 @@ public class TextDrawable extends Drawable
 	{
 		g.setFont(getFont());
 		g.setColor(color);
-		g.drawString(text, (float)x, (float)getEffectiveY());
+		g.drawString(text, (float)x, (float)y);
 	}
 
 	@Override
 	public void draw(StringBuilder svg)
 	{
 		svg.append("<text font-family='" + XML.esc(fontName) + ", sans-serif' ");
+		svg.append("textLength = '" + getWidth() + "' ");
 		svg.append("font-size='" + fontSize + "' ");
 		if(bold)
 		{
 			svg.append("font-weight='bold' ");
 		}
 		svg.append("fill='" + ColorUtils.getSvgColor(color) + "' x='"
-			+ svgRound(x) + "' y='" + svgRound(getEffectiveY()) + "'>");
+			+ svgRound(x) + "' y='" + svgRound(y) + "'>");
 		svg.append(XML.esc(text) + "</text>\n");
 	}
 }

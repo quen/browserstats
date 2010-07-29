@@ -255,8 +255,26 @@ public class ShapeDrawable extends Drawable
 		return currentY;
 	}
 
+	/**
+	 * @return Colour
+	 */
+	public Color getColor()
+	{
+		return color;
+	}
+
 	@Override
 	public void draw(Graphics2D g)
+	{
+		GeneralPath path = getPath();
+		g.setColor(color);
+		g.fill(path);
+	}
+
+	/**
+	 * @return Java2D path for shape (not closed yet)
+	 */
+	protected GeneralPath getPath()
 	{
 		checkFinished();
 		GeneralPath path = new GeneralPath();
@@ -265,18 +283,20 @@ public class ShapeDrawable extends Drawable
 		{
 			segment.apply(path);
 		}
-		path.closePath();
-		g.setColor(color);
-		g.fill(path);
+		if(closePath())
+		{
+			path.closePath();
+		}
+		return path;
 	}
 
 	@Override
 	public void draw(StringBuilder svg)
 	{
 		checkFinished();
-		svg.append("<path fill='");
-		svg.append(ColorUtils.getSvgColor(color));
-		svg.append("' d='M ");
+		svg.append("<path");
+		svg.append(getSvgPathAttributes());
+		svg.append(" d='M ");
 		svg.append(svgRound(startX));
 		svg.append(",");
 		svg.append(svgRound(startY));
@@ -284,7 +304,26 @@ public class ShapeDrawable extends Drawable
 		{
 			segment.apply(svg);
 		}
-		svg.append(" z'/>\n");
+		if(closePath())
+		{
+			svg.append(" z");
+		}
+		svg.append("'/>\n");
 	}
 
+	/**
+	 * @return SVG attributes for path tag, beginning with a space
+	 */
+	protected String getSvgPathAttributes()
+	{
+		return " fill='" + ColorUtils.getSvgColor(color) + "'";
+	}
+
+	/**
+	 * @return True to close the paths
+	 */
+	protected boolean closePath()
+	{
+		return true;
+	}
 }

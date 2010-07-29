@@ -504,9 +504,9 @@ public class Graph extends CommandLineTool
 		public void move(double x, double y)
 		{
 			this.y = y;
-			double middle = y + allocatedHeight/2;
-			name.move(x, middle);
-			percentage.move(x + name.getWidth() + SEPARATOR, middle);
+			double baseline = name.getVerticalMiddleY(y, y+allocatedHeight);
+			name.move(x, baseline);
+			percentage.move(x + name.getWidth() + SEPARATOR, baseline);
 		}
 
 		/**
@@ -589,7 +589,7 @@ public class Graph extends CommandLineTool
 		 */
 		void setGraphPosition(double x, double y)
 		{
-			numberGraph.move(x, y);
+			numberGraph.move(x, numberGraph.getVerticalMiddleY(y, y));
 		}
 
 		/**
@@ -619,9 +619,10 @@ public class Graph extends CommandLineTool
 			canvas.add(new RectDrawable(x + boxWidth - BOX_BORDER, y + BOX_BORDER, BOX_BORDER, boxHeight - 2 * BOX_BORDER, border));
 
 			// Draw number
-			numberFootnote.move(x + BOX_BORDER + BOX_HORIZONTAL_PADDING, y + boxHeight / 2);
+			double baseline = numberFootnote.getVerticalMiddleY(y, y+boxHeight);
+			numberFootnote.move(x + BOX_BORDER + BOX_HORIZONTAL_PADDING, baseline);
 			canvas.add(numberFootnote);
-			name.move(x + boxWidth + BOX_SPACING, y + boxHeight / 2);
+			name.move(x + boxWidth + BOX_SPACING, baseline);
 			canvas.add(name);
 			canvas.add(numberGraph);
 		}
@@ -640,14 +641,14 @@ public class Graph extends CommandLineTool
 		int mLabelSidePadding = 10, mLargeCurveWidth = 20, mTitleBottomPadding = 10,
 			mLargeCurvePadding = 10, mFootnoteMargin = 20, mFootnoteVerticalSpacing = 10,
 			mDateMargin = 20, mDateTopPadding = 5;
-		double mOverprint = 0.5;
+		double mOverprint = 1;
 
 		// LAYOUT
 		/////////
 
 		// Do title and calculate height
-		TextDrawable titleLabel = new TextDrawable(title, 0, 0,
-			TextDrawable.Alignment.TOP, foreground, fontName, false, titleSize);
+		TextDrawable titleLabel = new TextDrawable(title, 0, 0, foreground, fontName, false, titleSize);
+		titleLabel.setVerticalTop(0);
 		canvas.add(titleLabel);
 		double titleHeight = titleLabel.getHeight();
 		double graphY = titleHeight + mTitleBottomPadding;
@@ -663,9 +664,9 @@ public class Graph extends CommandLineTool
 			{
 				GroupColours colours = groupColours.get(groupNames[group]);
 				Label label = new Label(group,
-					new TextDrawable(groupNames[group], 0, 0, TextDrawable.Alignment.CENTER,
+					new TextDrawable(groupNames[group], 0, 0,
 						colours.getText(), fontName, true, labelSize),
-					new TextDrawable(data.getPercentage(group, lastPoint), 0, 0, TextDrawable.Alignment.CENTER,
+					new TextDrawable(data.getPercentage(group, lastPoint), 0, 0,
 						colours.getText(), fontName, false, labelSize));
 				endLabelsList.add(label);
 				endLabelsWidth = Math.max(endLabelsWidth, label.getWidth());
@@ -685,9 +686,9 @@ public class Graph extends CommandLineTool
 			{
 				GroupColours colours = groupColours.get(groupNames[group]);
 				Label label = new Label(group,
-					new TextDrawable(groupNames[group], 0, 0, TextDrawable.Alignment.CENTER,
+					new TextDrawable(groupNames[group], 0, 0,
 						colours.getText(), fontName, true, labelSize),
-					new TextDrawable(data.getPercentage(group, 0), 0, 0, TextDrawable.Alignment.CENTER,
+					new TextDrawable(data.getPercentage(group, 0), 0, 0,
 						colours.getText(), fontName, false, labelSize));
 				startLabelsList.add(label);
 				startLabelsMinWidth = Math.max(startLabelsMinWidth, label.getWidth());
@@ -713,11 +714,11 @@ public class Graph extends CommandLineTool
 			{
 				GroupColours colours = groupColours.get(groupNames[group]);
 				Footnote footnote = new Footnote(group,
-					new TextDrawable(groupNames[group], 0, 0, TextDrawable.Alignment.CENTER,
+					new TextDrawable(groupNames[group], 0, 0,
 						foreground, fontName, false, footnoteSize),
-					new TextDrawable(footnoteNumber + "", 0, 0, TextDrawable.Alignment.CENTER,
+					new TextDrawable(footnoteNumber + "", 0, 0,
 						colours.getText(), fontName, false, footnoteSize),
-					new TextDrawable(footnoteNumber + "", 0, 0, TextDrawable.Alignment.CENTER,
+					new TextDrawable(footnoteNumber + "", 0, 0,
 						colours.getText(), fontName, false, footnoteSize));
 				footnotesList.add(footnote);
 				footnoteNumber++;
@@ -756,7 +757,7 @@ public class Graph extends CommandLineTool
 		double dateHeight = 0;
 		for(int i=0; i<numPoints; i++)
 		{
-			dateText[i] = new TextDrawable(data.getPointDate(i), 0, 0, TextDrawable.Alignment.TOP,
+			dateText[i] = new TextDrawable(data.getPointDate(i), 0, 0,
 				foreground, fontName, false, footnoteSize);
 			dateHeight = Math.max(dateHeight, dateText[i].getHeight());
 		}
@@ -784,6 +785,7 @@ public class Graph extends CommandLineTool
 
 		// Position last date
 		double dateY = canvas.getHeight() - bottomAreaHeight;
+		double dateTextY = dateY + dateText[0].getAscent();
 		double lastDateWidth = dateText[dateText.length-1].getWidth();
 		double lastDateMiddle = pointPositions[numPoints-1].getMiddle();
 		double lastDateX;
@@ -795,7 +797,7 @@ public class Graph extends CommandLineTool
 		{
 			lastDateX = lastDateMiddle - lastDateWidth/2;
 		}
-		dateText[dateText.length-1].move(lastDateX + graphX, dateY);
+		dateText[dateText.length-1].move(lastDateX + graphX, dateTextY);
 
 		// Position first date, unless it overlaps
 		double firstDateWidth = dateText[0].getWidth();
@@ -815,7 +817,7 @@ public class Graph extends CommandLineTool
 		}
 		else
 		{
-			dateText[0].move(firstDateX + graphX, dateY);
+			dateText[0].move(firstDateX + graphX, dateTextY);
 		}
 
 		// Position other dates when there is room
@@ -827,7 +829,7 @@ public class Graph extends CommandLineTool
 			double dateX = dateMiddle - (dateWidth/2);
 			if(dateX > nextAvailableX && dateX + dateWidth < lastDateX - mDateMargin)
 			{
-				dateText[i].move(dateX + graphX, dateY);
+				dateText[i].move(dateX + graphX, dateTextY);
 				nextAvailableX = dateX + dateWidth + mDateMargin;
 			}
 			else
@@ -854,24 +856,39 @@ public class Graph extends CommandLineTool
 
 			// Draw
 			double realAboveY = graphY;
-			for(Label label : startLabelsArray)
+			for(int i=0; i<startLabelsArray.length; i++)
 			{
+				Label label = startLabelsArray[i];
 				double aboveY = label.getY();
-				ShapeDrawable shape = new ShapeDrawable(0, aboveY,
-					groupColours.get(groupNames[label.getGroup()]).getMain());
+				Color colour = groupColours.get(groupNames[label.getGroup()]).getMain();
+
+				// Shape in background
+				ShapeDrawable shape = new ShapeDrawable(0, aboveY, colour);
 				double endX = startLabelsMinWidth + mLabelSidePadding*2;
 				shape.lineTo(endX, aboveY);
 				shape.flatCurveTo(endX + mLargeCurveWidth, realAboveY);
 				double belowY = aboveY + label.getAllocatedHeight();
 				double realBelowY = ((double)data.getValue(label.getGroup(), 0)
 					* graphHeight / data.getTotal(0)) + realAboveY;
-				double overprint = belowY > graphY + graphHeight - mOverprint ? 0 : mOverprint;
-				shape.lineTo(endX + mLargeCurveWidth, realBelowY + overprint);
-				shape.flatCurveTo(endX, belowY + overprint);
-				shape.lineTo(0, belowY + overprint);
+				shape.lineTo(endX + mLargeCurveWidth, realBelowY);
+				shape.flatCurveTo(endX, belowY);
+				shape.lineTo(0, belowY);
 				shape.finish();
 				canvas.add(shape);
+
+				// Line to overprint bottom
+				if(i != startLabelsArray.length-1)
+				{
+					LineDrawable line = new LineDrawable(0, belowY, mOverprint, colour);
+					line.lineTo(endX, belowY);
+					line.flatCurveTo(endX + mLargeCurveWidth - mOverprint/2, realBelowY);
+					line.finish();
+					canvas.add(line);
+				}
+
+				// Label
 				label.addTo(canvas);
+
 				realAboveY = realBelowY;
 			}
 		}
@@ -885,12 +902,14 @@ public class Graph extends CommandLineTool
 
 			// Draw
 			double realAboveY = graphY;
-			for(Label label : endLabelsArray)
+			for(int i=0; i<endLabelsArray.length; i++)
 			{
+				Label label = endLabelsArray[i];
 				double startX = graphX + graphWidth + mLargeCurvePadding;
+				Color colour = groupColours.get(groupNames[label.getGroup()]).getMain();
 
-				ShapeDrawable shape = new ShapeDrawable(startX, realAboveY,
-					groupColours.get(groupNames[label.getGroup()]).getMain());
+				// Shape in background
+				ShapeDrawable shape = new ShapeDrawable(startX, realAboveY, colour);
 				double aboveY = label.getY();
 				shape.flatCurveTo(startX + mLargeCurveWidth, aboveY);
 				shape.lineTo(canvas.getWidth(), aboveY);
@@ -903,6 +922,18 @@ public class Graph extends CommandLineTool
 				shape.flatCurveTo(startX, realBelowY + overprint);
 				shape.finish();
 				canvas.add(shape);
+
+				// Line to overprint bottom
+				if(i != startLabelsArray.length-1)
+				{
+					LineDrawable line = new LineDrawable(startX, realBelowY, mOverprint, colour);
+					line.flatCurveTo(startX + mLargeCurveWidth, belowY);
+					line.lineTo(canvas.getWidth(), belowY);
+					line.finish();
+					canvas.add(line);
+				}
+
+				// Label
 				label.addTo(canvas);
 
 				realAboveY = realBelowY;

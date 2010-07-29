@@ -30,7 +30,7 @@ class GraphWorm
 	private final static int FOOTNOTE_PADDING = 4;
 	private final static double OVERPRINT_PIXELS = 1;
 
-	private LinkedList<GraphWorm.Segment> segments = new LinkedList<GraphWorm.Segment>();
+	private LinkedList<Segment> segments = new LinkedList<Segment>();
 	private double footnoteX = -1, footnoteY;
 	private boolean last;
 
@@ -50,19 +50,7 @@ class GraphWorm
 			this.curve = curve;
 		}
 
-		/**
-		 * Constructs a copy of this segment for overprinting the bottom line.
-		 * @param original Original segment
-		 */
-		Segment(Segment original)
-		{
-			this.x = original.x;
-			this.aboveY = original.belowY - OVERPRINT_PIXELS/2;
-			this.belowY = original.belowY + OVERPRINT_PIXELS/2;
-			this.curve = original.curve;
-		}
-
-		void applyForward(ShapeDrawable shape, GraphWorm.Segment next, GraphWorm.Segment previous)
+		void applyForward(ShapeDrawable shape, Segment next, Segment previous)
 		{
 			if(curve)
 			{
@@ -82,7 +70,7 @@ class GraphWorm
 			}
 		}
 
-		void applyBackward(ShapeDrawable shape, GraphWorm.Segment previous)
+		void applyBackward(ShapeDrawable shape, Segment previous)
 		{
 			applyBackward(shape, previous.x, previous.belowY, false);
 		}
@@ -98,6 +86,23 @@ class GraphWorm
 			{
 				shape.lineTo(previousX, belowY);
 				shape.lineTo(previousX, previousY);
+			}
+		}
+
+		void applyLineBelow(LineDrawable line, Segment next, Segment previous)
+		{
+			double effectiveX = next==null ? x - OVERPRINT_PIXELS : x;
+			if(curve)
+			{
+				line.flatCurveTo(effectiveX, belowY);
+			}
+			else
+			{
+				if(previous != null)
+				{
+					line.lineTo(previous.x, belowY);
+				}
+				line.lineTo(effectiveX, belowY);
 			}
 		}
 	}
@@ -161,30 +166,7 @@ class GraphWorm
 	{
 		// Draw main shape
 		ShapeDrawable shape = new ShapeDrawable(startX, startAboveY, color);
-		GraphWorm.Segment[] segmentArray = segments.toArray(new GraphWorm.Segment[segments.size()]);
-		draw(canvas, shape, segmentArray);
-
-		// Except for last one, do overprint shape
-		if(!last)
-		{
-			shape = new ShapeDrawable(startX, startBelowY - OVERPRINT_PIXELS/2, color);
-			Segment[] overprint = new Segment[segmentArray.length];
-			for(int i=0; i<segmentArray.length; i++)
-			{
-				overprint[i] = new Segment(segmentArray[i]);
-			}
-			draw(canvas, shape, overprint);
-		}
-	}
-
-	/**
-	 * @param canvas
-	 * @param shape
-	 * @param segmentArray
-	 */
-	private void draw(Canvas canvas, ShapeDrawable shape,
-		GraphWorm.Segment[] segmentArray)
-	{
+		Segment[] segmentArray = segments.toArray(new Segment[segments.size()]);
 		for(int i=0; i<segmentArray.length; i++)
 		{
 			segmentArray[i].applyForward(shape, i==segmentArray.length - 1 ? null
@@ -197,6 +179,19 @@ class GraphWorm
 		segmentArray[0].applyBackward(shape, startX, startBelowY, true);
 		shape.finish();
 		canvas.add(shape);
+
+		// Except for last one, do overprint shape (line beneath)
+		if(!last)
+		{
+			LineDrawable line = new LineDrawable(startX, startBelowY, OVERPRINT_PIXELS, color);
+			for(int i=0; i<segmentArray.length; i++)
+			{
+				segmentArray[i].applyLineBelow(line, i==segmentArray.length - 1 ? null
+					: segmentArray[i+1], i>0 ? segmentArray[i-1] : null);
+			}
+			line.finish();
+			canvas.add(line);
+		}
 	}
 
 	/**
