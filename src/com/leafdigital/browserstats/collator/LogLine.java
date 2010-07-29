@@ -75,12 +75,40 @@ public class LogLine
 	LogLine(String line, String userAgent, String isoDate, String isoTime,
 		String ip, String path, String status)
 	{
+		if(line == null)
+		{
+			throw new NullPointerException("Line may not be null");
+		}
 		this.line = line;
+		if(userAgent == null)
+		{
+			throw new NullPointerException("User agent may not be null");
+		}
 		this.userAgent = userAgent;
+		if(isoDate == null)
+		{
+			throw new NullPointerException("Date may not be null");
+		}
 		this.isoDate = isoDate;
+		if(isoTime == null)
+		{
+			throw new NullPointerException("Time may not be null");
+		}
 		this.isoTime = isoTime;
+		if(ip == null)
+		{
+			throw new NullPointerException("IP may not be null");
+		}
 		this.ip = ip;
+		if(path == null)
+		{
+			throw new NullPointerException("Path may not be null");
+		}
 		this.path = path;
+		if(status == null)
+		{
+			throw new NullPointerException("Status may not be null");
+		}
 		this.status = status;
 	}
 

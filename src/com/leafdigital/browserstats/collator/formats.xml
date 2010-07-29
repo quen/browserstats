@@ -30,9 +30,11 @@ formats used for date and time fields.
 <!-- 111.1.111.11 - - [11/Jan/2009:00:00:09 +0000] "GET /robots.txt HTTP/1.0" 404 985 "null" "CatchBot/1.0; +http://www.catchbot.com" -->
 <!-- Apache 2 (odd request) -->
 <!-- 11.111.11.111 - - [23/Jan/2009:17:10:07 -0500] "00" 501 214 "-" "-" -->
+<!-- Apache 2 (odd request) -->
+<!-- 220.0.44.12 - - [31/Jan/2005:11:21:42 -0500] "GET / onmousedown=\"return clk(this,'res',184)\" HTTP/1.1" 400 299 "-" "-" -->
 <format name="apache" ip="1" date="3" time="4" path="5" agent="7" status="6"
 	dateformat="dd/MMM/yyyy" timeformat="HH:mm:ss">
-	<line>^([^ ]*+) ([^\x5b]*+)\[([^:]*+):([^ ]*+) [^\x5d]*+] "(?:[A-Z]+ ([^ ]*+) )?[^"]*+" ([0-9]+) .*"([^"]*+)"$</line>
+	<line>^([^ ]*+) ([^\x5b]*+)\[([^:]*+):([^ ]*+) [^\x5d]*+] "(?:(?:[A-Z]+ ([^"\\]*(?:\\.[^"\\]*)*) HTTP/[0-9.]+")|(?:[^"]*+")) ([0-9]+) .*"([^"]*+)"$</line>
 </format>
 
 <!-- Netscaler -->

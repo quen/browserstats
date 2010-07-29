@@ -190,13 +190,29 @@ public class LogFormat
 		}
 
 		String agent = m.group(agentField);
+		if(agent == null)
+		{
+			agent = "";
+		}
 		if(decodeAgent)
 		{
 			agent = agent.replace('+', ' ');
 		}
 		String ip = m.group(ipField);
+		if(ip == null)
+		{
+			ip = "";
+		}
 		String path = m.group(pathField);
+		if(path == null)
+		{
+			path = "";
+		}
 		String status = m.group(statusField);
+		if(status == null)
+		{
+			status = "";
+		}
 		LogLine result = new LogLine(line, agent, isoDate, isoTime, ip, path, status);
 		result.initCategory(c.categorise(result));
 		return result;
