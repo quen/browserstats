@@ -377,68 +377,6 @@ public class Summarise extends CommandLineTool
 
 	private void addAutoGroups(Set<KnownAgent> agents)
 	{
-		// Check which parts of the agent vary; we will use this in group names
-		boolean varyType = false, varyOs = false,
-			varyEngine = false, varyAgent = false;
-		String singleType = null, singleOs = null,
-			singleEngine = null, singleAgent = null;
-		for(KnownAgent agent : agents)
-		{
-			if(singleType == null)
-			{
-				singleType = agent.getType();
-			}
-			else
-			{
-				if(!agent.getType().equals(singleType))
-				{
-					varyType = true;
-				}
-			}
-
-			if(singleOs == null)
-			{
-				singleOs = agent.getOs();
-			}
-			else
-			{
-				if(!agent.getOs().equals(singleOs))
-				{
-					varyOs = true;
-				}
-			}
-
-			if(singleEngine == null)
-			{
-				singleEngine = agent.getEngine();
-			}
-			else
-			{
-				if(!agent.getEngine().equals(singleEngine))
-				{
-					varyEngine = true;
-				}
-			}
-
-			if(singleAgent == null)
-			{
-				singleAgent = agent.getAgent();
-			}
-			else
-			{
-				if(!agent.getAgent().equals(singleAgent))
-				{
-					varyAgent = true;
-				}
-			}
-		}
-
-		// If they're all always the same, just include the agent name
-		if(!(varyType || varyOs || varyEngine || varyAgent))
-		{
-			varyAgent = true;
-		}
-
 		// Add a group for each agent
 		for(KnownAgent agent : agents)
 		{
