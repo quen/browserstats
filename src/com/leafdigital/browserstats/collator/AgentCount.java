@@ -101,5 +101,9 @@ public class AgentCount
 		{
 			w.close();
 		}
+		else
+		{
+			w.flush();
+		}
 	}
 }
