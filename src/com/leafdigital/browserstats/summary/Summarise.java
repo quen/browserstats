@@ -1030,9 +1030,9 @@ public class Summarise extends CommandLineTool
 	}
 
 	/**
-	 * @param file
-	 * @return
-	 * @throws IOException
+	 * @param file Summary file to load (null for stdin)
+	 * @return XML document object
+	 * @throws IOException Any error loading
 	 */
 	private Document loadXml(File file) throws IOException
 	{
