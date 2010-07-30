@@ -30,8 +30,9 @@ import com.leafdigital.browserstats.shared.*;
 /** Draws a graph based on .summary files. */
 public class Graph extends CommandLineTool
 {
-	private boolean overwrite, stdout, png = true, svg,
+	private boolean overwrite, stdout, png, svg, csv,
 		startLabels = true, endLabels = true;
+	private boolean csvPercentage = true;
 	private Color background = Color.WHITE, foreground = Color.BLACK;
 	private File folder;
 	private int width=800, height=600, labelSize = 12, footnoteSize = 9,
@@ -95,11 +96,40 @@ public class Graph extends CommandLineTool
 		{
 			checkArgs(args, i, 1);
 			String format = args[i+1];
-			png = format.equals("png") || format.equals("both");
-			svg = format.equals("svg") || format.equals("both");
-			if(!(png || svg))
+			if(format.equals("png"))
+			{
+				png = true;
+			}
+			else if(format.equals("svg"))
+			{
+				svg = true;
+			}
+			else if(format.equals("csv"))
+			{
+				csv = true;
+			}
+			else
 			{
 				throw new IllegalArgumentException("-format unknown: " + format);
+			}
+			return 2;
+		}
+		if(args[i].equals("-csv"))
+		{
+			checkArgs(args, i, 1);
+			String type = args[i+1];
+			csv = true;
+			if(type.equals("percentage"))
+			{
+				csvPercentage = true;
+			}
+			else if(type.equals("count"))
+			{
+				csvPercentage = false;
+			}
+			else
+			{
+				throw new IllegalArgumentException("-csv unknown: " + csv);
 			}
 			return 2;
 		}
@@ -241,6 +271,12 @@ public class Graph extends CommandLineTool
 				fontName = "sans-serif";
 			}
 		}
+
+		// If format not specified, default to PNG
+		if(!(png || svg || csv))
+		{
+			png = true;
+		}
 	}
 
 	@Override
@@ -273,7 +309,7 @@ public class Graph extends CommandLineTool
 		}
 
 		// Set up canvas(es)
-		Canvas[] canvases = new Canvas[png && svg ? 2 : 1];
+		Canvas[] canvases = new Canvas[png && svg ? 2 : png || svg ? 1 : 0];
 		if(png)
 		{
 			canvases[0] = new PngCanvas(width, height, background);
@@ -282,6 +318,9 @@ public class Graph extends CommandLineTool
 		{
 			canvases[png ? 1 : 0] = new SvgCanvas(width, height, background);
 		}
+
+		// Store CSV data
+		String csvData = null;
 
 		try
 		{
@@ -294,7 +333,11 @@ public class Graph extends CommandLineTool
 
 				for(Canvas canvas : canvases)
 				{
-					pieChart(inputFiles.getFirst(), canvas);
+					pieChart(lastInputFile, canvas);
+				}
+				if(csv)
+				{
+					csvData = singleCsv(lastInputFile);
 				}
 			}
 			else
@@ -321,6 +364,10 @@ public class Graph extends CommandLineTool
 				{
 					trendChart(inputFilesSorted, canvas);
 				}
+				if(csv)
+				{
+					csvData = trendCsv(inputFilesSorted);
+				}
 			}
 
 			// Save output
@@ -339,6 +386,17 @@ public class Graph extends CommandLineTool
 					}
 					FileOutputStream out = new FileOutputStream(file);
 					out.write(canvas.save());
+					out.close();
+				}
+				if(csv)
+				{
+					File file = new File(folder, prefix + ".csv");
+					if(file.exists() && !overwrite)
+					{
+						throw new IOException("File exists (use -overwrite): " + file);
+					}
+					FileOutputStream out = new FileOutputStream(file);
+					out.write(csvData.getBytes("UTF-8"));
 					out.close();
 				}
 			}
@@ -937,6 +995,106 @@ public class Graph extends CommandLineTool
 			footnote.setGraphPosition(shape.getFootnoteX(),
 				shape.getFootnoteY());
 		}
+	}
+
+	private String singleCsv(InputFile file)
+	{
+		StringBuilder out = new StringBuilder();
+		if(!title.isEmpty())
+		{
+			out.append(title);
+			out.append("\n\n");
+		}
+		out.append(","); // Empty cell
+		if(csvPercentage)
+		{
+			out.append("%\n");
+		}
+		else
+		{
+			out.append("Count\n");
+		}
+
+		// Get all group names except excluded, also count total
+		int total = 0;
+		String[] allGroupNames = file.getGroupNames();
+		LinkedList<String> groupNamesList = new LinkedList<String>();
+		for(String groupName : allGroupNames)
+		{
+			if(SpecialNames.GROUP_EXCLUDED.equals(groupName))
+			{
+				continue;
+			}
+			groupNamesList.add(groupName);
+			total += file.getCount(groupName);
+		}
+		String[] groupNames =
+			groupNamesList.toArray(new String[groupNamesList.size()]);
+
+		// Output results for each group
+		for(String groupName : groupNames)
+		{
+			out.append(groupName);
+			out.append(",");
+			int count = file.getCount(groupName);
+			if(csvPercentage)
+			{
+				out.append(TrendData.getPercentageString(count, total));
+			}
+			else
+			{
+				out.append(count);
+			}
+			out.append("\n");
+		}
+
+		return out.toString();
+	}
+
+	private String trendCsv(InputFile[] files)
+	{
+		StringBuilder out = new StringBuilder();
+		if(!title.isEmpty())
+		{
+			out.append(title);
+			out.append("\n\n");
+		}
+
+		TrendData data = new TrendData(files);
+		String[] groupNames = data.getGroupNames();
+
+		// Do header row, starting with empty cell
+		for(int point=0; point<data.getNumPoints(); point++)
+		{
+			out.append(',');
+			out.append(data.getPointDate(point));
+		}
+		out.append('\n');
+
+		// Do group rows
+		for(int group=0; group<data.getNumGroups(); group++)
+		{
+			out.append(groupNames[group]);
+
+			for(int point=0; point<data.getNumPoints(); point++)
+			{
+				out.append(',');
+				int count = data.getValue(group, point);
+				int total = data.getTotal(point);
+				if(csvPercentage)
+				{
+					out.append(TrendData.getPercentageString(count, total));
+				}
+				else
+				{
+					out.append(count);
+				}
+			}
+
+			out.append('\n');
+		}
+
+		return out.toString();
 	}
 
 	private Map<String, GroupColours> groupColours =

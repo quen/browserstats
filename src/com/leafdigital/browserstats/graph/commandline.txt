@@ -79,9 +79,15 @@ Output options
   Applies only to trend graphs. Controls which end(s) group labels appear on.
   Default is both.
 
--format {svg|png|both}
+-format {svg|png|csv}
   By default, the output file is saved in PNG format. You can also specify
-  SVG format, or both formats. TODO - I also intend to add CSV output.
+  SVG format, or a CSV table of all the data. Use multiple -format parameters
+  if you want more than one format.
+
+-csv {percentage|count}
+  Specifies whether the CSV file will include percentages or counts. The default
+  is percentages. If you specify this command, you don't need to include
+  -format csv.
 
 -category {category}
   If specified, the given category will be graphed. Otherwise, the total count
