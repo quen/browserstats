@@ -43,7 +43,7 @@ public class Summarise extends CommandLineTool
 	private String onlyCategory, suffix;
 	private File folder;
 
-	private boolean csv=true, xml=false;
+	private boolean csv=false, xml=false;
 
 	private TestType test = TestType.NONE;
 	private String[] testParams;
@@ -123,9 +123,15 @@ public class Summarise extends CommandLineTool
 		{
 			checkArgs(args, i, 1);
 			String format = args[i+1];
-			csv = format.equals("csv") || format.equals("both");
-			xml = format.equals("xml") || format.equals("both");
-			if(!(csv || xml))
+			if(format.equals("csv"))
+			{
+				csv = true;
+			}
+			else if(format.equals("xml"))
+			{
+				xml = true;
+			}
+			else
 			{
 				throw new IllegalArgumentException("-format unknown: " + format);
 			}
@@ -227,6 +233,11 @@ public class Summarise extends CommandLineTool
 	@Override
 	protected void validateArgs() throws IllegalArgumentException
 	{
+		// Default to xml format
+		if(!(csv || xml))
+		{
+			xml = true;
+		}
 		// Check they're not trying to do stdout with both formats
 		if(csv && xml && stdout)
 		{

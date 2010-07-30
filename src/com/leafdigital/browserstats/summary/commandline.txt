@@ -74,10 +74,11 @@ Input options
 Output options
 --------------
 
--format {csv|xml|both}
-  By default, the output file is saved in CSV format. You can also specify
-  XML format, which is used by the graph drawing tool, or both formats.
-  XML output files have the extension .summary.
+-format {csv|xml}
+  By default, the output file is saved in XML format, which is used by the
+  graph drawing tool. (XML output files have the extension .summary.) You can
+  also output CSV format for further processing in a spreadsheet or other
+  software. If you want both formats, use two -format parameters.
 
 -category {category}
   If specified, only counts from the given category will be included in output.
