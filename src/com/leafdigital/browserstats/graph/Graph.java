@@ -19,6 +19,7 @@ Copyright 2010 Samuel Marshall.
 package com.leafdigital.browserstats.graph;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -366,8 +367,29 @@ public class Graph extends CommandLineTool
 
 	private void pieChart(InputFile file, Canvas canvas)
 	{
+		// METRICS
+		//////////
+
+		int mTitleBottomPadding = 10, mLegendLeftPadding = 20,
+			mLegendEntryBottomPadding = 10, mLegendEntryRightPadding = 20,
+			mLegendRowPadding = 10, mLegendTopPadding = 20,
+			mSliceLabelPadding = 10;
+
+		// LAYOUT
+		/////////
+
+		// Do title and calculate height
+		double titleSpace = 0;
+		if(!title.isEmpty())
+		{
+			TextDrawable titleLabel = new TextDrawable(title, 0, 0, foreground, fontName, false, titleSize);
+			titleLabel.setVerticalTop(0);
+			canvas.add(titleLabel);
+			titleSpace = titleLabel.getHeight() + mTitleBottomPadding;
+		}
+
 		// Get all group names except excluded, also count total
-		double total = 0;
+		int total = 0;
 		String[] allGroupNames = file.getGroupNames();
 		LinkedList<String> groupNamesList = new LinkedList<String>();
 		for(String groupName : allGroupNames)
@@ -385,25 +407,108 @@ public class Graph extends CommandLineTool
 		// Set up colours
 		fillGroupColours(groupNames);
 
+		// Work out current graph position (before legend)
+		double graphX = 0, graphY = titleSpace,
+			graphWidth = canvas.getWidth(), graphHeight = canvas.getHeight() - graphY;
+
+		// Work out legend entries
+		LegendEntry[] legendEntries = new LegendEntry[groupNames.length];
+		for(int group=0; group<groupNames.length; group++)
+		{
+			String groupName = groupNames[group];
+			GroupColours groupColour = groupColours.get(groupName);
+			legendEntries[group] = new LegendEntry(group, groupColour.getMain(), groupName,
+				TrendData.getPercentageString(file.getCount(groupName), total),
+				fontName, foreground, labelSize);
+		}
+
+		// Draw legend to right or below?
+		if(graphWidth > graphHeight)
+		{
+			// Legend to right
+
+			// Get max width
+			double maxLegendWidth = 0;
+			for(LegendEntry entry : legendEntries)
+			{
+				maxLegendWidth = Math.max(maxLegendWidth, entry.getWidth());
+			}
+
+			// Update metrics
+			double legendX = graphX + graphWidth - maxLegendWidth;
+			graphWidth -= maxLegendWidth - mLegendLeftPadding;
+
+			// Draw legend entries
+			double legendY = graphY;
+			for(LegendEntry entry : legendEntries)
+			{
+				entry.move(legendX, legendY);
+				entry.addTo(canvas);
+				legendY += entry.getHeight() + mLegendEntryBottomPadding;
+			}
+		}
+		else
+		{
+			// Legend below
+
+			// First flow to count lines and get max height
+			double available = graphWidth;
+			int lines = 1;
+			double maxHeight = 0;
+			for(LegendEntry entry : legendEntries)
+			{
+				// Note: All heights should be the same really (or it will look silly)
+				// so this maximum counting is not really necessary, but just in case.
+				maxHeight = Math.max(maxHeight, entry.getHeight());
+				available -= entry.getWidth() + mLegendEntryRightPadding;
+				if(available < 0)
+				{
+					lines++;
+					available = graphWidth - entry.getWidth();
+				}
+			}
+
+			// Calculate height
+			double legendHeight = maxHeight * lines + mLegendRowPadding * (lines-1);
+			graphHeight -= legendHeight + mLegendTopPadding;
+
+			// Second flow to actually draw legend
+			double legendY = graphY + graphHeight + mLegendTopPadding;
+			double legendX = 0;
+			for(LegendEntry entry : legendEntries)
+			{
+				if(legendX + entry.getWidth() > graphWidth)
+				{
+					legendX = 0;
+					legendY += maxHeight + mLegendRowPadding;
+				}
+
+				entry.move(legendX, legendY);
+				entry.addTo(canvas);
+				legendX += entry.getWidth() + mLegendEntryRightPadding;
+			}
+		}
+
 		// Draw each group
 		double
-			middleX = (double)canvas.getWidth() / 2.0,
-			middleY = (double)canvas.getHeight() / 2.0,
-			radius = Math.min(canvas.getWidth(), canvas.getHeight()) / 2.0;
+			middleX = graphX + graphWidth / 2.0,
+			middleY = graphY + graphHeight / 2.0,
+			radius = Math.min(graphWidth, graphHeight) / 2.0;
 		double angle = 0;
 		List<PieSliceDrawable> sliceList = new LinkedList<PieSliceDrawable>();
+		List<TextDrawable> labelList = new LinkedList<TextDrawable>();
 		for(int i=0; i<groupNames.length; i++)
 		{
-			// Calculate the pie slice. We don't actually draw it yet, only the
-			// borders (for overprinting).
+			// Calculate the pie slice.
 			String groupName = groupNames[i];
 			double count = file.getCount(groupName);
 			double degrees = (count / total) * 360.0;
+			GroupColours groupColour = groupColours.get(groupName);
 			PieSliceDrawable slice = new PieSliceDrawable(middleX, middleY, radius,
-				angle, degrees,	groupColours.get(groupName).getMain());
+				angle, degrees,	groupColour.getMain());
 			sliceList.add(slice);
 
-			// Overprint
+			// We don't actually draw the slice yet, only the borders for overprinting
 			if(i == 0)
 			{
 				canvas.add(slice.getOverprintRadius(false, 2.0));
@@ -413,270 +518,31 @@ public class Graph extends CommandLineTool
 				canvas.add(slice.getOverprintRadius(true, 2.0));
 			}
 
+			// Calculate the space for a label
+			TextDrawable name = new TextDrawable(groupName, 0, 0, groupColour.getText(),
+				fontName, true, labelSize);
+			Point2D labelPoint = slice.getLabelPosition(
+				name.getWidth(), name.getHeight(), mSliceLabelPadding);
+			if(labelPoint != null)
+			{
+				name.move(labelPoint.getX(),
+					labelPoint.getY() + name.getAscent());
+				labelList.add(name);
+			}
+
 			angle += degrees;
 		}
+
 		// Now draw the actual slices
 		for(PieSliceDrawable slice : sliceList)
 		{
 			canvas.add(slice);
 		}
-	}
 
-	private static class Label
-	{
-		private final static int SEPARATOR = 5, MIN_VERTICAL_PADDING = 4;
-
-		private int groupIndex;
-		private TextDrawable name, percentage;
-
-		private double allocatedHeight, y;
-
-		Label(int groupIndex, TextDrawable name, TextDrawable percentage)
+		// And draw the labels
+		for(TextDrawable label : labelList)
 		{
-			this.groupIndex = groupIndex;
-			this.name = name;
-			this.percentage = percentage;
-		}
-
-		double getWidth()
-		{
-			return (name.getWidth() + percentage.getWidth() + SEPARATOR);
-		}
-
-		/**
-		 * @return Index of group that this label is for
-		 */
-		public int getGroup()
-		{
-			return groupIndex;
-		}
-
-		/**
-		 * @return Minimum height for label, including text plus padding
-		 */
-		private double getMinHeight()
-		{
-			return name.getHeight() + MIN_VERTICAL_PADDING * 2;
-		}
-
-		/**
-		 * @param height Height to allocate to label
-		 */
-		public void allocateHeight(double height)
-		{
-			allocatedHeight = height;
-		}
-
-		public void spreadHeight(Label[] allLabels, int index)
-		{
-			// If this label is big enough, leave it
-			double minHeight = getMinHeight();
-			double difference = minHeight - allocatedHeight;
-			if(difference <= 0)
-			{
-				return;
-			}
-
-			// Try to get height from surrounding labels (evenly on both sides)
-			// in three passes
-
-			// Left contribution (up to half required)
-			double leftContribution = 0;
-			if(index > 0)
-			{
-				for(int i=index-1; index>=0; index--)
-				{
-					double available = allLabels[i].allocatedHeight - minHeight;
-					double required = difference/2 - leftContribution;
-					if(available >= required)
-					{
-						allLabels[i].allocatedHeight -= required;
-						leftContribution += required;
-						break;
-					}
-					else if(available > 0)
-					{
-						allLabels[i].allocatedHeight -= available;
-						leftContribution += available;
-					}
-				}
-			}
-
-			// Right contribution (up to whatever's needed)
-			double rightContribution = 0;
-			if(index < allLabels.length - 1)
-			{
-				for(int i=index+1; i<allLabels.length; i++)
-				{
-					double available = allLabels[i].allocatedHeight - minHeight;
-					double required = difference - leftContribution - rightContribution;
-					if(available >= required)
-					{
-						allLabels[i].allocatedHeight -= required;
-						rightContribution += required;
-						break;
-					}
-					else if(available > 0)
-					{
-						allLabels[i].allocatedHeight -= available;
-						rightContribution += available;
-					}
-				}
-			}
-
-			// Left contribution (if right contribution didn't pan out)
-			if(index > 0)
-			{
-				for(int i=index-1; index>=0 ; index--)
-				{
-					double available = allLabels[i].allocatedHeight - minHeight;
-					double required = difference - leftContribution - rightContribution;
-					if(available >= required)
-					{
-						allLabels[i].allocatedHeight -= required;
-						leftContribution += required;
-						break;
-					}
-					else if(available > 0)
-					{
-						allLabels[i].allocatedHeight -= available;
-						leftContribution += available;
-					}
-				}
-			}
-
-			allocatedHeight += leftContribution + rightContribution;
-		}
-
-		/**
-		 * Moves the label to its final position.
-		 * @param x X
-		 * @param y Y
-		 */
-		public void move(double x, double y)
-		{
-			this.y = y;
-			double baseline = name.getVerticalMiddleY(y, y+allocatedHeight);
-			name.move(x, baseline);
-			percentage.move(x + name.getWidth() + SEPARATOR, baseline);
-		}
-
-		/**
-		 * Adds this label to canvas.
-		 * @param canvas Canvas
-		 */
-		public void addTo(Canvas canvas)
-		{
-			canvas.add(name);
-			canvas.add(percentage);
-		}
-
-		/**
-		 * @return Height allocated to this label
-		 */
-		public double getAllocatedHeight()
-		{
-			return allocatedHeight;
-		}
-
-		/**
-		 * @return Y position of top of label area
-		 */
-		public double getY()
-		{
-			return y;
-		}
-	}
-
-	private static class Footnote
-	{
-		private final static int BOX_HORIZONTAL_PADDING = 4,
-			BOX_VERTICAL_PADDING = 2, BOX_BORDER = 1, BOX_SPACING = 5;
-		private int groupIndex;
-		private TextDrawable name, numberGraph, numberFootnote;
-
-		private double x;
-		private int lineIndex;
-
-		Footnote(int groupIndex, TextDrawable name, TextDrawable numberGraph,
-			TextDrawable numberFootnote)
-		{
-			this.groupIndex = groupIndex;
-			this.name = name;
-			this.numberGraph = numberGraph;
-			this.numberFootnote = numberFootnote;
-		}
-
-		double getWidth()
-		{
-			return name.getWidth() + numberFootnote.getWidth() +
-				BOX_BORDER * 2 + BOX_HORIZONTAL_PADDING * 2 + BOX_SPACING;
-		}
-
-		double getHeight()
-		{
-			return numberFootnote.getHeight() + BOX_BORDER * 2
-				+ BOX_VERTICAL_PADDING * 2;
-		}
-
-		/**
-		 * @return Group index
-		 */
-		public int getGroup()
-		{
-			return groupIndex;
-		}
-
-		void setRoughPosition(double x, int lineIndex)
-		{
-			this.x = x;
-			this.lineIndex = lineIndex;
-		}
-
-		/**
-		 * Sets the position of the number in the graph (inside the first
-		 * shape for that group).
-		 * @param x X position
-		 * @param y Y position
-		 */
-		void setGraphPosition(double x, double y)
-		{
-			numberGraph.move(x, numberGraph.getVerticalMiddleY(y, y));
-		}
-
-		/**
-		 * @param canvas Canvas that receives data
-		 * @param baseY Y position of footnote area
-		 * @param rowHeight Height of each row (to convert line index into Y)
-		 * @param groupNames Group names
-		 * @param colours Map from group name to colour
-		 * @param border Border colour
-		 */
-		public void addTo(Canvas canvas, double baseY, double rowHeight,
-			String[] groupNames, Map<String, GroupColours> colours,
-			Color border)
-		{
-			double y = baseY + lineIndex * rowHeight;
-			double boxHeight = getHeight();
-			double boxWidth = numberFootnote.getWidth() + BOX_HORIZONTAL_PADDING * 2
-				+ BOX_BORDER * 2;
-
-			// Fill and outline box
-			canvas.add(new RectDrawable(x + BOX_BORDER, y + BOX_BORDER,
-				boxWidth - 2 * BOX_BORDER, boxHeight - 2 * BOX_BORDER,
-				colours.get(groupNames[groupIndex]).getMain()));
-			canvas.add(new RectDrawable(x, y, boxWidth, BOX_BORDER, border));
-			canvas.add(new RectDrawable(x, y+boxHeight - BOX_BORDER, boxWidth, BOX_BORDER, border));
-			canvas.add(new RectDrawable(x, y + BOX_BORDER, BOX_BORDER, boxHeight - 2 * BOX_BORDER, border));
-			canvas.add(new RectDrawable(x + boxWidth - BOX_BORDER, y + BOX_BORDER, BOX_BORDER, boxHeight - 2 * BOX_BORDER, border));
-
-			// Draw number
-			double baseline = numberFootnote.getVerticalMiddleY(y, y+boxHeight);
-			numberFootnote.move(x + BOX_BORDER + BOX_HORIZONTAL_PADDING, baseline);
-			canvas.add(numberFootnote);
-			name.move(x + boxWidth + BOX_SPACING, baseline);
-			canvas.add(name);
-			canvas.add(numberGraph);
+			canvas.add(label);
 		}
 	}
 
@@ -692,7 +558,7 @@ public class Graph extends CommandLineTool
 
 		int mLabelSidePadding = 10, mLargeCurveWidth = 20, mTitleBottomPadding = 10,
 			mLargeCurvePadding = 10, mFootnoteMargin = 20, mFootnoteVerticalSpacing = 10,
-			mDateMargin = 20, mDateTopPadding = 5;
+			mDateMargin = 20, mDateTopPadding = 5, mLabelVerticalPadding = 4;
 		double mOverprint = 1;
 
 		// LAYOUT
@@ -715,11 +581,9 @@ public class Graph extends CommandLineTool
 			if(data.getValue(group, lastPoint) > 0)
 			{
 				GroupColours colours = groupColours.get(groupNames[group]);
-				Label label = new Label(group,
-					new TextDrawable(groupNames[group], 0, 0,
-						colours.getText(), fontName, true, labelSize),
-					new TextDrawable(data.getPercentage(group, lastPoint), 0, 0,
-						colours.getText(), fontName, false, labelSize));
+				Label label = new Label(group, groupNames[group],
+					data.getPercentage(group, lastPoint), fontName,
+						colours.getText(), labelSize, mLabelVerticalPadding);
 				endLabelsList.add(label);
 				endLabelsWidth = Math.max(endLabelsWidth, label.getWidth());
 			}
@@ -737,11 +601,9 @@ public class Graph extends CommandLineTool
 			if(data.getValue(group, 0) > 0)
 			{
 				GroupColours colours = groupColours.get(groupNames[group]);
-				Label label = new Label(group,
-					new TextDrawable(groupNames[group], 0, 0,
-						colours.getText(), fontName, true, labelSize),
-					new TextDrawable(data.getPercentage(group, 0), 0, 0,
-						colours.getText(), fontName, false, labelSize));
+				Label label = new Label(group, groupNames[group],
+					data.getPercentage(group, lastPoint), fontName,
+					colours.getText(), labelSize, mLabelVerticalPadding);
 				startLabelsList.add(label);
 				startLabelsMinWidth = Math.max(startLabelsMinWidth, label.getWidth());
 			}
@@ -903,7 +765,7 @@ public class Graph extends CommandLineTool
 		if(startLabels)
 		{
 			// Position
-			distributeLabelsVertically(data, 0, mLabelSidePadding, graphY, graphHeight,
+			Label.distributeLabelsVertically(data, 0, mLabelSidePadding, graphY, graphHeight,
 				startLabelsArray);
 
 			// Draw
@@ -948,7 +810,7 @@ public class Graph extends CommandLineTool
 		if(endLabels)
 		{
 			// Position
-			distributeLabelsVertically(data, numPoints-1,
+			Label.distributeLabelsVertically(data, numPoints-1,
 				graphX + graphWidth + mLargeCurvePadding + mLargeCurveWidth +
 				mLabelSidePadding, 0, canvas.getHeight(),	endLabelsArray);
 
@@ -1077,72 +939,8 @@ public class Graph extends CommandLineTool
 		}
 	}
 
-	/**
-	 * Arranges the labels vertically, allowing each the minimum size to include
-	 * the text plus a bit more.
-	 * @param data Trend data
-	 * @param point Point to use in trend data
-	 * @param x X position to move label to
-	 * @param y Y position of graph
-	 * @param height Height of graph
-	 * @param labels Labels to arrange
-	 */
-	private static void distributeLabelsVertically(
-		TrendData data, int point, double x, double y, double height,
-		Label[] labels)
-	{
-		// Start by allocating available space according to the data
-		double total = (double)data.getTotal(point);
-		for(Label label : labels)
-		{
-			label.allocateHeight(
-				((double)data.getValue(label.getGroup(), point) / total) * height);
-		}
-
-		// Now share it out to make everything reach minimums
-		for(int i=0; i<labels.length; i++)
-		{
-			labels[i].spreadHeight(labels, i);
-		}
-
-		// Height is finalised, so move the labels
-		double currentY = 0;
-		for(Label label : labels)
-		{
-			label.move(x, y + currentY);
-			currentY += label.getAllocatedHeight();
-		}
-	}
-
 	private Map<String, GroupColours> groupColours =
 		new HashMap<String, GroupColours>();
-
-	private static class GroupColours
-	{
-		private Color main, text;
-
-		protected GroupColours(Color main, Color text)
-		{
-			this.main = main;
-			this.text = text;
-		}
-
-		/**
-		 * @return Main colour for this group
-		 */
-		public Color getMain()
-		{
-			return main;
-		}
-
-		/**
-		 * @return Text colour for this group
-		 */
-		public Color getText()
-		{
-			return text;
-		}
-	}
 
 	private final static int
 		COLOUR_SATURATION_MAX = 200, COLOUR_SATURATION_MIN = 35,
@@ -1150,7 +948,7 @@ public class Graph extends CommandLineTool
 		COLOUR_LIGHTNESS_DARK = 60, COLOUR_LIGHTNESS_DARK_MAX = 110,
 		COLOUR_HUE_STEP = 30;
 
-	private void fillGroupColours(final String[] groupNames)
+	void fillGroupColours(final String[] groupNames)
 	{
 		// Organise into list of similar name
 		Map<String, List<Integer>> similar = new HashMap<String, List<Integer>>();

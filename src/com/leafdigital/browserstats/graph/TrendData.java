@@ -228,13 +228,23 @@ public class TrendData
 	public String getPercentage(int group, int point)
 		throws IllegalArgumentException
 	{
-		int total = getTotal(point);
+		return getPercentageString(getValue(group, point), getTotal(point));
+	}
+
+	/**
+	 * Calculates a percentage from two values.
+	 * @param count Count
+	 * @param total Out of this total
+	 * @return Percentage string e.g "0.0%"
+	 */
+	public static String getPercentageString(int count, int total)
+	{
 		if(total == 0)
 		{
 			return "0.0%";
 		}
 		String value = "" + Math.round(
-			(double)getValue(group, point) * 1000.0 / (double)total);
+			(double)count * 1000.0 / (double)total);
 		if(value.length() < 2)
 		{
 			value = "0" + value;

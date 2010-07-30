@@ -18,11 +18,11 @@ Copyright 2010 Samuel Marshall.
 */
 package com.leafdigital.browserstats.graph;
 
-import java.awt.*;
-import java.awt.geom.*;
-
 import static com.leafdigital.browserstats.graph.SvgCanvas.svgRound;
 import static java.lang.Math.*;
+
+import java.awt.*;
+import java.awt.geom.*;
 
 /**
  * A pie slice that can be drawn to PNG or SVG.
@@ -55,10 +55,19 @@ public class PieSliceDrawable extends Drawable
 	@Override
 	public void draw(Graphics2D g)
 	{
-		Arc2D arc = new Arc2D.Double(middleX - radius, middleY - radius,
-			radius * 2, radius * 2, 90 - startAngle, -degrees, Arc2D.PIE);
+		Arc2D arc = getArc();
 		g.setColor(color);
 		g.fill(arc);
+	}
+
+	/**
+	 * @return Arc used for drawing and measuring
+	 */
+	private Arc2D getArc()
+	{
+		Arc2D arc = new Arc2D.Double(middleX - radius, middleY - radius,
+			radius * 2, radius * 2, 90 - startAngle, -degrees, Arc2D.PIE);
+		return arc;
 	}
 
 	@Override
@@ -102,6 +111,15 @@ public class PieSliceDrawable extends Drawable
 	public Point2D.Double getRadius(boolean second)
 	{
 		double radians = second ? getEndRadians() : getStartRadians();
+		return getRadius(radians);
+	}
+
+	/**
+	 * @param radians Angle in radians
+	 * @return Radius at this many radians
+	 */
+	private Point2D.Double getRadius(double radians)
+	{
 		return new Point2D.Double(
 			radius * cos(radians) + middleX,
 			radius * sin(radians) + middleY);
@@ -121,5 +139,39 @@ public class PieSliceDrawable extends Drawable
 		radius.lineTo(p.getX(), p.getY());
 		radius.finish();
 		return radius;
+	}
+
+	/**
+	 * Gets the position for drawing a label on this slice, if it will fit. The
+	 * label is centred on the middle radius of the slice, and as close to the
+	 * outside as possible.
+	 * @param width Width of label
+	 * @param height Height of label
+	 * @param padding Extra padding required around label
+	 * @return Position of label top left, or null if it doesn't fit
+	 */
+	public Point2D getLabelPosition(double width, double height, double padding)
+	{
+		// Get arc
+		Arc2D arc = getArc();
+
+		// Get middle radius
+		Point2D edge = getRadius((getStartRadians() + getEndRadians()) / 2.0);
+		double dx = edge.getX() - middleX, dy = edge.getY() - middleY;
+
+		for(double proportion = 1.0; proportion > 0.0; proportion -= 0.01)
+		{
+			double
+				centreX = dx * proportion + middleX,
+				centreY = dy * proportion + middleY;
+			if(arc.contains(
+				centreX - width/2 - padding, centreY - height/2 - padding,
+				width + padding * 2, height + padding * 2))
+			{
+				return new Point2D.Double(centreX - width/2, centreY - height/2);
+			}
+		}
+
+		return null;
 	}
 }
