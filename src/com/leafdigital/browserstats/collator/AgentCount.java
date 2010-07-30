@@ -32,8 +32,9 @@ public class AgentCount
 	 * @param agent User-agent
 	 * @param ip IP address
 	 * @param c Category
+	 * @param progress If true, outputs progress dots to stderr
 	 */
-	void count(String agent, String ip, Category c)
+	void count(String agent, String ip, Category c, boolean progress)
 	{
 		AgentData data = agents.get(agent);
 		if(data==null)
@@ -44,7 +45,7 @@ public class AgentCount
 		data.count(ip, c);
 
 		lines++;
-		if((lines & 0x3fff)==0)
+		if(progress && (lines & 0x3fff)==0)
 		{
 			System.err.print(".");
 		}

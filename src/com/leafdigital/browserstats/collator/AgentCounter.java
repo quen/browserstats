@@ -139,7 +139,7 @@ public class AgentCounter
 		}
 
 		// Actually count data
-		count.count(line.getUserAgent(), line.getIp(), line.getCategory());
+		count.count(line.getUserAgent(), line.getIp(), line.getCategory(), !stdout);
 	}
 
 	/**
