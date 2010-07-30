@@ -37,11 +37,15 @@ import com.leafdigital.util.xml.XML;
 public class Summarise extends CommandLineTool
 {
 	private boolean overwrite, stdout, preventOther, showPercentages,
-		showExcluded=true, showHeaders=true, showTotal = true;
+		showExcluded=true, showHeaders=true, showTotal = true, autoGroup = true,
+		explicitAutoGroup;
 	private LinkedList<Conditions> parameters = new LinkedList<Conditions>();
 	private LinkedList<AutoVersion> autoVersions = new LinkedList<AutoVersion>();
 	private String onlyCategory, suffix;
 	private File folder;
+
+	private EnumSet<KnownAgent.Field> autoGroupFields =
+		EnumSet.of(KnownAgent.Field.AGENT);
 
 	private boolean csv=false, xml=false;
 
@@ -140,6 +144,11 @@ public class Summarise extends CommandLineTool
 		if(args[i].equals("-group"))
 		{
 			checkArgs(args, i, 1);
+			if(explicitAutoGroup)
+			{
+				throw new IllegalArgumentException("-group must be before -autogroup");
+			}
+			autoGroup = false;
 			String group = args[i+1];
 			if(group.equals(SpecialNames.GROUP_EXCLUDED) || group.equals(SpecialNames.GROUP_OTHER))
 			{
@@ -153,6 +162,39 @@ public class Summarise extends CommandLineTool
 			Conditions parameter = new Group(group, args, i+2);
 			parameters.add(parameter);
 			return parameter.getArgsUsed() + 2;
+		}
+		if(args[i].equals("-autogroup"))
+		{
+			checkArgs(args, i, 1);
+			autoGroup = true;
+			explicitAutoGroup = true;
+
+			autoGroupFields = EnumSet.noneOf(KnownAgent.Field.class);
+			int used = 0;
+			for(int index = i+1; index<args.length; index++)
+			{
+				String field = args[index];
+				if(field.startsWith("-"))
+				{
+					break;
+				}
+				try
+				{
+					autoGroupFields.add(KnownAgent.Field.valueOf(field.toUpperCase()));
+				}
+				catch(IllegalArgumentException e)
+				{
+					throw new IllegalArgumentException("-autogroup unknown field: "
+						+ field);
+				}
+				used++;
+			}
+			if(used == 0)
+			{
+				// Default to using agent
+				autoGroupFields.add(KnownAgent.Field.AGENT);
+			}
+			return used + 1;
 		}
 		if(args[i].equals("-autoversion"))
 		{
@@ -270,23 +312,59 @@ public class Summarise extends CommandLineTool
 	@Override
 	protected void go()
 	{
-		// Add 'other' group to parameters
-		parameters.add(new Other());
-
 		File current = null;
 		try
 		{
+			// Add 'other' group to parameters
+			Other other = new Other();
+			parameters.add(other);
+
 			File[] input = getInputFiles();
+
+			// Read stdin data if required
+			Document stdinDoc = null;
 			if(input == null)
 			{
-				doFile(null);
+				stdinDoc = loadXml(null);
+			}
+
+			// Do autogroup
+			if(autoGroup)
+			{
+				Set<KnownAgent> include = new HashSet<KnownAgent>();
+				if(input == null)
+				{
+					buildAutoGroupAgents(stdinDoc, other, include);
+				}
+				else
+				{
+					for(File f : input)
+					{
+						current = f;
+						Document d = loadXml(f);
+						buildAutoGroupAgents(d, other, include);
+					}
+				}
+
+				// Now that we have the list of agents, add the actual groups
+				addAutoGroups(include);
+
+				// Put 'other' back at the end
+				parameters.remove(other);
+				parameters.add(other);
+			}
+
+			if(input == null)
+			{
+				doFile(null, stdinDoc);
 			}
 			else
 			{
 				for(File f : input)
 				{
 					current = f;
-					doFile(f);
+					Document d = loadXml(f);
+					doFile(f, d);
 				}
 			}
 		}
@@ -297,72 +375,265 @@ public class Summarise extends CommandLineTool
 		}
 	}
 
-	private void doFile(File file) throws IOException
+	private void addAutoGroups(Set<KnownAgent> agents)
 	{
-		// Load input XML
-		Document d;
-		try
+		// Check which parts of the agent vary; we will use this in group names
+		boolean varyType = false, varyOs = false,
+			varyEngine = false, varyAgent = false;
+		String singleType = null, singleOs = null,
+			singleEngine = null, singleAgent = null;
+		for(KnownAgent agent : agents)
 		{
-			DocumentBuilder builder =
-				DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			if(file != null)
+			if(singleType == null)
 			{
-				d = builder.parse(file);
+				singleType = agent.getType();
 			}
 			else
 			{
-				d = builder.parse(System.in, "stdin");
-			}
-		}
-		catch(ParserConfigurationException e)
-		{
-			throw new IOException("Misconfigured Java XML support: "
-				+ e.getMessage());
-		}
-		catch(SAXException e)
-		{
-			throw new IOException("Invalid XML input: " + e.getMessage());
-		}
-
-		// Parse XML
-		Element root = d.getDocumentElement();
-		if(!root.getTagName().equals("knownagents"))
-		{
-			throw new IOException("XML root tag <knownagents> not found");
-		}
-		String[] categories = new String[0];
-		if(root.hasAttribute("categories")
-			&& root.getAttribute("categories").length() > 0)
-		{
-			categories = root.getAttribute("categories").split(",");
-		}
-		LinkedList<KnownAgent> knownAgents = new LinkedList<KnownAgent>();
-		for(Node n = root.getFirstChild(); n!=null;
-			n = n.getNextSibling())
-		{
-			if(n instanceof Element && ((Element)n).getTagName().equals("agent"))
-			{
-				knownAgents.add(new KnownAgent((Element)n, categories));
-			}
-		}
-
-		// Check category
-		int onlyCategoryIndex = -1;
-		if(onlyCategory != null)
-		{
-			for(int i=0; i<categories.length; i++)
-			{
-				if(categories[i].equals(onlyCategory))
+				if(!agent.getType().equals(singleType))
 				{
-					onlyCategoryIndex = i;
-					break;
+					varyType = true;
 				}
 			}
-			if(onlyCategoryIndex == -1)
+
+			if(singleOs == null)
 			{
-				throw new IllegalArgumentException("Invalid -category: " + onlyCategory);
+				singleOs = agent.getOs();
+			}
+			else
+			{
+				if(!agent.getOs().equals(singleOs))
+				{
+					varyOs = true;
+				}
+			}
+
+			if(singleEngine == null)
+			{
+				singleEngine = agent.getEngine();
+			}
+			else
+			{
+				if(!agent.getEngine().equals(singleEngine))
+				{
+					varyEngine = true;
+				}
+			}
+
+			if(singleAgent == null)
+			{
+				singleAgent = agent.getAgent();
+			}
+			else
+			{
+				if(!agent.getAgent().equals(singleAgent))
+				{
+					varyAgent = true;
+				}
 			}
 		}
+
+		// If they're all always the same, just include the agent name
+		if(!(varyType || varyOs || varyEngine || varyAgent))
+		{
+			varyAgent = true;
+		}
+
+		// Add a group for each agent
+		for(KnownAgent agent : agents)
+		{
+			// Work out group name
+			String name = agent.toStringWith(autoGroupFields).replace(":", " / ");
+
+			// Specify group to match agent
+			String[] args = new String[]
+	    {
+				"type",
+				Pattern.quote(agent.getType()),
+				"os",
+				Pattern.quote(agent.getOs()),
+				"engine",
+				Pattern.quote(agent.getEngine()),
+				"agent",
+				Pattern.quote(agent.getAgent())
+	    };
+
+			Conditions parameter = new Group(name, args, 0);
+			parameters.add(parameter);
+		}
+	}
+
+	private void buildAutoGroupAgents(Document d, Other other, Set<KnownAgent> include) throws IOException
+	{
+		// Get file contents
+		XnownAgentFileContents contents = new XnownAgentFileContents(d);
+		String[] categories = contents.getCategories();
+		KnownAgent[] knownAgents = contents.getKnownAgents();
+
+		// Check category
+		int onlyCategoryIndex = getCategoryIndex(categories);
+
+		// Count values; this will handle -include and -exclude lines, assigning
+		// all remaining agents to the 'other' group
+		countParameters(parameters, categories, knownAgents);
+		KnownAgent[] found = other.getKnownAgents();
+
+		// Organise found agents by their identifier minus version
+		Map<String, List<KnownAgent>> uniqueAgents =
+			new HashMap<String, List<KnownAgent>>();
+		for(KnownAgent agent : found)
+		{
+			String key = agent.toStringWith(autoGroupFields);
+			List<KnownAgent> list = uniqueAgents.get(key);
+			if(list == null)
+			{
+				list = new LinkedList<KnownAgent>();
+				uniqueAgents.put(key, list);
+			}
+			list.add(agent);
+		}
+
+		// Group versions together
+		found = new KnownAgent[uniqueAgents.size()];
+		Iterator<List<KnownAgent>> iterator = uniqueAgents.values().iterator();
+		for(int i=0; i<found.length; i++)
+		{
+			List<KnownAgent> list = iterator.next();
+
+			if(list.size() == 1)
+			{
+				found[i] = list.get(0);
+			}
+			else
+			{
+				found[i] = KnownAgent.combineCountsWithSameFields(
+					autoGroupFields, list);
+			}
+		}
+
+		// Count up totals
+		int overallTotal = 0;
+		int[] categoryTotals = new int[categories.length];
+		// If the preventOther flag is enabled, we add an entry for all agents
+		// so the total counts are zero (making the thresholds zero); don't bother
+		// counting
+		if(!preventOther)
+		{
+			for(KnownAgent agent : found)
+			{
+				// Get counts
+				int count = agent.getCount();
+				int[] categoryCounts = agent.getCategoryCounts();
+
+				// Build up totals
+				overallTotal += count;
+				for(int category=0; category<categories.length; category++)
+				{
+					categoryTotals[category] += categoryCounts[category];
+				}
+			}
+		}
+
+		// Work out thresholds for each category
+		int overallThreshold = overallTotal / 200;
+		int[] categoryThresholds = new int[categories.length];
+		for(int category=0; category<categories.length; category++)
+		{
+			categoryThresholds[category] = categoryTotals[category] / 200;
+		}
+
+		// Now loop through and add everything over threshold in any of the
+		// categories we're including, or in total (unless we are doing 'only
+		// category' which excludes the total value)
+		for(KnownAgent agent : found)
+		{
+			boolean overThreshold = preventOther;
+			if(!overThreshold && onlyCategoryIndex == -1
+				&& agent.getCount() > overallThreshold)
+			{
+				overThreshold = true;
+			}
+			if(!overThreshold)
+			{
+				int[] categoryCounts = agent.getCategoryCounts();
+				for(int category=0; category<categories.length; category++)
+				{
+					if(onlyCategoryIndex != -1 && onlyCategoryIndex != category)
+					{
+						continue;
+					}
+					if(categoryCounts[category] > categoryThresholds[category])
+					{
+						overThreshold = true;
+						break;
+					}
+				}
+			}
+
+			if(overThreshold)
+			{
+				include.add(agent.cloneWithoutCountData());
+			}
+		}
+	}
+
+	private static class XnownAgentFileContents
+	{
+		private String[] categories;
+		private KnownAgent[] knownAgents;
+
+		XnownAgentFileContents(Document d) throws IOException
+		{
+			// Parse XML
+			Element root = d.getDocumentElement();
+			if(!root.getTagName().equals("knownagents"))
+			{
+				throw new IOException("XML root tag <knownagents> not found");
+			}
+			categories = new String[0];
+			if(root.hasAttribute("categories")
+				&& root.getAttribute("categories").length() > 0)
+			{
+				categories = root.getAttribute("categories").split(",");
+			}
+			LinkedList<KnownAgent> knownAgentList = new LinkedList<KnownAgent>();
+			for(Node n = root.getFirstChild(); n!=null;
+				n = n.getNextSibling())
+			{
+				if(n instanceof Element && ((Element)n).getTagName().equals("agent"))
+				{
+					knownAgentList.add(new KnownAgent((Element)n, categories));
+				}
+			}
+			knownAgents = knownAgentList.toArray(new KnownAgent[knownAgentList.size()]);
+		}
+
+		/**
+		 * @return Categories from this file
+		 */
+		public String[] getCategories()
+		{
+			return categories;
+		}
+
+		/**
+		 * @return Array of known agents from this file
+		 */
+		public KnownAgent[] getKnownAgents()
+		{
+			return knownAgents;
+		}
+	}
+
+	private void doFile(File file, Document d) throws IOException
+	{
+		// Get file contents
+		XnownAgentFileContents contents = new XnownAgentFileContents(d);
+		String[] categories = contents.getCategories();
+		KnownAgent[] knownAgents = contents.getKnownAgents();
+
+		// Check category
+		int onlyCategoryIndex = getCategoryIndex(categories);
 
 		// Count values
 		LinkedList<Conditions> localParameters = parameters;
@@ -731,6 +1002,68 @@ public class Summarise extends CommandLineTool
 	}
 
 	/**
+	 * Gets the unique category index to use.
+	 * @param categories Array of categories
+	 * @return Category index Category index or -1 for all categories
+	 * @throws IllegalArgumentException
+	 */
+	private int getCategoryIndex(String[] categories)
+		throws IllegalArgumentException
+	{
+		int onlyCategoryIndex = -1;
+		if(onlyCategory != null)
+		{
+			for(int i=0; i<categories.length; i++)
+			{
+				if(categories[i].equals(onlyCategory))
+				{
+					onlyCategoryIndex = i;
+					break;
+				}
+			}
+			if(onlyCategoryIndex == -1)
+			{
+				throw new IllegalArgumentException("Invalid -category: " + onlyCategory);
+			}
+		}
+		return onlyCategoryIndex;
+	}
+
+	/**
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	private Document loadXml(File file) throws IOException
+	{
+		// Load input XML
+		Document d;
+		try
+		{
+			DocumentBuilder builder =
+				DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			if(file != null)
+			{
+				d = builder.parse(file);
+			}
+			else
+			{
+				d = builder.parse(System.in, "stdin");
+			}
+		}
+		catch(ParserConfigurationException e)
+		{
+			throw new IOException("Misconfigured Java XML support: "
+				+ e.getMessage());
+		}
+		catch(SAXException e)
+		{
+			throw new IOException("Invalid XML input: " + e.getMessage());
+		}
+		return d;
+	}
+
+	/**
 	 * Converts a number into a percentage string, ending with "%", with one
 	 * decimal place.
 	 * @param num Number
@@ -852,7 +1185,7 @@ public class Summarise extends CommandLineTool
 
 	private static void countParameters(
 		Collection<Conditions> parameters,
-		String[] categories, Collection<KnownAgent> knownAgents)
+		String[] categories, KnownAgent[] knownAgents)
 	{
 		for(Conditions parameter : parameters)
 		{

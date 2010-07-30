@@ -23,7 +23,14 @@ Input options
   See 'Agent and group processing' below.
 
 -group {name} {conditions}
-  Assigns matching agents into a named group.
+  Assigns matching agents into a named group. If you don't specify this
+  option, then all agents not excluded will be sorted into groups as if
+  "-autogroup agent" was specified.
+  See 'Agent and group processing' below.
+
+-autogroup {fields}
+  Specifies automatic grouping. Example: "-autogroup os" or
+  "-autogroup agent os".
   See 'Agent and group processing' below.
 
 -autoversion {type} {name}
@@ -58,8 +65,8 @@ Input options
 --
   Indicate that this is the end of the options section.
 
-  This is required if the first input file name starts with -, or if the
-  last option is -include, -exclude, or -group.
+  NOTE: This is required if the first input file name starts with -, or if the
+  last option is -include, -exclude, -group, or -autogroup.
 
 @{file}
   Read arguments from a file instead of the command line. You can combine
@@ -138,6 +145,21 @@ Processing:
 All -include, -exclude and -group parameters are processed in the given order.
 When the system considers each agent, it assigns it according to the first
 matching parameter.
+
+Automatic groups:
+
+If automatic groups are enabled (by default they are enabled if you don't
+specify any -group manually), these will apply after the defined -include,
+-exclude, and -group parameters to any agents that weren't matched by the
+defined groups.
+
+You specify which fields are considered when creating automatic groups (default
+is just the agent name). For example, if you specify '-autogroup os agent',
+then the system will create one group for each combination of OS and browser.
+
+Unless you specify the -preventother flag, the system doesn't create automatic
+groups where these would have less than 0.5% of the count in every input file
+for the categories being considered. These are classified as 'other'.
 
 Groups:
 
