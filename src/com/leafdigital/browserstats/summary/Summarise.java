@@ -377,6 +377,16 @@ public class Summarise extends CommandLineTool
 
 	private void addAutoGroups(Set<KnownAgent> agents)
 	{
+		SortedMap<String, Group> sortedGroups = new TreeMap<String, Group>(
+			new Comparator<String>()
+			{
+				@Override
+				public int compare(String o1, String o2)
+				{
+					return o1.toLowerCase().compareTo(o2.toLowerCase());
+				}
+			});
+
 		// Add a group for each agent
 		for(KnownAgent agent : agents)
 		{
@@ -384,20 +394,21 @@ public class Summarise extends CommandLineTool
 			String name = agent.toStringWith(autoGroupFields).replace(":", " / ");
 
 			// Specify group to match agent
-			String[] args = new String[]
-	    {
-				"type",
-				Pattern.quote(agent.getType()),
-				"os",
-				Pattern.quote(agent.getOs()),
-				"engine",
-				Pattern.quote(agent.getEngine()),
-				"agent",
-				Pattern.quote(agent.getAgent())
-	    };
+			List<String> argList = new LinkedList<String>();
+			for(KnownAgent.Field field : autoGroupFields)
+			{
+				argList.add(field.toString().toLowerCase());
+				argList.add(Pattern.quote(agent.get(field)));
+			}
 
-			Conditions parameter = new Group(name, args, 0);
-			parameters.add(parameter);
+			Group group = new Group(name,
+				argList.toArray(new String[argList.size()]), 0);
+			sortedGroups.put(name, group);
+		}
+
+		for(Group group : sortedGroups.values())
+		{
+			parameters.add(group);
 		}
 	}
 

@@ -207,6 +207,25 @@ class KnownAgent
 	}
 
 	/**
+	 * Gets a field value.
+	 * @param field Field required
+	 * @return Value of field
+	 * @throws IllegalArgumentException If field name is incorrect
+	 */
+	public String get(KnownAgent.Field field) throws IllegalArgumentException
+	{
+		switch(field)
+		{
+		case TYPE : return type;
+		case OS : return os;
+		case ENGINE : return engine;
+		case AGENT : return agent;
+		case VERSION : return version;
+		default: throw new IllegalArgumentException("Invalid field");
+		}
+	}
+
+	/**
 	 * @return Type text (may be "")
 	 */
 	public String getType()

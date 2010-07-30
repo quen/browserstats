@@ -157,6 +157,8 @@ You specify which fields are considered when creating automatic groups (default
 is just the agent name). For example, if you specify '-autogroup os agent',
 then the system will create one group for each combination of OS and browser.
 
+Automatic groups are created in alphabetical order.
+
 Unless you specify the -preventother flag, the system doesn't create automatic
 groups where these would have less than 0.5% of the count in every input file
 for the categories being considered. These are classified as 'other'.
