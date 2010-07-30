@@ -144,5 +144,9 @@ class IdentifyResults
 		{
 			w.close();
 		}
+		else
+		{
+			w.flush();
+		}
 	}
 }
