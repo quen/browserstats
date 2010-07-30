@@ -277,6 +277,14 @@ public class Graph extends CommandLineTool
 		{
 			png = true;
 		}
+
+		// If stdout or stdin is set, check only one format is specified
+		if( (stdout || getInputFiles() == null) &&
+			((csv ? 1 : 0) + (png ? 1 : 0) + (svg ? 1 : 0)) != 1)
+		{
+			throw new IllegalArgumentException(
+				"Cannot write multiple formats to stdout");
+		}
 	}
 
 	@Override
@@ -373,7 +381,14 @@ public class Graph extends CommandLineTool
 			// Save output
 			if(stdout || getInputFiles() == null)
 			{
-				System.out.write(canvases[0].save());
+				if(canvases.length != 0)
+				{
+					System.out.write(canvases[0].save());
+				}
+				if(csv)
+				{
+					System.out.write(csvData.getBytes("UTF-8"));
+				}
 			}
 			else
 			{
