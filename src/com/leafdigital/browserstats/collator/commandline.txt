@@ -110,8 +110,8 @@ Output options
 
 -stdout
   Write output to standard output instead of to a file. (Not compatible with
-  -daily or -monthly.) 
-  
+  -daily or -monthly or -yearly.)
+
   This option also cancels the normal progress output (which is actually
   written to stderr, but anyway).
 
@@ -122,16 +122,19 @@ Output options
   Use the given prefix on output files. Default prefix is 'log'. This will
   result in a file called log.useragents if you write a single output file,
   or log.2009-08.useragents for monthly files, etc.
-  
+
 -daily 
   Write one output file per calendar day.
-  
+
 -monthly
   Write one output file per calendar month.
-  
+
+-yearly
+  Write one output file per calendar year.
+
 -single
   Write only one output file (default).
-  
+
 -overwrite
   Overwrite existing output files. (Without specifying this option, if the 
   system would otherwise overwrite an existing file, it exits with an error.)

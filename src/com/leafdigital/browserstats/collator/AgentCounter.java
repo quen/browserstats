@@ -77,6 +77,22 @@ public class AgentCounter
 			count = counts.get(null);
 		}	break;
 
+		case YEARLY :
+		{
+			currentPeriod = line.getIsoDate().substring(0, 4);
+			count = counts.get(currentPeriod);
+			// If there is no data for this month...
+			if(count==null)
+			{
+				// Give an error if that's because this month is in the past
+				if(past.contains(currentPeriod))
+				{
+					throw new IOException("Line out of sequence (try -unordered):\n"
+						+ line);
+				}
+			}
+		} break;
+
 		case MONTHLY :
 		{
 			currentPeriod = line.getIsoDate().substring(0, 7);

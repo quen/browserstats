@@ -41,6 +41,8 @@ public class Collate extends CommandLineTool
 		DAILY,
 		/** One output file per month */
 		MONTHLY,
+		/** One output file per year */
+		YEARLY,
 		/** Single output file */
 		ALL
 	};
@@ -186,6 +188,11 @@ public class Collate extends CommandLineTool
 		if(args[i].equals("-monthly"))
 		{
 			period = TimePeriod.MONTHLY;
+			return 1;
+		}
+		if(args[i].equals("-yearly"))
+		{
+			period = TimePeriod.YEARLY;
 			return 1;
 		}
 		if(args[i].equals("-single"))
@@ -341,7 +348,7 @@ public class Collate extends CommandLineTool
 		if(stdout && period!=TimePeriod.ALL)
 		{
 			throw new IllegalArgumentException(
-				"Cannot specify -stdout with -daily or -monthly");
+				"Cannot specify -stdout with -daily or -monthly or -yearly");
 		}
 
 		if(includes==null)
