@@ -46,29 +46,29 @@
 		<mkdir dir="${build}/output" />
 		<jar jarfile="${build}/output/bs.collate.jar" basedir="${build}/classes"
 			level="9">
-			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/collator/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/collate/**" />
 			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
 			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
 			<manifest>
-				<attribute name="Main-Class" value="com.leafdigital.browserstats.collator.Collate"/>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.collate.Collate"/>
 		  </manifest>
 		</jar>
 		<jar jarfile="${build}/output/bs.identify.jar" basedir="${build}/classes"
 			level="9">
-			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/agents/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/identify/**" />
 			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
 			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
 			<manifest>
-				<attribute name="Main-Class" value="com.leafdigital.browserstats.agents.Identify"/>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.identify.Identify"/>
 		  </manifest>
 		</jar>
 		<jar jarfile="${build}/output/bs.summarise.jar" basedir="${build}/classes"
 			level="9">
-			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/summary/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/summarise/**" />
 			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
 			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
 			<manifest>
-				<attribute name="Main-Class" value="com.leafdigital.browserstats.summary.Summarise"/>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.summarise.Summarise"/>
 		  </manifest>
 		</jar>
 		<jar jarfile="${build}/output/bs.graph.jar" basedir="${build}/classes"
