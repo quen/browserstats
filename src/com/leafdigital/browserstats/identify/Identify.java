@@ -169,7 +169,6 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 				// Abort when test fails
 				return;
 			}
-			System.err.println("Self-test OK");
 			return;
 
 		case IDENTIFY:
