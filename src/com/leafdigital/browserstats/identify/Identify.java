@@ -19,7 +19,7 @@ Copyright 2010 Samuel Marshall.
 package com.leafdigital.browserstats.identify;
 
 import java.io.*;
-import java.util.HashSet;
+import java.util.*;
 import java.util.regex.*;
 
 import com.leafdigital.browserstats.shared.CommandLineTool;
@@ -52,7 +52,9 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		/** Show all user-agents matching the given type, engine, name, version, os */
 		SHOWAGENT(5),
 		/** Identify an agent given on command line */
-		IDENTIFY(1);
+		IDENTIFY(1),
+		/** Identify patterns of string that match each agent. */
+		SHOWAGENTSELECTED(5);
 
 		private int params;
 		TestType(int params)
@@ -154,6 +156,8 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 	private Pattern selectType, selectEngine, selectName, selectVersion, selectOs;
 	private HashSet<String> selectMatches;
 
+	private AgentPatterns agentPatterns = new AgentPatterns();
+
 	@Override
 	protected void go()
 	{
@@ -165,10 +169,8 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 				// Abort when test fails
 				return;
 			}
-			System.out.println();
-
-			// Continue with remaining processing if any
-			break;
+			System.err.println("Self-test OK");
+			return;
 
 		case IDENTIFY:
 			System.out.println(list.match(testParams[0]));
@@ -188,6 +190,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			break;
 
 		case SHOWAGENT:
+		case SHOWAGENTSELECTED:
 			try
 			{
 				selectType = Pattern.compile(testParams[0]);
@@ -199,9 +202,10 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			}
 			catch(PatternSyntaxException e)
 			{
-				System.err.println("-test agent regular expression not valid: " + e.getPattern());
+				System.err.println("-test showagent/patterns regular expression not valid: " + e.getPattern());
 				return;
 			}
+			agentPatterns = new AgentPatterns();
 			break;
 		}
 
@@ -233,6 +237,10 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 				System.err.println("  Matched requests: " + matchedCount + " (" + ((matchedCount*100)/(matchedCount+unmatchedCount)) + "%)");
 				System.err.println("Unmatched requests: " + unmatchedCount);
 				break;
+
+			case SHOWAGENTSELECTED:
+				agentPatterns.display();
+				break;
 			}
 		}
 		catch(IOException e)
@@ -253,11 +261,12 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			throw new IOException("Error processing input:\n\n" + e.getMessage());
 		}
 
-		// Some test types don't write result
+		// Test types don't write result
 		switch(test)
 		{
 		case UNMATCHED:
 		case SHOWAGENT:
+		case SHOWAGENTSELECTED:
 			return;
 		}
 
@@ -328,15 +337,23 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 			break;
 
 		case SHOWAGENT:
+		case SHOWAGENTSELECTED:
 			if(match!=null && selectType.matcher(match.getType()).find()
 				&& selectEngine.matcher(match.getEngine()).find()
 				&& selectName.matcher(match.getName()).find()
 				&& selectVersion.matcher(match.getVersion()).find()
 				&& selectOs.matcher(match.getOs()).find() )
 			{
-				if(selectMatches.add(agent))
+				if(test == TestType.SHOWAGENT)
 				{
-					System.out.println(agent);
+					if(selectMatches.add(agent))
+					{
+						System.out.println(agent);
+					}
+				}
+				else
+				{
+					agentPatterns.agent(agent);
 				}
 			}
 			break;

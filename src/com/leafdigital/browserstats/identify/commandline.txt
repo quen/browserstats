@@ -28,7 +28,16 @@ Input options
   about any value. Useful for testing that matching is working as expected,
   for example for common agents such as IE 6; some other agents produce
   strings that look like these browsers.
-  
+
+-test showagentselected {type} {engine} {name} {version} {os}
+  Same as -test showagent, but shows the user-agent strings categorised by
+  pattern (different numbers or words are treated as equivalent; only the
+  pattern of text and whitespace is considered). When there are more than
+  three examples of the same pattern, only three are shown. The results are
+  also ordered by pattern, which may mean that related entries are together.
+  This is useful for some browsers (mainly those other than IE) where the size
+  of output can be significantly less than with plain -test showagent.
+
 -test identify {agent}
   [Does not require log files.]
   
