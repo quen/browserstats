@@ -675,7 +675,7 @@ public class Graph extends CommandLineTool
 			{
 				GroupColours colours = groupColours.get(groupNames[group]);
 				Label label = new Label(group, groupNames[group],
-					data.getPercentage(group, lastPoint), fontName,
+					data.getPercentage(group, 0), fontName,
 					colours.getText(), labelSize, mLabelVerticalPadding);
 				startLabelsList.add(label);
 				startLabelsMinWidth = Math.max(startLabelsMinWidth, label.getWidth());
