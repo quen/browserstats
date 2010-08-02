@@ -188,9 +188,7 @@ List used to detect user agents.
 			<regex>^Virtual Reach</regex>
 			<sample>Virtual Reach Newsclip Collector</sample>
 		</agent>
-	</group>
-
-	<group type="internalsearch" os="" engine="" version="">
+		<!-- The following are typically used for intranet seach engines. -->
 		<agent name="ultraseek">
 			<regex>^Ultraseek</regex>
 			<sample>Ultraseek</sample>
