@@ -11,17 +11,23 @@ Input options
   Read data from stdin instead of files. (Implies -stdout.)
 
 -test selftest
-  [Does not require log files. If logfiles are supplied, normal processing
-  continues after the test.]
-  
+  [Does not require log files.]
+
   Tests that the internal user-agent list is internally consistent.
-  
+
 -test unmatched {count}
   Prints list of all user-agents that didn't match any known agent, and were
   involved in at least the specified number of requests. Shows agents along
   with the count of requests for that agent, and a summary of the number and
   percentage of matched/unmatched agents and counts.
-  
+
+-test partial
+  Prints list (showing user agent and partial details) for everything
+  that was partially matched, organised by the details of the partial match.
+  A partial match is when a browser was partly identified (for example, if
+  we detected it as Firefox, but the version isn't recognised). During normal
+  processing, these are counted as unmatched.
+
 -test showagent {type} {engine} {name} {version} {os}
   Shows user-agent strings for all agents that were matched according to the
   specified values, which are regular expressions; use "" if you don't care

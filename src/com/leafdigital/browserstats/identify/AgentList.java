@@ -58,7 +58,7 @@ public class AgentList extends MatchElement
 		{
 			for(String sample : browser.getTestCases())
 			{
-				Agent result = match(sample);
+				MatchElement result = match(sample);
 				if(result != browser)
 				{
 					System.err.println(browser);

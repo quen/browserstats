@@ -39,6 +39,9 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 
 	private IdentifyResults results;
 
+	private Map<Group, Map<String, Integer>> partialMatches =
+		new TreeMap<Group, Map<String, Integer>>();
+
 	/** Special test constants to check options. */
 	private enum TestType
 	{
@@ -49,6 +52,8 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		SELFTEST(0),
 		/** Show all unmatched user agents with counts above the parameter */
 		UNMATCHED(1),
+		/** Show all partiall-matched user agents */
+		PARTIAL(0),
 		/** Show all user-agents matching the given type, engine, name, version, os */
 		SHOWAGENT(5),
 		/** Identify an agent given on command line */
@@ -237,6 +242,29 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 				System.err.println("Unmatched requests: " + unmatchedCount);
 				break;
 
+			case PARTIAL:
+				// Display partial matches
+				if(partialMatches.isEmpty())
+				{
+					System.out.println("No partial matches");
+				}
+				else
+				{
+					System.out.println("Partial matches");
+					System.out.println("---------------");
+					System.out.println();
+					for(Map.Entry<Group, Map<String, Integer>> entry : partialMatches.entrySet())
+					{
+						System.out.println(entry.getKey());
+						for(Map.Entry<String, Integer> agent : entry.getValue().entrySet())
+						{
+							System.out.printf("%5d: %s\n", agent.getValue(), agent.getKey());
+						}
+						System.out.println();
+					}
+				}
+				break;
+
 			case SHOWAGENTSELECTED:
 				agentPatterns.display();
 				break;
@@ -264,6 +292,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		switch(test)
 		{
 		case UNMATCHED:
+		case PARTIAL:
 		case SHOWAGENT:
 		case SHOWAGENTSELECTED:
 			return;
@@ -312,7 +341,28 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 	@Override
 	public void agentCounts(String agent, int count, int[] categoryCounts)
 	{
-		Agent match = list.match(agent);
+		MatchElement matchElement = list.match(agent);
+		Agent match;
+		if(matchElement instanceof Agent || matchElement == null)
+		{
+			match = (Agent)matchElement;
+		}
+		else
+		{
+			// Partial match of an exclusive group. Display warnings
+			if(test == TestType.PARTIAL)
+			{
+				Group key = (Group)matchElement;
+				Map<String, Integer> map = partialMatches.get(key);
+				if(map == null)
+				{
+					map = new TreeMap<String, Integer>();
+					partialMatches.put(key, map);
+				}
+				map.put(agent, count);
+			}
+			match = null;
+		}
 
 		// Handle test option
 		switch(test)

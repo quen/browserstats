@@ -25,9 +25,13 @@ List used to detect user agents.
 	2. User-agents are categorised into several basic types. The more obscure
 			types (search engines etc) are placed above the more common ones (browsers)
 			because search engines often spoof browsers.
-	3. When altering this list, be sure to run -test selftest, which will make
+	3. By default, groups that include regular expressions are 'exclusive' (if
+			anything matches the expression, it will not be considered for other
+			groups, even if no agent inside the group matches). Change this with
+			exclusive="n", or test the results with -test partial.
+	4. When altering this list, be sure to run -test selftest, which will make
 			sure the list is consistent (all samples match their containing agent).
-	4. When altering this list because a particular user-agent gives incorrect
+	5. When altering this list because a particular user-agent gives incorrect
 			result, always include that user-agent line as a <sample>.
 
 	-->
@@ -546,8 +550,8 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 
 			<group name="safari">
 				<regex>Safari/</regex>
-			<group version="5">
-				<regex>Version/5\.</regex>
+				<group version="5">
+					<regex>Version/5\.</regex>
 					<agent os="mac">
 						<regex>\(Macintosh;</regex>
 						<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_4; de-de) AppleWebKit/533.16

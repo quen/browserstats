@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
 import com.leafdigital.util.xml.XML;
 
 /** Information required to detect a single browser version. */
-public class Agent extends MatchElement implements Comparable<Agent>
+public class Agent extends MatchElement
 {
 	private String[] testCases;
 
@@ -85,13 +85,6 @@ public class Agent extends MatchElement implements Comparable<Agent>
 	}
 
 	@Override
-	public String toString()
-	{
-		return getName() + "/" + getVersion() + "/" + getOs() + " (" +
-		  getEngine() + "; " + getType() + ")";
-	}
-
-	@Override
 	public boolean equals(Object obj)
 	{
 		if(obj==null || !(obj instanceof Agent))
@@ -109,38 +102,6 @@ public class Agent extends MatchElement implements Comparable<Agent>
 	{
 		return getType().hashCode() + getEngine().hashCode() + getName().hashCode()
 			+ getVersion().hashCode() + getOs().hashCode();
-	}
-
-	@Override
-	public int compareTo(Agent o)
-	{
-		int i = getType().compareTo(o.getType());
-		if(i!=0)
-		{
-			return i;
-		}
-		i = getEngine().compareTo(o.getEngine());
-		if(i!=0)
-		{
-			return i;
-		}
-		i = getName().compareTo(o.getName());
-		if(i!=0)
-		{
-			return i;
-		}
-		i = getVersion().compareTo(o.getVersion());
-		if(i!=0)
-		{
-			return i;
-		}
-		i = getOs().compareTo(o.getOs());
-		if(i!=0)
-		{
-			return i;
-		}
-
-		return 0;
 	}
 
 	/**

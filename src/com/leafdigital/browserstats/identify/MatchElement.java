@@ -26,11 +26,12 @@ import org.w3c.dom.Element;
 import com.leafdigital.util.xml.*;
 
 /** Information required to detect a group of browsers. */
-public abstract class MatchElement
+public abstract class MatchElement implements Comparable<MatchElement>
 {
 	private String type, engine, name, version, os;
 	private Pattern[] regexes;
 	private MatchElement parent;
+	private boolean exclusive;
 
 	private LinkedList<MatchElement> children;
 
@@ -70,6 +71,11 @@ public abstract class MatchElement
 				throw new InvalidElementException(e, "Invalid regex: " + regexText);
 			}
 		}
+
+		// By default, a group is exclusive if it has any regular expressions
+		exclusive = e.hasAttribute("exclusive")
+			? e.getAttribute("exclusive").equals("y")
+			: regexes != null;
 	}
 
 	/**
@@ -123,6 +129,19 @@ public abstract class MatchElement
 		}
 	}
 
+	private static String blankForNull(String s)
+	{
+		return s != null ? s : "";
+	}
+
+	/**
+	 * @return Type or blank if none
+	 */
+	public String getTypeS()
+	{
+		return blankForNull(getType());
+	}
+
 	/** @return Browser engine identifier */
 	public String getEngine()
 	{
@@ -134,6 +153,14 @@ public abstract class MatchElement
 		{
 			return engine;
 		}
+	}
+
+	/**
+	 * @return Engine or blank if none
+	 */
+	public String getEngineS()
+	{
+		return blankForNull(getEngine());
 	}
 
 	/** @return Browser identifier */
@@ -149,6 +176,14 @@ public abstract class MatchElement
 		}
 	}
 
+	/**
+	 * @return Name or blank if none
+	 */
+	public String getNameS()
+	{
+		return blankForNull(getName());
+	}
+
 	/** @return Browser version */
 	public String getVersion()
 	{
@@ -162,6 +197,14 @@ public abstract class MatchElement
 		}
 	}
 
+	/**
+	 * @return Engine or blank if none
+	 */
+	public String getVersionS()
+	{
+		return blankForNull(getVersion());
+	}
+
 	/** @return Operating system identifier */
 	public String getOs()
 	{
@@ -173,6 +216,14 @@ public abstract class MatchElement
 		{
 			return os;
 		}
+	}
+
+	/**
+	 * @return OS or blank if none
+	 */
+	public String getOsS()
+	{
+		return blankForNull(getOs());
 	}
 
 	/**
@@ -201,7 +252,7 @@ public abstract class MatchElement
 	 * @param agent User-agent string
 	 * @return Matching browser or null if none
 	 */
-	public Agent match(String agent)
+	public MatchElement match(String agent)
 	{
 		if(!matches(agent))
 		{
@@ -211,13 +262,52 @@ public abstract class MatchElement
 		{
 			for(MatchElement child : children)
 			{
-				Agent result = child.match(agent);
+				MatchElement result = child.match(agent);
 				if(result != null)
 				{
 					return result;
 				}
 			}
 		}
-		return null;
+		return exclusive ? this : null;
+	}
+
+	@Override
+	public String toString()
+	{
+		return getNameS() + "/" + getVersionS() + "/" + getOsS() + " (" +
+		  getEngineS() + "; " + getTypeS() + ")";
+	}
+
+	@Override
+	public int compareTo(MatchElement o)
+	{
+		int i = getTypeS().compareTo(o.getTypeS());
+		if(i!=0)
+		{
+			return i;
+		}
+		i = getEngineS().compareTo(o.getEngineS());
+		if(i!=0)
+		{
+			return i;
+		}
+		i = getNameS().compareTo(o.getNameS());
+		if(i!=0)
+		{
+			return i;
+		}
+		i = getVersionS().compareTo(o.getVersionS());
+		if(i!=0)
+		{
+			return i;
+		}
+		i = getOsS().compareTo(o.getOsS());
+		if(i!=0)
+		{
+			return i;
+		}
+
+		return 0;
 	}
 }
