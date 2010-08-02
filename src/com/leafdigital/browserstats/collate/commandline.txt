@@ -16,7 +16,7 @@ Input options
 -format {format}
   Specify input format. Available formats are: 
   apache - Apache default, Tomcat default, other servers
-  netscaler - Netscaler
+  netscaler - NetScaler
   
 -customformat {regex} {ip field} {date field} {time field}
   {agent field} {path field} {status field} {date format} {time format}
