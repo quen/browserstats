@@ -69,12 +69,6 @@ Output options
 -titlesize {pixels}
   Size (in pixels) of font to use for title.
 
--nologo
-  Removes the browserstats logotype.
-
--percentages {on|off}
-  Displays percentages beside group names.
-
 -labels {start|end|both|none}
   Applies only to trend graphs. Controls which end(s) group labels appear on.
   Default is both.
@@ -171,4 +165,24 @@ The system will not wrap individual pieces of text.
 Pie chart display
 -----------------
 
-TODO - Not yet implemented.
+Ordering:
+
+Groups are arranged in the same order as in the summary file. The first group
+starts at twelve o'clock on the pie chart, and runs clockwise.
+
+Automatic colouring:
+
+(As for trend chart.)
+
+Legend:
+
+Pie charts always include a legend. For each group, this includes a colour box,
+the group name, and the percentage. If (after taking into account the space
+required for the title) the available space for the graph is wider than it is
+high (default), then the legend is shown at the right. Otherwise it is shown
+below the graph.
+
+Labels:
+
+The system also places group-name labels directly onto the pie chart where
+there is enough room (i.e. on big slices only).
