@@ -30,6 +30,7 @@ public abstract class MatchElement implements Comparable<MatchElement>
 {
 	private String type, engine, name, version, os;
 	private Pattern[] regexes;
+	private Pattern[] notRegexes;
 	private MatchElement parent;
 	private boolean exclusive;
 
@@ -71,6 +72,22 @@ public abstract class MatchElement implements Comparable<MatchElement>
 				throw new InvalidElementException(e, "Invalid regex: " + regexText);
 			}
 		}
+
+		Element[] notRegexElements = XML.getChildren(e, "notregex");
+		notRegexes = notRegexElements.length == 0 ? null : new Pattern[notRegexElements.length];
+		for(int i=0; i<notRegexElements.length; i++)
+		{
+			String notRegexText = XML.getText(notRegexElements[i]);
+			try
+			{
+				notRegexes[i] = Pattern.compile(notRegexText);
+			}
+			catch(PatternSyntaxException x)
+			{
+				throw new InvalidElementException(e, "Invalid regex: " + notRegexText);
+			}
+		}
+
 
 		// By default, a group is exclusive if it has any regular expressions
 		exclusive = e.hasAttribute("exclusive")
@@ -232,7 +249,18 @@ public abstract class MatchElement implements Comparable<MatchElement>
 	 */
 	protected boolean matches(String agent)
 	{
-		if(regexes==null)
+		if(notRegexes != null)
+		{
+			for(Pattern regex : notRegexes)
+			{
+				if(regex.matcher(agent).find())
+				{
+					return false;
+				}
+			}
+		}
+
+		if(regexes == null)
 		{
 			return true;
 		}
