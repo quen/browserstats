@@ -18,6 +18,9 @@ Input options
   apache - Apache default, Tomcat default, other servers
   netscaler - NetScaler
   
+  TESTING: "-test selftest" runs a self-test on the built-in formats (useful
+    only when developing in this area).
+
 -customformat {regex} {ip field} {date field} {time field}
   {agent field} {path field} {status field} {date format} {time format}
   
