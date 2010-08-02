@@ -250,18 +250,23 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 				}
 				else
 				{
-					System.out.println("Partial matches");
-					System.out.println("---------------");
-					System.out.println();
+					int agents = 0, requests = 0;
 					for(Map.Entry<Group, Map<String, Integer>> entry : partialMatches.entrySet())
 					{
 						System.out.println(entry.getKey());
 						for(Map.Entry<String, Integer> agent : entry.getValue().entrySet())
 						{
+							agents++;
+							requests += (int)agent.getValue();
 							System.out.printf("%5d: %s\n", agent.getValue(), agent.getKey());
 						}
 						System.out.println();
 					}
+					System.err.println("Summary results");
+					System.err.println("---------------");
+					System.err.println();
+					System.err.println("  Partial match agents: " + agents + " (" + ((agents*100)/(matched+unmatched)) + "%)");
+					System.err.println("Partial match requests: " + requests + " (" + ((requests*100)/(matchedCount+unmatchedCount)) + "%)");
 				}
 				break;
 
@@ -368,12 +373,13 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 		switch(test)
 		{
 		case UNMATCHED:
+		case PARTIAL:
 			if(match==null)
 			{
 				unmatched++;
 				unmatchedCount += count;
 
-				if(count > minCount)
+				if(count > minCount && test == TestType.UNMATCHED)
 				{
 					System.out.printf("%5d: %s\n", count, agent);
 				}
