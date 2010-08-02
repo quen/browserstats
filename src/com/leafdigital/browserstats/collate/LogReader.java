@@ -130,7 +130,7 @@ public class LogReader implements Iterable<LogLine>
 				else
 				{
 					throw new IOException("Invalid input line (" + e.getMessage() +
-						")\n[" + line + "]");
+						")\n[" + line + "]\n\nUse -lenient flag to skip invalid lines");
 				}
 			}
 
