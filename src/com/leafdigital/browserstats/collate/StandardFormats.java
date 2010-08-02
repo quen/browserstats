@@ -19,7 +19,7 @@ Copyright 2010 Samuel Marshall.
 package com.leafdigital.browserstats.collate;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.*;
 
 import org.w3c.dom.*;
 
@@ -55,6 +55,12 @@ public class StandardFormats
 				{
 					format.setSkip(XML.getChildText(child, "skip", false));
 				}
+				Element[] children = XML.getChildren(child, "sample");
+				for(Element sample : children)
+				{
+					format.addSample(
+						XML.getRequiredAttribute(sample, "name"), XML.getText(sample));
+				}
 				formats.put(XML.getRequiredAttribute(child, "name"), format);
 			}
 		}
@@ -78,5 +84,26 @@ public class StandardFormats
 			throw new IllegalArgumentException("Unknown log format: " + name);
 		}
 		return result;
+	}
+
+	/**
+	 * Runs a self-test against all formats, displaying the results.
+	 */
+	void selfTest()
+	{
+		boolean ok = true;
+		for(Map.Entry<String, LogFormat> entry : formats.entrySet())
+		{
+			System.out.println(entry.getKey() + ":");
+			ok = entry.getValue().selfTest() && ok;
+		}
+		if(ok)
+		{
+			System.out.println("\nSelf-test OK");
+		}
+		else
+		{
+			System.out.println("\nSelf-test FAILED");
+		}
 	}
 }

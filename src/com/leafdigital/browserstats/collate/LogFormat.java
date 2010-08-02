@@ -19,6 +19,7 @@ Copyright 2010 Samuel Marshall.
 package com.leafdigital.browserstats.collate;
 
 import java.text.*;
+import java.util.*;
 import java.util.regex.*;
 
 /** Format describing method of reading log lines. */
@@ -28,6 +29,35 @@ public class LogFormat
 	private int ipField, dateField, timeField, agentField, pathField, statusField;
 	private SimpleDateFormat dateFormat, timeFormat, isoDateFormat, isoTimeFormat;
 	private boolean decodeAgent;
+	private Collection<Sample> samples = new LinkedList<Sample>();
+
+	/**
+	 * Records information about a sample line.
+	 */
+	private class Sample
+	{
+		String name, line;
+
+		private Sample(String name, String line)
+		{
+			this.name = name;
+			this.line = line;
+		}
+
+		/**
+		 * Tests the sample and displays an error if it fails.
+		 * @return True if it was OK
+		 */
+		boolean test()
+		{
+			if(regex.matcher(line).find())
+			{
+				return true;
+			}
+			System.out.println("  FAILED: " + name);
+			return false;
+		}
+	}
 
 	/**
 	 * @param regex Regular expression to parse line
@@ -148,6 +178,16 @@ public class LogFormat
 	}
 
 	/**
+	 * Adds a sample line for self-testing.
+	 * @param name Name of sample
+	 * @param sample Sample line
+	 */
+	void addSample(String name, String sample)
+	{
+		this.samples.add(new Sample(name, sample));
+	}
+
+	/**
 	 * Parses a single line from the log file.
 	 * @param line Line text
 	 * @param c Categoriser used to assign categories
@@ -218,5 +258,17 @@ public class LogFormat
 		return result;
 	}
 
-
+	boolean selfTest()
+	{
+		boolean ok = true;
+		for(Sample sample : samples)
+		{
+			ok = sample.test() && ok;
+		}
+		if(ok)
+		{
+			System.out.println("  OK");
+		}
+		return ok;
+	}
 }

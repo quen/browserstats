@@ -17,24 +17,20 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 Copyright 2010 Samuel Marshall.
 
 
-This file lists built-in format support. Each format contains one or more
-sample log lines, followed by the actual format specification which defines
-a regular expression, which field corresponds to which piece of data, and
-formats used for date and time fields.
+This file lists built-in format support. Each format contains a regular
+expression, definition of which field corresponds to which piece of data,
+formats used for date and time fields, and one or more samples.
 -->
 
 <formats>
-<!-- Apache 2 (normal request) -->
-<!-- 11.111.111.111 - - [01/Jan/2009:00:02:52 -0500] "GET /NakedElves/ HTTP/1.1" 200 10623 "http://www.google.com/search?q=elf+porn&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:en-US:official&client=firefox-a" "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5" -->
-<!-- Tomcat -->
-<!-- 111.1.111.11 - - [11/Jan/2009:00:00:09 +0000] "GET /robots.txt HTTP/1.0" 404 985 "null" "CatchBot/1.0; +http://www.catchbot.com" -->
-<!-- Apache 2 (odd request) -->
-<!-- 11.111.11.111 - - [23/Jan/2009:17:10:07 -0500] "00" 501 214 "-" "-" -->
-<!-- Apache 2 (odd request) -->
-<!-- 220.0.44.12 - - [31/Jan/2005:11:21:42 -0500] "GET / onmousedown=\"return clk(this,'res',184)\" HTTP/1.1" 400 299 "-" "-" -->
+
 <format name="apache" ip="1" date="3" time="4" path="5" agent="7" status="6"
 	dateformat="dd/MMM/yyyy" timeformat="HH:mm:ss">
 	<line>^([^ ]*+) ([^\x5b]*+)\[([^:]*+):([^ ]*+) [^\x5d]*+] "(?:(?:[A-Z]+ ([^"\\]*(?:\\.[^"\\]*)*) HTTP/[0-9.]+")|(?:[^"]*+")) ([0-9]+) .*"([^"]*+)"$</line>
+	<sample name="Apache 2 (normal request)">11.111.111.111 - - [01/Jan/2009:00:02:52 -0500] "GET /NakedElves/ HTTP/1.1" 200 10623 "http://www.google.com/search?q=elf+porn&amp;ie=utf-8&amp;oe=utf-8&amp;aq=t&amp;rls=org.mozilla:en-US:official&amp;client=firefox-a" "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5"</sample>
+	<sample name="Tomcat">111.1.111.11 - - [11/Jan/2009:00:00:09 +0000] "GET /robots.txt HTTP/1.0" 404 985 "null" "CatchBot/1.0; +http://www.catchbot.com"</sample>
+	<sample name="Apache 2 (odd request 1)">11.111.11.111 - - [23/Jan/2009:17:10:07 -0500] "00" 501 214 "-" "-"</sample>
+	<sample name="Apache 2 (odd request 2)">111.1.11.11 - - [31/Jan/2005:11:21:42 -0500] "GET / onmousedown=\"return clk(this,'res',184)\" HTTP/1.1" 400 299 "-" "-"</sample>
 </format>
 
 <!-- NetScaler -->
@@ -43,12 +39,12 @@ formats used for date and time fields.
      So path is just the path before ?. -->
 <!-- Also note, I found invalid lines in the log I was using. The solution was
      to use the -lenient option to Collate. -->
-<!-- 2009-07-13 06:25:49 learn.open.ac.uk 111.11.111.11 - 111.111.111.111 80 GET /includes/header2.css - 304 928 174 0 HTTP/1.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.1;+.NET+CLR+1.1.4322) MoodleSession=111111;+MoodleSessionTest=aaaa;+MOODLEID_=1234;+ARPT=AAAAAA111AAAA http://learn.open.ac.uk/mod/oucontent/view.php?id=111111&section=1.1 -->
 <format name="netscaler" date="1" time="2" ip="3" path="4" status="5" agent="6+"
   dateformat="yyyy-MM-dd" timeformat="HH:mm:ss">
   <!-- NetScaler has comment lines beginning #. -->
   <skip>^#</skip>
   <line>^([^ ]*+) ([^ ]*+) [^ ]*+ ([^ ]*+) [^ ]*+ [^ ]*+ [^ ]*+ [^ ]*+ ([^ ]*+) [^ ]*+ ([0-9]++) .*?HTTP[^ ]*+ ([^ ]*+) </line>
+  <sample name="NetScaler (normal request)">2009-07-13 06:25:49 learn.open.ac.uk 111.11.111.11 - 111.111.111.111 80 GET /includes/header2.css - 304 928 174 0 HTTP/1.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.1;+.NET+CLR+1.1.4322) MoodleSession=111111;+MoodleSessionTest=aaaa;+MOODLEID_=1234;+ARPT=AAAAAA111AAAA http://learn.open.ac.uk/mod/oucontent/view.php?id=111111&amp;section=1.1</sample>
 </format>
 
 </formats>

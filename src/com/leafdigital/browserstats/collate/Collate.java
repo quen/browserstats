@@ -57,7 +57,9 @@ public class Collate extends CommandLineTool
 		/** Show all excluded paths */
 		SHOWEXCLUDES(1),
 		/** Test matching a line */
-		LINE(1);
+		LINE(1),
+		/** Self-test that the format samples match */
+		SELFTEST(0);
 
 		private int params;
 		TestType(int params)
@@ -399,6 +401,9 @@ public class Collate extends CommandLineTool
 			case LINE:
 				testLine();
 				return;
+			case SELFTEST:
+				formats.selfTest();
+				return;
 			}
 		}
 		// Construct counter
@@ -567,5 +572,11 @@ public class Collate extends CommandLineTool
 		{
 			System.out.println("No match.");
 		}
+	}
+
+	@Override
+	protected boolean requiresInput()
+	{
+		return test != TestType.SELFTEST;
 	}
 }
