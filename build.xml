@@ -9,6 +9,9 @@
 	
 	<!-- Where to put the jar when it's built -->
 	<property name="jarfolder" location="${user.home}/Desktop" />
+	
+	<!-- Version number -->
+	<property name="version" value="1.0.0"/>
 
 	<!-- Get date in format used for build version -->
 	<target name="timestamp">
@@ -37,7 +40,7 @@
 		  	<exclude name="**/*.java" />
 		  </fileset>
 		</copy>
-		<echo message="${build-date}"
+		<echo message="${version} (${build-date})"
 			file="${build}/classes/com/leafdigital/browserstats/shared/version.txt" />
 	</target>
 

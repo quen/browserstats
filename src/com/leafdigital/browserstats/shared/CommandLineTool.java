@@ -266,8 +266,21 @@ public abstract class CommandLineTool
 	{
 		try
 		{
-			InputStream stream = getClass().getResourceAsStream("commandline.txt");
-			if(stream==null)
+			InputStream stream =
+				CommandLineTool.class.getResourceAsStream("version.txt");
+			if(stream != null)
+			{
+				BufferedReader reader = new BufferedReader(new InputStreamReader(
+					stream, "UTF-8"));
+				String version = reader.readLine();
+				System.out.println("leafdigital browserstats " +
+					getClass().getName().replaceAll("^.*\\.", "") + " v" + version);
+				System.out.println();
+				reader.close();
+			}
+
+			stream= getClass().getResourceAsStream("commandline.txt");
+			if(stream == null)
 			{
 				throw new IOException("Helpfile missing");
 			}
@@ -282,6 +295,7 @@ public abstract class CommandLineTool
 				}
 				System.out.println(line);
 			}
+			reader.close();
 		}
 		catch(IOException e)
 		{
