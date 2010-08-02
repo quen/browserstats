@@ -1,0 +1,33 @@
+leafdigital browserstats
+------------------------
+
+Copyright 2010 Samuel Marshall
+
+Released under GNU Public License v3 (see LICENSE)
+
+This program is now ready for use! Please try it out.
+
+
+Build instructions
+------------------
+
+Once you have downloaded the source, just change to the directory with this
+file and run 'ant'. The default build.xml file will build the project.
+
+Examine build.xml if you want to change where it puts temporary data or the
+resulting output files.
+
+
+Repository information
+----------------------
+
+In case you're not reading it there, the hosting site for this project is:
+
+http://github.com/quen/browserstats
+
+There you can do the following:
+
+* Read complete documentation (click the Wiki tab).
+* Download the full source code (click the Download Source button or use Git).
+* Download the latest binary version (click the Downloads tab).
+* Report bugs or contribute improvements (click the Issues tab).

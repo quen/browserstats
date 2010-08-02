@@ -1,0 +1,48 @@
+leafdigital browserstats
+------------------------
+
+Copyright 2010 Samuel Marshall
+
+Released under GNU Public License v3 (see LICENSE)
+
+
+Basics
+------
+
+This system contains four components which can be used to obtain browser
+statistics from web logs.
+
+To run each component, type:
+
+java -jar bs.component.jar
+
+('component' should be the name of the specific component jar file)
+
+This will show a list of command line parameters for each component.
+
+Generally, the components need to be run in the following order:
+
+1. Collate
+2. Identify
+3. Summarise
+4. Graph
+
+
+More information
+----------------
+
+The hosting site for this project is:
+
+http://github.com/quen/browserstats
+
+There you can do the following:
+
+* Read complete documentation (click the Wiki tab).
+* Download the full source code (click the Download Source button or use Git).
+* Download the latest binary version (click the Downloads tab).
+* Report bugs or contribute improvements (click the Issues tab).
+
+
+Thanks for trying out this program, I hope it's useful.
+
+--sam
