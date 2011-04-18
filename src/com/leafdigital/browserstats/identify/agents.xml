@@ -40,6 +40,10 @@ List used to detect user agents.
 		Search engines.
 		-->
 	<group type="search" os="" engine="" version="">
+		<agent name="bing">
+			<regex>^Mozilla/5\.0 \(compatible; bingbot/</regex>
+			<sample>Mozilla/5.0 (compatible; bingbot/2.0;  http://www.bing.com/bingbot.htm)</sample>
+		</agent>
 		<agent name="msn">
 			<regex>^msnbot(-media)?/</regex>
 				<sample>msnbot/1.1 (+http://search.msn.com/msnbot.htm)</sample>
@@ -271,7 +275,25 @@ List used to detect user agents.
 	</group>
 
 	<!--
-		Mobile phones.
+		Miscellaneous server-side apps that don't fit into specific categories.
+		-->
+	<group type="miscserver" os="" engine="" version="">
+		<agent name="facebook">
+			<regex>^facebookexternalhit/</regex>
+			<sample>facebookexternalhit/1.1 ( http://www.facebook.com/externalhit_uatext.php)</sample>
+		</agent>
+		<agent name="secondlife">
+			<regex>^Second Life LSL/</regex>
+			<sample>Second Life LSL/11.04.05.225793 (http://secondlife.com)</sample>
+		</agent>
+		<agent name="bluecoat">
+			<regex>^Mozilla/4.0 \(compatible;\)$</regex>
+			<sample>Mozilla/4.0 (compatible;)</sample>
+		</agent>
+	</group>
+
+	<!--
+		Mobile phones and similar devices.
 		See http://www.zytrax.com/tech/web/mobile_ids.html - credit that site
 		for some of the agent strings here.
 		-->
@@ -305,7 +327,7 @@ List used to detect user agents.
 		<group name="apple" engine="webkit">
 		  <regex>iP(hone|od|ad)[ ;]</regex>
 		  <group>
-				<regex>iPhone OS.* AppleWebKit/</regex>
+				<regex>CPU( iPhone)? OS.* AppleWebKit/</regex>
 				<agent version="2.1">
 					<regex>iPhone OS 2_1</regex>
 					<sample>Mozilla/5.0 (iPod; U; CPU iPhone OS 2_1_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5F138 Safari/525.20</sample>
@@ -322,13 +344,31 @@ List used to detect user agents.
 					<regex>iPhone OS 3_1</regex>
 					<sample>Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_1_2 like Mac OS X; en-us) AppleWebKit/528.18 (KHTML, like Gecko)</sample>
 				</agent>
+				<agent version="3.2">
+					<regex>OS 3_2</regex>
+					<sample> Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B367 Safari/531.21.10</sample>
+				</agent>
 				<agent version="4.0">
-					<regex>iPhone OS 4_0</regex>
+					<regex>OS 4_0</regex>
 					<sample>Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko)</sample>
 				</agent>
-		  </group>
-		  <agent version="1">
-		  	<!-- Ancient version -->
+				<agent version="4.1">
+					<regex>OS 4_1</regex>
+					<sample>Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_1 like Mac OS X; en-gb) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8B117 Safari/6531.22.7</sample>
+				</agent>
+				<agent version="4.2">
+					<regex>OS 4_2</regex>
+					<sample>Mozilla/5.0 (iPad; U; CPU OS 4_2_1 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko)</sample>
+					<sample>Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_2_1 like Mac OS X; en-gb) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8C148 Safari/6533.18.5</sample>
+				</agent>
+				<agent version="4.3">
+					<regex>OS 4_3</regex>
+					<sample>Mozilla/5.0 (iPad; U; CPU OS 4_3_1 like Mac OS X; en-gb) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8G4 Safari/6533.18.5</sample>
+					<sample>Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_1 like Mac OS X; en-gb) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8G4 Safari/6533.18.5</sample>
+				</agent>
+			</group>
+			<agent version="1">
+				<!-- Ancient version -->
 				<regex>\(iP(hone|od); U; CPU like Mac OS X</regex>
 				<sample>Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3</sample>
 				<sample>Mozilla/5.0 (iPod; U; CPU like Mac OS X; en) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/4B1 Safari/419.3</sample>
@@ -423,6 +463,11 @@ List used to detect user agents.
 			<sample>BlackBerry8130/4.3.0 Profile/MIDP-2.0 Configuration/CLDC-1.1 VendorID/106</sample>
 		</agent>
 
+		<agent name="blackberrywebkit" engine="webkit">
+			<regex>^Mozilla/5.0 \(BlackBerry.*AppleWebKit</regex>
+			<sample>Mozilla/5.0 (BlackBerry; U; BlackBerry 9800; en-GB) AppleWebKit/534.1  (KHTML, like Gecko) Version/6.0.0.246 Mobile Safari/534.1</sample>
+		</agent>
+
 		<agent name="googletranscode">
 			<regex>Google Wireless Transcoder</regex>
 			<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; Google Wireless Transcoder;)</sample>
@@ -503,6 +548,18 @@ List used to detect user agents.
 			<regex>^Bloglines/</regex>
 			<sample>Bloglines/3.1 (http://www.bloglines.com; 1 subscriber)</sample>
 		</agent>
+		<agent name="freshfeed">
+			<regex>^Fresh Feed</regex>
+			<sample>Fresh Feed 1.0 rv:1 (Macintosh; Mac OS X 10.6.7; en_GB)</sample>
+		</agent>
+		<agent name="rssowl">
+			<regex>^RSSOwl/</regex>
+			<sample>RSSOwl/2.0.6.201010031449 (X11; U; en)</sample>
+		</agent>
+		<agent name="reeder">
+			<regex>^Reeder/</regex>
+			<sample>Reeder/1.4.1 CFNetwork/485.13.9 Darwin/11.0.0</sample>
+		</agent>
 	</group>
 
 	<!--
@@ -515,8 +572,80 @@ List used to detect user agents.
 			<group name="chrome">
 				<!-- 'Iron' is a de-googled version of Chrome from the same source -->
 				<regex>(Chrome|Iron)/</regex>
+
+				<group version="11">
+					<regex>(Chrome|Iron)/11\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.34 Safari/534.24</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.34 Safari/534.24</sample>
+					</agent>
+				</group>
+
+				<group version="10">
+					<regex>(Chrome|Iron)/10\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.204 Safari/534.16</sample>
+						<sample>Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Ubuntu/10.10 Chromium/10.0.648.133 Chrome/10.0.648.133 Safari/534.16</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_8; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.204 Safari/534.16</sample>
+					</agent>
+				</group>
+
+				<group version="9">
+					<regex>(Chrome|Iron)/9\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Chrome/9.0.597.98 Safari/534.13</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+					</agent>
+				</group>
+
+				<group version="8">
+					<regex>(Chrome|Iron)/8\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+					</agent>
+				</group>
+
+				<group version="7">
+					<regex>(Chrome|Iron)/7\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+					</agent>
+				</group>
+
 				<group version="6">
-					<regex>(Chrome|Iron)/6</regex>
+					<regex>(Chrome|Iron)/6\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/534.2 (KHTML, like Gecko) Chrome/6.0.447.0 Safari/534.2</sample>
@@ -531,7 +660,7 @@ List used to detect user agents.
 					</agent>
 				</group>
 				<group version="5">
-					<regex>(Chrome|Iron)/5</regex>
+					<regex>(Chrome|Iron)/5\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.70 Safari/533.4</sample>
@@ -546,7 +675,7 @@ List used to detect user agents.
 					</agent>
 				</group>
 				<group version="4">
-					<regex>(Chrome|Iron)/4</regex>
+					<regex>(Chrome|Iron)/4\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (K
@@ -562,7 +691,7 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 					</agent>
 				</group>
 				<group version="3">
-					<regex>(Chrome|Iron)/3</regex>
+					<regex>(Chrome|Iron)/3\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/531.2 (KHTML, like Gecko) Chrome/3.0.191.0 Safari/531.2</sample>
@@ -573,14 +702,14 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 					</agent>
 				</group>
 				<group version="2">
-					<regex>(Chrome|Iron)/2</regex>
+					<regex>(Chrome|Iron)/2\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.33 Safari/530.5</sample>
 					</agent>
 				</group>
 				<group version="1">
-					<regex>(Chrome|Iron)/1</regex>
+					<regex>(Chrome|Iron)/1\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.48 Safari/525.19</sample>
@@ -723,6 +852,16 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 					<sample>Mozilla/4.0 (compatible; MSIE 5.0; Windows ME) Opera 5.11</sample>
 				</agent>
 			</group>
+		</group>
+
+		<!-- New IE versions with Mozilla 5 agent (sigh) -->
+		<group engine="trident" name="ie" os="win">
+			<regex>^Mozilla/5\.0 \(compatible; MSIE [0-9]+\.[0-9]+;.*Windows(?! CE)</regex>
+			<agent version="9.0">
+				<regex>MSIE 9\.0</regex>
+				<sample>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0)</sample>
+				<sample>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; WOW64; Trident/5.0)</sample>
+			</agent>
 		</group>
 
 		<group engine="trident" name="ie" os="win">
@@ -963,6 +1102,23 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 		<agent name="nagios">
 			<regex>^check_http/</regex>
 			<sample>check_http/v1.4.14 (nagios-plugins 1.4.14)</sample>
+		</agent>
+	</group>
+
+	<!--
+		Random local clients that run on user desktops (other than feed readers) 
+		making web requests.
+		-->
+	<group type="misclocal" os="" engine="" version="">
+		<agent name="msoffice">
+			<regex>^Microsoft Office (Existence|Protocol) Discovery$</regex>
+			<sample>Microsoft Office Existence Discovery</sample>
+			<sample>Microsoft Office Protocol Discovery</sample>
+		</agent>
+		<agent name="mswebdav">
+		  <regex>^Microsoft-WebDAV-MiniRedir/</regex>
+		  <sample>Microsoft-WebDAV-MiniRedir/6.0.6002</sample>
+		  <sample>Microsoft-WebDAV-MiniRedir/6.1.7600</sample>
 		</agent>
 	</group>
 
