@@ -1,3 +1,21 @@
+/*
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+*/
 package com.leafdigital.browserstats.shared;
 
 import java.io.*;
@@ -9,17 +27,17 @@ public abstract class CommandLineTool
 	private boolean failed = false;
 
 	private LinkedList<File> inputFileList = new LinkedList<File>();
-	private boolean showHelp = false;	
+	private boolean showHelp = false;
 	private boolean stdin = false;
-	
+
 	private File[] inputFiles = null;
-	
+
 	/** @return Input files or null if stdin should be used. */
 	protected File[] getInputFiles()
 	{
 		return inputFiles;
 	}
-	
+
 	/**
 	 * Runs complete tool task.
 	 * @param args Command-line arguments
@@ -31,7 +49,7 @@ public abstract class CommandLineTool
 		{
 			return;
 		}
-		
+
 		// Process arguments
 		try
 		{
@@ -40,7 +58,7 @@ public abstract class CommandLineTool
 		catch(IllegalArgumentException e)
 		{
 			System.err.println("Error processing command-line arguments:\n\n" +
-				e.getMessage());			
+				e.getMessage());
 			return;
 		}
 		// Show help if required
@@ -52,16 +70,16 @@ public abstract class CommandLineTool
 		// Do task
 		go();
 	}
-	
+
 	/**
-	 * Indicates that initialisation (e.g. constructor) has failed and 
+	 * Indicates that initialisation (e.g. constructor) has failed and
 	 * program should quit
 	 */
 	protected void failed()
 	{
 		failed = true;
 	}
-	
+
 	/**
 	 * Processes an arguments file.
 	 * @param f File
@@ -70,7 +88,7 @@ public abstract class CommandLineTool
 	 */
 	protected void processArgsFile(File f) throws IOException, IllegalArgumentException
 	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(			
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
 			new FileInputStream(f), "UTF-8"));
 		try
 		{
@@ -83,14 +101,14 @@ public abstract class CommandLineTool
 					// EOF
 					break;
 				}
-				
+
 				line = line.trim();
 				if(line.equals("") || line.startsWith("#"))
 				{
 					// Skip blank lines and comments
 					continue;
 				}
-				
+
 				args.add(line);
 			}
 			processArgs(args.toArray(new String[args.size()]), false);
@@ -100,7 +118,7 @@ public abstract class CommandLineTool
 			reader.close();
 		}
 	}
-	
+
 	/**
 	 * Checks that the required number of additional parameters are available.
 	 * @param args Argument array
@@ -124,15 +142,15 @@ public abstract class CommandLineTool
 	 * @param commandLine True if this is the top-level (command-line) call
 	 * @throws IllegalArgumentException Any incorrect argument
 	 */
-	private void processArgs(String[] args, boolean commandLine) 
+	private void processArgs(String[] args, boolean commandLine)
 		throws IllegalArgumentException
 	{
 		if(args.length==0 && commandLine)
 		{
 			showHelp = true;
-			return;			
+			return;
 		}
-		
+
 		int i=0;
 		for(; i<args.length; )
 		{
@@ -156,7 +174,7 @@ public abstract class CommandLineTool
 				}
 				try
 				{
-					processArgsFile(argFile);					
+					processArgsFile(argFile);
 				}
 				catch(IOException e)
 				{
@@ -180,24 +198,24 @@ public abstract class CommandLineTool
 				i++;
 				break;
 			}
-			
-			int result = processArg(args, i);			
+
+			int result = processArg(args, i);
 			if(result != 0)
 			{
 				i+=result;
-				continue;				
+				continue;
 			}
-			
+
 			if(args[i].startsWith("-"))
 			{
 				throw new IllegalArgumentException("Unknown option: " + args[i]);
 			}
 			break;
 		}
-		
+
 		for(; i<args.length; i++)
 		{
-			File f = new File(args[i]);				
+			File f = new File(args[i]);
 			if(!f.exists())
 			{
 				throw new IllegalArgumentException("Input file not found: " + f);
@@ -208,7 +226,7 @@ public abstract class CommandLineTool
 			}
 			inputFileList.add(f);
 		}
-		
+
 		if (commandLine)
 		{
 			inputFiles = inputFileList.toArray(new File[inputFileList.size()]);
@@ -227,20 +245,20 @@ public abstract class CommandLineTool
 			{
 				inputFiles = null;
 			}
-			
+
 			validateArgs();
 		}
 	}
-	
+
 	/**
 	 * Adjust if input files are not required (e.g. for a -test option)
 	 * @return False if files aren't required, default is true
 	 */
-	protected boolean requiresInput()	
+	protected boolean requiresInput()
 	{
 		return true;
 	}
-	
+
 	/**
 	 * Shows help from a file called commandline.txt in same folder as class.
 	 */
@@ -248,8 +266,21 @@ public abstract class CommandLineTool
 	{
 		try
 		{
-			InputStream stream = getClass().getResourceAsStream("commandline.txt");
-			if(stream==null)
+			InputStream stream =
+				CommandLineTool.class.getResourceAsStream("version.txt");
+			if(stream != null)
+			{
+				BufferedReader reader = new BufferedReader(new InputStreamReader(
+					stream, "UTF-8"));
+				String version = reader.readLine();
+				System.out.println("leafdigital browserstats " +
+					getClass().getName().replaceAll("^.*\\.", "") + " v" + version);
+				System.out.println();
+				reader.close();
+			}
+
+			stream= getClass().getResourceAsStream("commandline.txt");
+			if(stream == null)
 			{
 				throw new IOException("Helpfile missing");
 			}
@@ -264,14 +295,15 @@ public abstract class CommandLineTool
 				}
 				System.out.println(line);
 			}
+			reader.close();
 		}
 		catch(IOException e)
 		{
 			// Come on
 			System.err.println("Cannot load command-line help.");
 		}
-	}		
-	
+	}
+
 	/**
 	 * Process a single argument.
 	 * @param args Argument array
@@ -280,16 +312,16 @@ public abstract class CommandLineTool
 	 *   this argument), or 0 if the argument is unknown
 	 * @throws IllegalArgumentException If arguments are not valid
 	 */
-	protected abstract int processArg(String[] args, int i) 
+	protected abstract int processArg(String[] args, int i)
 		throws IllegalArgumentException;
-	
+
 	/**
 	 * Validates arguments once all have been read. May also carry out tasks
 	 * required to initialise default arguments after reading.
 	 * @throws IllegalArgumentException If arguments are not valid
 	 */
 	protected abstract void validateArgs() throws IllegalArgumentException;
-	
+
 	/**
 	 * Goes ahead with actual task now that all arguments have been read.
 	 */

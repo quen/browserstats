@@ -1,0 +1,148 @@
+Command-line arguments: [options] [input file(s)]
+
+Input options
+-------------
+
+-stdin
+  Read data from stdin instead of files.
+
+-lenient
+  Continue after encountering a log line that doesn't match the specified
+  input format (line will be displayed to standard error).
+
+-encoding {encoding}
+  Specify input encoding (default is UTF-8).
+
+-format {format}
+  Specify input format. Available formats are: 
+  apache - Apache default, Tomcat default, other servers
+  netscaler - NetScaler
+  
+  TESTING: "-test selftest" runs a self-test on the built-in formats (useful
+    only when developing in this area).
+
+-customformat {regex} {ip field} {date field} {time field}
+  {agent field} {path field} {status field} {date format} {time format}
+  
+  regex = Regular expression that should match lines in the input logfile
+  ip, date, time, agent, path, status fields = Which bracketed sections within
+    the regex (1 = first) corresponds to the user's IP, date, time,
+    user agent, path, HTTP status. In the case of agent (only) the field number
+    may be followed by a + symbol, indicating that the field should be 
+    URL-decoded and have + symbols converted to spaces.
+    
+  date format, time format = the format (Java SimpleDateFormat) of date and 
+    time fields.
+    
+  TESTING: "-test parse" shows the first line from the log parsed into its
+    constituent fields, so you can check the regular expression is correct.
+
+-customskip {regex}
+  For use only after -customformat. Sets the (single) regular expression which
+  matches lines in the format that should be entirely skipped (e.g. comments).
+    
+-category {name} {field} {regex}
+  Specifies an expression which, if it matches lines, defines them as 
+  belonging to a category.
+  
+  field = agent, ip, date, time, path, line(=whole line), status
+  
+  The date and time matches here are against ISO format 2009-07-24 or 14:43:00.
+  
+  Multiple categories may be specified; the first to match will be assigned
+  as the category for that request.
+
+-include {field} {regex} 
+  Includes only lines which match the regular expression (field and regex as   
+  for category).
+  
+  You can include multiple -include parameters; lines which match any of these
+  will be included.
+  
+  If you don't specify any, the default is to include all lines with HTTP 
+  status 200.
+  
+  TESTING: "-test showincludes {field}" will list all different values of the 
+    field (e.g. path) for which lines are included, after both -include and 
+    -exclude are parsed.
+  
+-exclude {field} {regex} 
+  Excludes lines which match the regular expression (field and regex as for
+  category).
+  
+  You can include multiple -exclude parameters; lines which match any of these
+  will be excluded.
+  
+  If you don't specify any, the default is to exclude common image and resource
+  formats, along with lines that report a blank useragent or the word "null".
+  
+  TESTING: "-test showexcludes {field}" will list all values of the field (e.g.
+    path) for which lines are excluded, after both -include and -exclude are
+    parsed.
+  
+-from {date}
+  Include only lines beginning from the specified date in ISO format, e.g. 
+  2009-07-01.
+  
+-to {date}
+  Include only lines up to the specified date (inclusive) in ISO format, e.g. 
+  2009-07-31.
+  
+-unordered 
+  Indicates that input files may not be supplied in date order; increases 
+  memory consumption. (Without specifying this option, if the input files are 
+  unordered, the software attempts to detect that fact and gives an error.)
+  
+-- 
+  Indicate that this is the end of the options section (required if the first 
+  input file starts with a -).
+
+@{file}
+  Read arguments from a file instead of the command line. You can combine
+  this usage with command-line options. Using a file is highly recommended if
+  you need to specify any of the complex options with regular expressions in.
+  
+  When arguments are specified in a file, one single argument must be specified
+  per line of the file. For example, "-format tomcat" must be written on two
+  lines. You can include # at the start of a line for comments; blank lines
+  are OK.
+  
+
+Output options
+--------------
+
+-stdout
+  Write output to standard output instead of to a file. (Not compatible with
+  -daily or -monthly or -yearly.)
+
+  This option also cancels the normal progress output (which is actually
+  written to stderr, but anyway).
+
+-folder {path} 
+  Write output files to specified folder (default: current folder).
+  
+-prefix {prefix}
+  Use the given prefix on output files. Default prefix is 'log'. This will
+  result in a file called log.useragents if you write a single output file,
+  or log.2009-08.useragents for monthly files, etc.
+
+-daily 
+  Write one output file per calendar day.
+
+-monthly
+  Write one output file per calendar month.
+
+-yearly
+  Write one output file per calendar year.
+
+-single
+  Write only one output file (default).
+
+-overwrite
+  Overwrite existing output files. (Without specifying this option, if the 
+  system would otherwise overwrite an existing file, it exits with an error.)
+
+-verbose
+  Displays additional information to standard error (memory consumption and 
+  certain timings). The timing information may be useful if trying to optimise
+  a regular expression for use on large log files.

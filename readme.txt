@@ -1,1 +1,0 @@
-This project isn't ready for use yet.

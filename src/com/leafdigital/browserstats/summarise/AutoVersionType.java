@@ -16,35 +16,33 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.util.xml;
+package com.leafdigital.browserstats.summarise;
 
-import java.io.IOException;
-
-/** Exception used for XML errors */
-public class XMLException extends IOException
+enum AutoVersionType
 {
-	/**
-	 * @param message
-	 */
-	public XMLException(String message)
+	FULL_OTHER("full+"), FULL_DISCARD("full"),
+	MIN_OTHER("min+"), MIN_DISCARD("min");
+
+	private String name;
+	AutoVersionType(String name)
 	{
-		super(message);
+		this.name = name;
 	}
+
 	/**
-	 * @param cause
+	 * Returns the type matching the given name.
+	 * @param name Type name e.g. "full+"
+	 * @return Type value or null if no match
 	 */
-	public XMLException(Throwable cause)
+	static AutoVersionType get(String name)
 	{
-		super("Invalid XML");
-		initCause(cause);
-	}
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public XMLException(String message,Throwable cause)
-	{
-		super(message);
-		initCause(cause);
+		for(AutoVersionType possible : AutoVersionType.values())
+		{
+			if(possible.name.equals(name))
+			{
+				return possible;
+			}
+		}
+		return null;
 	}
 }

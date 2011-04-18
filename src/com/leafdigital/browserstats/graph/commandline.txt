@@ -1,0 +1,188 @@
+Command-line arguments: [options] [input file(s)]
+
+The system writes output files with the same name as the input file, except
+with '.png' or '.svg' extension. (This will replace an existing '.summary'
+extension if present, otherwise will be appended.)
+
+Behaviour differs depending on how many input files there are. A single file
+generates a pie chart. Multiple files are displayed as time points, in the
+order specified. For this to work, the file names must contain dates in 
+.YYYY-MM-DD., .YYYY-MM. or .YYYY. format. Unless processing a single file,\
+you will get an error if a file date can't be determined.
+
+Input options
+-------------
+
+-stdin
+  Read data from stdin instead of files. (Implies -stdout.)
+
+--
+  Indicate that this is the end of the options section.
+
+  This is required if the first input file name starts with -.
+
+@{file}
+  Read arguments from a file instead of the command line. You can combine
+  this usage with command-line options. Using a file is highly recommended if
+  you need to specify any of the complex options with regular expressions in.
+
+  When arguments are specified in a file, one single argument must be specified
+  per line of the file. For example, "-format tomcat" must be written on two
+  lines. You can include # at the start of a line for comments; blank lines
+  are OK.
+
+Output options
+--------------
+
+-size {width} {height}
+  Specifies output file size in pixels. The default is 800 x 600.
+
+-title {title}
+  Specifies title for graph. (On the command line, use quotes as normal to
+  include multiple words.) Default is the file prefix.
+
+-background {colour}
+  Specifies image background colour in one of two formats:
+  #rrggbb (hexadecimal red, green, and blue; upper or lower case)
+  hhh/sss/lll (hue in degrees, saturation and lightness in range 0-255, decimal)
+  Default is #ffffff.
+
+-foreground {colour}
+  Specifies colour to use for title and footnotes. Default is #000000.
+
+-group {name} {colour} {text colour}
+  Specifies colours for a specific group. The text colour refers to the colour
+  of text which is displayed on top of the group background.
+
+  By default, group colours are selected from a standard pool, using similar
+  colours where the first word of the group name is the same.
+
+-font {name}
+  Font to use for graph labels. Default is arbitrary sans-serif.
+
+-labelsize {pixels}
+  Size (in pixels) of font to use for labels.
+
+-footnotesize {pixels}
+  Size (in pixels) of font to use for footnotes.
+
+-titlesize {pixels}
+  Size (in pixels) of font to use for title.
+
+-labels {start|end|both|none}
+  Applies only to trend graphs. Controls which end(s) group labels appear on.
+  Default is both.
+
+-format {svg|png|csv}
+  By default, the output file is saved in PNG format. You can also specify
+  SVG format, or a CSV table of all the data. Use multiple -format parameters
+  if you want more than one format.
+
+-csv {percentage|count}
+  Specifies whether the CSV file will include percentages or counts. The default
+  is percentages. If you specify this command, you don't need to include
+  -format csv.
+
+-category {category}
+  If specified, the given category will be graphed. Otherwise, the total count
+  value will be graphed.
+
+-prefix {name}
+  If specified, this will be used as the first part of the output filename;
+  if you set the prefix to frog, then the output filename will be frog.png
+  or frog.svg. If not specified, the default is the name of the *last* input
+  file, with .summary removed.
+
+-stdout
+  Write output to standard output instead of to a file. This does not need
+  to be specified if you specify -stdin.
+
+-folder {folder}
+  Place output file in the specified folder instead of in the same folder as
+  the last input file.
+
+-overwrite
+  Overwrite existing output files. (Without specifying this option, if the
+  system would otherwise overwrite an existing file, it exits with an error.)
+
+Trend graph display
+-------------------
+
+Ordering:
+
+Groups are arranged in the order of the first summary file. Other groups are
+added in the order of the first summary file where they are encountered. (If
+the summary files are in radically different order, results will be arbitrary.)
+
+To specify a precise order, add lines to the first summary file for all groups
+(with zero counts).
+
+Automatic colouring:
+
+The system assigns colours from a predefined list.
+
+If several groups have similar text, they will be assigned similar colours.
+
+- Determine 'similar text' using the portion of the group name up to:
+  - any punctuation symbol
+  - any digit
+
+- Arrange the groups into order. If the group names contain a number, arrange
+  in numerical order. If there is no number, arrange in the order encountered.
+  Groups with no number count 'lower' than any group with a number.
+
+- The last group in this order is assigned a saturated colour. Groups before
+  this are assigned progressively less saturated colours. Less important groups
+  also shift in brightness (becoming darker, if the colour is a bright one, or
+  lighter if it is a dark one).
+
+You can manually assign colours; if you only assign a colour to one group in
+a set of similarly-named groups, that colour will be taken as the brightest
+colour mentioned.
+
+Footnotes:
+
+When a group is not labelled (because it isn't at the end or start of the
+graph, wherever you're drawing labels) a footnote number is drawn in the graph
+and that footnote is referenced under the graph with the group name.
+
+Dates:
+
+The system always displays the last date, then will display the first date if
+it fits. After that, other dates are displayed as they can be fitted in without
+overlapping each other.
+
+Labels:
+
+End and start labels are displayed, where possible, in proportion to the size
+of the graph bars; a minimum height limit (so the text fits in) applies.
+
+Edge cases:
+
+If there is not enough space or font size is set too large, text will overlap.
+The system will not wrap individual pieces of text.
+
+Pie chart display
+-----------------
+
+Ordering:
+
+Groups are arranged in the same order as in the summary file. The first group
+starts at twelve o'clock on the pie chart, and runs clockwise.
+
+Automatic colouring:
+
+(As for trend chart.)
+
+Legend:
+
+Pie charts always include a legend. For each group, this includes a colour box,
+the group name, and the percentage. If (after taking into account the space
+required for the title) the available space for the graph is wider than it is
+high (default), then the legend is shown at the right. Otherwise it is shown
+below the graph.
+
+Labels:
+
+The system also places group-name labels directly onto the pie chart where
+there is enough room (i.e. on big slices only).

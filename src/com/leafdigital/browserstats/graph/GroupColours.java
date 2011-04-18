@@ -16,35 +16,36 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.util.xml;
+package com.leafdigital.browserstats.graph;
 
-import java.io.IOException;
+import java.awt.Color;
 
-/** Exception used for XML errors */
-public class XMLException extends IOException
+/**
+ * Tracks colours (main colour and text colour) for a particular group.
+ */
+class GroupColours
 {
-	/**
-	 * @param message
-	 */
-	public XMLException(String message)
+	private Color main, text;
+
+	protected GroupColours(Color main, Color text)
 	{
-		super(message);
+		this.main = main;
+		this.text = text;
 	}
+
 	/**
-	 * @param cause
+	 * @return Main colour for this group
 	 */
-	public XMLException(Throwable cause)
+	public Color getMain()
 	{
-		super("Invalid XML");
-		initCause(cause);
+		return main;
 	}
+
 	/**
-	 * @param message
-	 * @param cause
+	 * @return Text colour for this group
 	 */
-	public XMLException(String message,Throwable cause)
+	public Color getText()
 	{
-		super(message);
-		initCause(cause);
+		return text;
 	}
 }

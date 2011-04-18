@@ -6,9 +6,15 @@
 
 	<!-- Build folder (will be deleted on run!) -->
 	<property name="build" location="${java.io.tmpdir}/build/browserstats" />
-	
+
 	<!-- Where to put the jar when it's built -->
 	<property name="jarfolder" location="${user.home}/Desktop" />
+
+	<!-- Where to put the zip when it's built -->
+	<property name="zipfolder" location="${jarfolder}" />
+
+	<!-- Version number -->
+	<property name="version" value="1.0.0"/>
 
 	<!-- Get date in format used for build version -->
 	<target name="timestamp">
@@ -37,22 +43,69 @@
 		  	<exclude name="**/*.java" />
 		  </fileset>
 		</copy>
-		<echo message="${build-date}"
+		<echo message="${version} (${build-date})"
 			file="${build}/classes/com/leafdigital/browserstats/shared/version.txt" />
 	</target>
 
 	<!-- Build jar files -->
 	<target name="jar" depends="compile">
 		<mkdir dir="${build}/output" />
-		<jar jarfile="${build}/output/browserstats.jar" basedir="${build}/classes"
-			level="9" />
+		<jar jarfile="${build}/output/bs.collate.jar" basedir="${build}/classes"
+			level="9">
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/collate/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
+			<manifest>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.collate.Collate"/>
+		  </manifest>
+		</jar>
+		<jar jarfile="${build}/output/bs.identify.jar" basedir="${build}/classes"
+			level="9">
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/identify/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
+			<manifest>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.identify.Identify"/>
+		  </manifest>
+		</jar>
+		<jar jarfile="${build}/output/bs.summarise.jar" basedir="${build}/classes"
+			level="9">
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/summarise/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
+			<manifest>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.summarise.Summarise"/>
+		  </manifest>
+		</jar>
+		<jar jarfile="${build}/output/bs.graph.jar" basedir="${build}/classes"
+			level="9">
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/graph/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/browserstats/shared/**" />
+			<fileset dir="${build}/classes" includes="com/leafdigital/util/xml/**" />
+			<manifest>
+				<attribute name="Main-Class" value="com.leafdigital.browserstats.graph.Graph"/>
+		  </manifest>
+		</jar>
 	</target>
 
-	<!-- Run JUnit tests -->
+	<!-- Move jar files to final location and make distribution zip -->
 	<target name="all" depends="jar">
-		<!-- Delete and recopy jar file -->
-		<delete file="${jarfolder}/browserstats.jar"/>
-		<copy file="${build}/output/browserstats.jar" todir="${jarfolder}" />
+		<!-- Make distribution zip file -->
+		<delete file="${zipfolder}/browserstats.${version}.zip"/>
+		<copy file="./LICENSE" todir="${build}/output"/>
+		<copy file="./DIST.README" tofile="${build}/output/README"/>
+		<zip destfile="${zipfolder}/browserstats.${version}.zip"
+			basedir="${build}/output" level="9" />
+
+		<!-- Delete and recopy jar files -->
+		<delete file="${jarfolder}/bs.collate.jar"/>
+		<copy file="${build}/output/bs.collate.jar" todir="${jarfolder}" />
+		<delete file="${jarfolder}/bs.identify.jar"/>
+		<copy file="${build}/output/bs.identify.jar" todir="${jarfolder}" />
+		<delete file="${jarfolder}/bs.summarise.jar"/>
+		<copy file="${build}/output/bs.summarise.jar" todir="${jarfolder}" />
+		<delete file="${jarfolder}/bs.graph.jar"/>
+		<copy file="${build}/output/bs.graph.jar" todir="${jarfolder}" />
 	</target>
 	
 </project>

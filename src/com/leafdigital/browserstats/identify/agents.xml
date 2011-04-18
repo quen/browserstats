@@ -1,0 +1,969 @@
+<!--
+This file is part of leafdigital browserstats.
+
+browserstats is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+browserstats is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with browserstats.	If not, see <http://www.gnu.org/licenses/>.
+
+Copyright 2010 Samuel Marshall.
+
+
+List used to detect user agents.
+
+	NOTE:
+	1. This list is ordered. Agent strings are tested against the topmost items
+			first.
+	2. User-agents are categorised into several basic types. The more obscure
+			types (search engines etc) are placed above the more common ones (browsers)
+			because search engines often spoof browsers.
+	3. By default, groups that include regular expressions are 'exclusive' (if
+			anything matches the expression, it will not be considered for other
+			groups, even if no agent inside the group matches). Change this with
+			exclusive="n", or test the results with -test partial.
+	4. When altering this list, be sure to run -test selftest, which will make
+			sure the list is consistent (all samples match their containing agent).
+	5. When altering this list because a particular user-agent gives incorrect
+			result, always include that user-agent line as a <sample>.
+
+	-->
+<agentlist>
+	<!--
+		Search engines.
+		-->
+	<group type="search" os="" engine="" version="">
+		<agent name="msn">
+			<regex>^msnbot(-media)?/</regex>
+				<sample>msnbot/1.1 (+http://search.msn.com/msnbot.htm)</sample>
+			<sample>msnbot/2.0b (+http://search.msn.com/msnbot.htm)</sample>
+			<sample>msnbot/2.0b</sample>
+				<sample>msnbot-media/1.1 (+http://search.msn.com/msnbot.htm)</sample>
+			<regex>MSNBOT-MOBILE/</regex>
+			<sample>T-Mobile Dash Mozilla/4.0 (compatible; MSIE 4.01; Windows CE; Smartphone; 320x240; MSNBOT-MOBILE/1.1; +http://search.msn.com/msnbot.htm)</sample>
+			<regex>^renlifangbot/</regex>
+			<sample>renlifangbot/1.0 (+http://search.msn.com/msnbot.htm)</sample>
+			<regex>^librabot/</regex>
+			<sample>librabot/1.0 (+http://search.msn.com/msnbot.htm)</sample>
+		</agent>
+			<agent name="google">
+				<regex>^Mozilla/5.0 \(compatible; Googlebot/</regex>
+				<sample>Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)</sample>
+				<sample>Mozilla/5.0 (compatible; Googlebot/2.1;	http://www.google.com/bot.html)</sample>
+				<regex>compatible; Googlebot-Mobile/</regex>
+				<sample>SAMSUNG-SGH-E250/1.0 Profile/MIDP-2.0 Configuration/CLDC-1.1 UP.Browser/6.2.3.3.c.1.101 (GUI) MMP/2.0 (compatible; Googlebot-Mobile/2.1; +http://www.google.com/bot.html)</sample>
+		</agent>
+			<agent name="yahoo">
+				<regex>Yahoo! Slurp.* http://help\.yahoo\.com/help/us/ysearch/slurp\)</regex>
+				<sample>Mozilla/5.0 (compatible; Yahoo! Slurp/3.0; http://help.yahoo.com/help/us/ysearch/slurp)</sample>
+				<regex>Yahoo! Slurp China.* http://misc\.yahoo\.com.cn/help.html\)</regex>
+				<sample>Mozilla/5.0 (compatible; Yahoo! Slurp China; http://misc.yahoo.com.cn/help.html)</sample>
+				<regex>Yahoo! DE Slurp.* http://help\.yahoo\.com/help/us/ysearch/slurp\)</regex>
+				<sample>Mozilla/5.0 (compatible; Yahoo! DE Slurp; http://help.yahoo.com/help/us/ysearch/slurp)</sample>
+				<regex>compatible;\s*YahooSeeker/</regex>
+				<sample>Nokia6682/2.0 (3.01.1) SymbianOS/8.0 Series60/2.6 Profile/MIDP-2.0 configuration/CLDC-1.1 UP.Link/6.3.0.0.0 (compatible;YahooSeeker/M1A1-R2D2; http://help.yahoo.com/help/us/ysearch/crawling/crawling-01.html)</sample>
+			</agent>
+			<agent name="voila">
+				<regex>VoilaBot</regex>
+				<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.8.1) VoilaBot BETA 1.2 (support.voilabot@orange-ftgroup.com)</sample>
+			</agent>
+			<agent name="askjeeves">
+				<regex>Ask Jeeves</regex>
+				<sample>Mozilla/5.0 (compatible; Ask Jeeves/Teoma; +http://about.ask.com/en/docs/about/webmasters.shtml)</sample>
+			</agent>
+			<agent name="yanga">
+				<regex>^Yanga WorldSearch</regex>
+				<sample>Yanga WorldSearch Bot v1.1/beta (http://www.yanga.co.uk/)</sample>
+			</agent>
+			<agent name="dotbot">
+				<regex>DotBot/</regex>
+				<sample>Mozilla/5.0 (compatible; DotBot/1.1; http://www.dotnetdotcom.org/, crawler@dotnetdotcom.org)</sample>
+			</agent>
+			<agent name="baidu">
+				<regex>^Baiduspider</regex>
+				<sample>Baiduspider+(+http://www.baidu.com/search/spider.htm)</sample>
+			</agent>
+			<agent name="searchme">
+				<regex>Charlotte/.*www\.searchme\.com/support/\)$</regex>
+				<sample>Mozilla/5.0 (compatible; Charlotte/1.1; http://www.searchme.com/support/)</sample>
+			</agent>
+			<agent name="cuil">
+				<regex>\(Twiceler.*cuil\.com</regex>
+				<sample>Mozilla/5.0 (Twiceler-0.9 http://www.cuil.com/twiceler/robot.html)</sample>
+			</agent>
+			<agent name="youdao">
+				<regex>compatible; YoudaoBot/</regex>
+			<sample>Mozilla/5.0 (compatible; YoudaoBot/1.0; http://www.youdao.com/help/webmaster/spider/; )</sample>
+				<regex>compatible; You?daoBot-Mobile/</regex>
+			<sample>Nokia3650/1.0 SymbianOS/6.1 Series60/1.2 Profile/MIDP-1.0 Configuration/CLDC-1.0/ (compatible; YodaoBot-Mobile/1.0; http://www.youdao.com/help/webmaster/spider/; )</sample>
+			</agent>
+			<agent name="tagoo">
+				<regex>^Mozilla/5.0 \(compatible; Tagoobot/</regex>
+				<sample>Mozilla/5.0 (compatible; Tagoobot/3.0; +http://www.tagoo.ru)</sample>
+			</agent>
+			<agent name="entireweb">
+				<regex>^Speedy Spider</regex>
+				<sample>Speedy Spider (http://www.entireweb.com/about/search_tech/speedy_spider/)</sample>
+			</agent>
+			<agent name="naver">
+				<regex>^Yeti/</regex>
+				<sample>Yeti/1.0 (NHN Corp.; http://help.naver.com/robots/)</sample>
+				<regex>^Mozilla/4.0 \(compatible; NaverBot/</regex>
+				<sample>Mozilla/4.0 (compatible; NaverBot/1.0; http://help.naver.com/customer_webtxt_02.jsp)</sample>
+			</agent>
+			<agent name="scoutjet">
+				<regex>^Mozilla/5.0 \(compatible; ScoutJet</regex>
+				<sample>Mozilla/5.0 (compatible; ScoutJet; +http://www.scoutjet.com/)</sample>
+			</agent>
+			<agent name="discovery">
+				<regex>^Mozilla/5.0 \(compatible; discobot/</regex>
+				<sample>Mozilla/5.0 (compatible; discobot/1.1; +http://discoveryengine.com/discobot.html)</sample>
+			</agent>
+			<agent name="soso">
+				<regex>^Sosospider</regex>
+				<sample>Sosospider+(+http://help.soso.com/webspider.htm)</sample>
+			</agent>
+			<agent name="setooz">
+				<regex>^OOZBOT/</regex>
+			<sample>OOZBOT/0.20 ( http://www.setooz.com/oozbot.html ; agentname at setooz dot_com )</sample>
+			</agent>
+			<agent name="sogou">
+				<regex>^Sogou web spider/</regex>
+				<sample>Sogou web spider/4.0(+http://www.sogou.com/docs/help/webmasters.htm#07)</sample>
+			</agent>
+			<agent name="picsearch">
+				<regex>^psbot/</regex>
+				<sample>psbot/0.1 (+http://www.picsearch.com/bot.html)</sample>
+			</agent>
+			<agent name="globalspec">
+				<regex>^Ocelli/</regex>
+				<sample>Ocelli/1.4 (http://www.globalspec.com/Ocelli)</sample>
+			</agent>
+			<agent name="exalead">
+				<regex>^Mozilla/5.0 \(compatible; Exabot/</regex>
+				<sample>Mozilla/5.0 (compatible; Exabot/3.0; +http://www.exabot.com/go/robot)</sample>
+				<regex>^Mozilla/5.0 \(compatible; Exabot-Images/</regex>
+				<sample>Mozilla/5.0 (compatible; Exabot-Images/3.0; +http://www.exabot.com/go/robot)</sample>
+			</agent>
+			<agent name="commoncrawl">
+				<regex>^CCBot/</regex>
+			<sample>CCBot/1.0 (+http://www.commoncrawl.org/bot.html)</sample>
+			</agent>
+			<agent name="gigablast">
+				<regex>^Gigabot/</regex>
+				<sample>Gigabot/3.0 (http://www.gigablast.com/spider.html)</sample>
+			</agent>
+			<agent name="dontbuylists">
+				<regex>^Mozilla/5.0 \(compatible; DBLBot/</regex>
+				<sample>Mozilla/5.0 (compatible; DBLBot/1.0; +http://www.dontbuylists.com/)</sample>
+			</agent>
+			<agent name="similarpages">
+				<regex>^SimilarPages/</regex>
+				<sample>SimilarPages/Nutch-1.0-dev (SimilarPages Nutch Crawler; http://www.similarpages.com; info@similarpages.com)</sample>
+			</agent>
+			<agent name="rediff">
+				<regex>^rdfbot/</regex>
+				<sample>rdfbot/1.0 (rdfbotsupport AT rediffmailpro DOT com)</sample>
+			</agent>
+			<agent name="dealgates">
+				<regex>^DealGates Bot/</regex>
+				<sample>DealGates Bot/1.2 by Luc Michalski (http://www.dealgates.net/bot.html)</sample>
+			</agent>
+			<agent name="amazon">
+				<regex>^AISearchBot</regex>
+				<sample>AISearchBot (Email: aisearchbot@gmail.com; If your web site doesn't want to be crawled, please send us a email.)</sample>
+			</agent>
+			<agent name="yandex">
+				<regex>^Yandex/</regex>
+				<sample>Yandex/1.01.001 (compatible; Win16; I)</sample>
+			</agent>
+			<agent name="gais">
+				<regex>^Gaisbot/</regex>
+				<sample>Gaisbot/3.0+(robot06@gais.cs.ccu.edu.tw;+http://gais.cs.ccu.edu.tw/robot.php)</sample>
+			</agent>
+		<agent name="virtualreach">
+			<regex>^Virtual Reach</regex>
+			<sample>Virtual Reach Newsclip Collector</sample>
+		</agent>
+		<!-- The following are typically used for intranet seach engines. -->
+		<agent name="ultraseek">
+			<regex>^Ultraseek</regex>
+			<sample>Ultraseek</sample>
+		</agent>
+		<agent name="exalead">
+			<regex>^NG/2\.0</regex>
+			<sample>NG/2.0</sample>
+		</agent>
+	</group>
+
+	<!--
+		Known crawlers other than public search engines.
+		-->
+	<group type="crawler" os="" engine="" version="">
+		<agent name="gingercrawler">
+			<regex>^GingerCrawler\/</regex>
+			<sample>GingerCrawler/1.0 (Language Assistant for Dyslexics; www.gingersoftware.com/crawler_agent.htm; support at ginger software dot com)</sample>
+		</agent>
+		<agent name="akula">
+			<regex>compatible; akula/k311</regex>
+			<sample>Mozilla/5.0 (compatible; akula/k311; +http://k311.fd.cvut.cz/)</sample>
+		</agent>
+		<agent name="turnitin">
+			<regex>^TurnitinBot\/</regex>
+			<sample>TurnitinBot/2.1 (http://www.turnitin.com/robot/crawlerinfo.html)</sample>
+		</agent>
+		<agent name="alexa">
+			<regex>^ia_archiver</regex>
+			<sample>ia_archiver (+http://www.alexa.com/site/help/webmasters; crawler@alexa.com)</sample>
+		</agent>
+		<agent name="serpanalytics">
+			<regex>^Mozilla/5.0 \(compatible; SERPAnalytics;</regex>
+			<sample>Mozilla/5.0 (compatible; SERPAnalytics; +http://www.serpanalytics.com/docs/bot)</sample>
+		</agent>
+		<agent name="sapphire">
+			<regex>^SapphireWebCrawler/</regex>
+			<sample>SapphireWebCrawler/1.0 (Sapphire Web Crawler using Nutch; http://boston.lti.cs.cmu.edu/crawler/; mhoy@cs.cmu.edu)</sample>
+		</agent>
+		<agent name="accelobot">
+			<regex>^Mozilla/5.0 \(compatible; heritrix/</regex>
+			<sample>Mozilla/5.0 (compatible; heritrix/1.15.1-200807172326 +http://www.accelobot.com)</sample>
+		</agent>
+		<agent name="siteimprove">
+			<regex> Siteimprove.com$</regex>
+			<sample>Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.0) LinkCheck by Siteimprove.com</sample>
+		</agent>
+
+		<!-- Frameworks used for building crawlers -->
+		<agent name="swish">
+			<regex>^swish-e</regex>
+			<sample>swish-e http://swish-e.org/</sample>
+		</agent>
+		<!-- Used for unidentified Nutch crawlers only -->
+		<agent name="nutch">
+			<regex>^agentname/Nutch</regex>
+			<sample>agentname/Nutch-1.0-dev</sample>
+			<regex>^[Nn]utch/Nutch</regex>
+			<sample>nutch/Nutch-1.0 (nutch)</sample>
+			<sample>Nutch/Nutch-1.0-dev (A Nutch-based crawler.; http://lucene.apache.org/nutch/bot.html; nutch-agent AT lucene.apache.org)</sample>
+		</agent>
+
+	</group>
+
+	<!--
+		Site copying / offline storage software.
+		-->
+	<group type="copier" os="" engine="" version="">
+		<agent name="httrack">
+			<regex>compatible; HTTrack </regex>
+			<sample>Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)</sample>
+		</agent>
+		<agent name="sitesucker">
+			<regex>^SiteSucker/</regex>
+			<sample>SiteSucker/2.2.2</sample>
+		</agent>
+	</group>
+
+	<!--
+		Mobile phones.
+		See http://www.zytrax.com/tech/web/mobile_ids.html - credit that site
+		for some of the agent strings here.
+		-->
+	<group type="mobile" engine="" os="" version="">
+
+		<!-- Opera Mini can run on iphone so needs to be above that or it gets misdetected -->
+		<group name="operamini">
+			<regex>^Opera/.* Opera Mini</regex>
+			<agent version="5">
+				<regex>Opera Mini/5</regex>
+				<sample>Opera/9.80 (iPhone; Opera Mini/5.0.0176/784; U; en) Presto/2.4.15</sample>
+			</agent>
+			<agent version="4">
+				<regex>Opera Mini/4</regex>
+				<sample>Opera/9.60 (J2ME/MIDP; Opera Mini/4.2.14320/504; U; en) Presto/2.2.0</sample>
+			</agent>
+			<agent version="3">
+				<regex>Opera Mini/3</regex>
+				<sample>Opera/8.01 (J2ME/MIDP; Opera Mini/3.1.10423/1724; en; U; ssr)</sample>
+			</agent>
+			<agent version="2">
+				<regex>Opera Mini/2</regex>
+				<sample>Opera/8.01 (J2ME/MIDP; Opera Mini/2.0.4509/1724; ru; U; ssr)</sample>
+			</agent>
+			<agent version="1">
+				<regex>Opera Mini/1</regex>
+				<sample>Opera/8.01 (J2ME/MIDP; Opera Mini/1.1.2277/lofi/nordic/int; O2 Xda II; en; U; ssr)</sample>
+			</agent>
+		</group>
+
+		<group name="apple" engine="webkit">
+		  <regex>iP(hone|od|ad)[ ;]</regex>
+		  <group>
+				<regex>iPhone OS.* AppleWebKit/</regex>
+				<agent version="2.1">
+					<regex>iPhone OS 2_1</regex>
+					<sample>Mozilla/5.0 (iPod; U; CPU iPhone OS 2_1_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5F138 Safari/525.20</sample>
+				</agent>
+				<agent version="2.2">
+					<regex>iPhone OS 2_2</regex>
+					<sample>Mozilla/5.0 (iPod; U; CPU iPhone OS 2_2_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5H11a Safari/525.20</sample>
+				</agent>
+				<agent version="3.0">
+					<regex>iPhone OS 3_0</regex>
+					<sample>iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/528.18 (KHTML, like Gecko) Version/4.0 Mobile/7A341 Safari/528.16</sample>
+				</agent>
+				<agent version="3.1">
+					<regex>iPhone OS 3_1</regex>
+					<sample>Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_1_2 like Mac OS X; en-us) AppleWebKit/528.18 (KHTML, like Gecko)</sample>
+				</agent>
+				<agent version="4.0">
+					<regex>iPhone OS 4_0</regex>
+					<sample>Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko)</sample>
+				</agent>
+		  </group>
+		  <agent version="1">
+		  	<!-- Ancient version -->
+				<regex>\(iP(hone|od); U; CPU like Mac OS X</regex>
+				<sample>Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3</sample>
+				<sample>Mozilla/5.0 (iPod; U; CPU like Mac OS X; en) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/4B1 Safari/419.3</sample>
+		  </agent>			
+		</group>
+
+		<agent name="android" engine="webkit">
+			<regex> Android.* AppleWebKit/</regex>
+			<sample>Mozilla/5.0 (Linux; U; Android 1.0; en-us; dream) AppleWebKit/525.10+ (KHTML, like Gecko) Version/3.0.4 Mobile Safari/523.12.2</sample>
+		</agent>
+
+		<agent name="imode">
+			<regex>^DoCoMo/</regex>
+			<sample>DoCoMo/2.0 P90liS(c100;TB;W20H10)</sample>
+		</agent>
+
+		<agent name="pre" engine="webkit">
+			<regex>\(webOS/.*AppleWebKit/</regex>
+			<sample>Mozilla/5.0 (webOS/1.0; U; en-US) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/1.0 Safari/525.27.1 Pre/1.0</sample>
+		</agent>
+
+		<agent name="palm">
+			<regex>Mozilla/4.0 \(compatible;.* Blazer/</regex>
+			<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; PalmSource/Palm-D060; Blazer/4.5) 16;320x320</sample>
+		</agent>
+
+		<!-- IE Mobile on new Windows Phone 7+ -->
+		<!-- http://blogs.msdn.com/b/iemobile/archive/2010/03/25/ladies-and-gentlemen-please-welcome-the-ie-mobile-user-agent-string.aspx -->
+		<group name="iemobile">
+			<regex>.*MSIE.* Windows Phone OS.*</regex>
+			<agent version="7">
+				<regex>IEMobile/7</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 7.0; Windows Phone OS 7.0; Trident/3.1; IEMobile/7.0; &lt;DeviceManufacturer>;&lt;DeviceModel>)</sample>
+			</agent>
+		</group>
+
+		<group name="iemobile">
+			<regex>.*MSIE.* Windows CE.*</regex>
+			<!-- This is not really version 8; 6 was latest at this point. -->
+			<agent version="6">
+				<regex>MSIEMobile 6</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows CE; IEMobile 8.12; MSIEMobile 6.0) SAMSUNG-SCH-i220</sample>
+			</agent>
+			<!-- This is not really version 7 either. -->
+			<agent version="6">
+				<regex>IEMobile 7</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows CE; IEMobile 7.11) Samsung-SCHI910 PPC 240x400</sample>
+			</agent>
+			<agent version="6">
+				<regex>IEMobile 6</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows CE; IEMobile 6.12) T-Mobile Dash</sample>
+				<sample>HTC_P4350 Mozilla/4.0 (compatible; MSIE 6.0; Windows CE; IEMobile 6.12)</sample>
+			</agent>
+			<agent version="4">
+				<regex>MSIE 4</regex>
+				<sample>Mozilla/4.0(compatible; MSIE 4.01; Windows CE; PPC; 240x320)</sample>
+			</agent>
+		</group>
+
+		<!-- IE mobile when pretending to be a desktop browser -->
+		<!-- http://msdn.microsoft.com/en-us/library/dd938878.aspx#BestPracticesforDevelopingWebSitesforInternetExplorerMobile6 -->
+		<group name="iemobile">
+			<regex>Windows Phone</regex>
+			<agent version="6">
+				<regex>Windows Phone 6.5</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; Windows Phone 6.5)</sample>
+			</agent>
+		</group>
+
+		<group name="operamobile" engine="presto">
+			<regex>^Opera/.* Opera Mobi/</regex>
+			<agent version="9">
+				<regex>^Opera/9</regex>
+				<sample>Opera/9.51 Beta (Microsoft Windows; PPC; Opera Mobi/15894; U; en) Presto/2.1.0</sample>
+			</agent>
+		</group>
+
+		<group name="operamobile" engine="presto">
+			<regex>^Mozilla/4.0 \(compatible; MSIE 6\.0.* Opera .* Maemo </regex>
+			<regex>^Mozilla/4.0 \(compatible; MSIE 6\.0.* Symbian .* Opera </regex>
+			<regex>^Mozilla/4.0 \(compatible; MSIE 6\.0.* KDDI.* Opera </regex>
+			<agent version="8">
+				<regex>Opera 8</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 6.0; ; Linux armv5tejl; U) Opera 8.02 [en_US] Maemo browser 0.4.34 N770/SU-18</sample>
+				<sample>Mozilla/4.0 (compatible; MSIE 6.0; KDDI-SN3J) Opera 8.60 [ja]</sample>
+				<sample>Mozilla/4.0 (compatible; MSIE 6.0; Symbian OS; Nokia N70/5.0705.3.0.1; 9399) Opera 8.65 [ru]</sample>
+			</agent>
+		</group>
+
+		<agent name="blackberry">
+			<regex>^BlackBerry</regex>
+			<sample>BlackBerry8130/4.3.0 Profile/MIDP-2.0 Configuration/CLDC-1.1 VendorID/106</sample>
+		</agent>
+
+		<agent name="googletranscode">
+			<regex>Google Wireless Transcoder</regex>
+			<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; Google Wireless Transcoder;)</sample>
+		</agent>
+
+		<agent name="symbianwebkit" engine="webkit">
+			<regex>\(SymbianOS/.*AppleWebKit/</regex>
+			<sample>Mozilla/5.0 (SymbianOS/9.4; Series60/5.0 NokiaX6-00/20.0.005; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/525 (KHTML, like Gecko) Version/3.0 BrowserNG/7.2.3</sample>
+			<sample>SonyEricssonU1i/R2AA; Mozilla/5.0 (SymbianOS/9.4; U; Series60/5.0 Profile/MIDP-2.1 Configuration/CLDC-1.1) AppleWebKit/525 (KHTML, like Gecko) Version/3.0 Safari/525</sample>
+		</agent>
+	</group>
+
+	<!--
+		Video game systems (handheld or consoles).
+		-->
+	<group type="gamesystem" engine="" os="" version="">
+		<agent name="psp">
+			<regex>^Mozilla/4\.0 \(PSP \(PlayStation Portable\)</regex>
+			<sample>Mozilla/4.0 (PSP (PlayStation Portable); 2.00)</sample>
+		</agent>
+		<agent name="ps3">
+			<regex>^Mozilla/5.0 \(PLAYSTATION 3</regex>
+			<sample>Mozilla/5.0 (PLAYSTATION 3; 1.00)</sample>
+		</agent>
+		<agent name="wii">
+			<regex>^Opera/.*\(Nintendo Wii;</regex>
+			<sample>Opera/9.30 (Nintendo Wii; U; ; 2047-7; en)</sample>
+		</agent>
+		<agent name="dsi">
+			<regex>^Opera/.*\(Nintendo DSi;</regex>
+			<sample>Opera/9.50 (Nintendo DSi; Opera/483; U; en-US)</sample>
+		</agent>
+	</group>
+
+	<!--
+		Specialised RSS readers or email clients that read RSS.
+		-->
+	<group type="feedreader" engine="" os="" version="">
+		<agent name="outlook">
+			<regex>^Microsoft Office/.*Outlook</regex>
+			<sample>Microsoft Office/14.0 (Windows NT 6.1; Microsoft Outlook 14.0.4536; Pro; MSOffice 14)</sample>
+			<regex>^OutlookConnector/</regex>
+			<sample>OutlookConnector/1.9 (TmstmpExt; MSOffice 12)</sample>
+		</agent>
+		<agent name="thunderbird">
+			<regex>^Mozilla/5.0.*Thunderbird/</regex>
+			<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.24) Gecko/20100228 Lightning/0.9 Thunderbird/2.0.0.24</sample>
+		</agent>
+		<agent name="windows">
+			<regex>^Windows-RSS-Platform/</regex>
+			<sample>Windows-RSS-Platform/1.0 (MSIE 7.0; Windows NT 5.1)</sample>
+		</agent>
+		<agent name="googledesktop">
+			<regex>^Mozilla/5.0.*Google Desktop/</regex>
+			<sample>Mozilla/5.0 (compatible; Google Desktop/5.9.1005.12335; http://desktop.google.com/)</sample>
+		</agent>
+		<agent name="osx">
+			<regex>^Apple-PubSub/</regex>
+			<sample>Apple-PubSub/65.19</sample>
+		</agent>
+		<agent name="evolution">
+			<regex>^Evolution/</regex>
+			<sample>Evolution/2.28.3.1</sample>
+		</agent>
+		<agent name="ical">
+			<regex>^iCal/</regex>
+			<sample>iCal/1388 CFNetwork/454.9.7 Darwin/10.4.0 (i386) (MacBookPro5%2C5)</sample>
+		</agent>
+		<agent name="itunes">
+			<regex>^iTunes/</regex>
+			<sample>iTunes/9.2 (Macintosh; Intel Mac OS X 10.6.4) AppleWebKit/533.16</sample>
+		</agent>
+		<agent name="googlereader">
+			<regex>^Feedfetcher-Google;</regex>
+			<sample>Feedfetcher-Google; ( http://www.google.com/feedfetcher.html; 3 subscribers; feed-id=15673931343781563451)</sample>
+		</agent>
+		<agent name="bloglines">
+			<regex>^Bloglines/</regex>
+			<sample>Bloglines/3.1 (http://www.bloglines.com; 1 subscriber)</sample>
+		</agent>
+	</group>
+
+	<!--
+		Browsers running on standard computers and operating systems.
+		-->
+	<group type="browser">
+		<group engine="webkit">
+			<regex>AppleWebKit/</regex>
+
+			<group name="chrome">
+				<!-- 'Iron' is a de-googled version of Chrome from the same source -->
+				<regex>(Chrome|Iron)/</regex>
+				<group version="6">
+					<regex>(Chrome|Iron)/6</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/534.2 (KHTML, like Gecko) Chrome/6.0.447.0 Safari/534.2</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.1 (KHTML, like Gecko) Chrome/6.0.437.3 Safari/534.1</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample> Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_4; en-US) AppleWebKit/534.2 (KHTML, like Gecko) Chrome/6.0.447.0 Safari/534.2</sample>
+					</agent>
+				</group>
+				<group version="5">
+					<regex>(Chrome|Iron)/5</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.70 Safari/533.4</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.86 Safari/533.4</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_4; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.86 Safari/533.4</sample>
+					</agent>
+				</group>
+				<group version="4">
+					<regex>(Chrome|Iron)/4</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (K
+o) Chrome/4.0.249.11 Safari/532.5</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_8; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.49 Safari/532.5</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/532.3 (KHTML, like Gecko) Chrome/4.0.223.11 Safari/532.3</sample>
+					</agent>
+				</group>
+				<group version="3">
+					<regex>(Chrome|Iron)/3</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/531.2 (KHTML, like Gecko) Chrome/3.0.191.0 Safari/531.2</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_2; en-US) AppleWebKit/531.3 (KHTML, like Gecko) Chrome/3.0.192 Safari/531.3</sample>
+					</agent>
+				</group>
+				<group version="2">
+					<regex>(Chrome|Iron)/2</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.33 Safari/530.5</sample>
+					</agent>
+				</group>
+				<group version="1">
+					<regex>(Chrome|Iron)/1</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.48 Safari/525.19</sample>
+					</agent>
+				</group>
+			</group>
+
+			<group name="safari">
+				<regex>Safari/</regex>
+				<group version="5">
+					<regex>Version/5\.</regex>
+					<agent os="mac">
+						<regex>\(Macintosh;</regex>
+						<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_4; de-de) AppleWebKit/533.16
+(KHTML, like Gecko) Version/5.0 Safari/533.16</sample>
+					</agent>
+					<agent os="win">
+						<regex>\(Windows;</regex>
+						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.16 (KHTML, like Gecko) Version/5.0 Safari/533.16</sample>
+					</agent>
+				</group>
+				<group version="4">
+					<regex>Version/4\.</regex>
+					<agent os="mac">
+						<regex>\(Macintosh;</regex>
+						<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_7; en-us) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Safari/530.17</sample>
+					</agent>
+					<agent os="win">
+						<regex>\(Windows;</regex>
+						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Safari/530.17</sample>
+					</agent>
+				</group>
+				<group version="3">
+					<regex>Version/3\.</regex>
+					<agent os="mac">
+						<regex>\(Macintosh;</regex>
+						<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1</sample>
+					</agent>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Version/3.1.2 Safari/525.21</sample>
+					</agent>
+				</group>
+				<agent version="2" os="mac">
+					<regex>Safari/4</regex>
+					<sample>Mozilla/5.0 (Macintosh; U; PPC Mac OS X; fr) AppleWebKit/412 (KHTML, like Gecko) Safari/412</sample>
+				</agent>
+				<agent version="1" os="mac">
+					<regex>Macintosh.*Safari/([123]?[0-9]{2})(\.|$)</regex>
+					<sample>Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/124 (KHTML, like Gecko) Safari/125</sample>
+				</agent>
+			</group>
+		</group>
+
+		<group engine="presto" name="opera">
+			<regex>^Opera/</regex>
+			<group version="10">
+				<regex>^Opera/9\.8.*Version/10</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Opera/9.80 (Windows NT 6.1; U; en) Presto/2.2.15 Version/10.00</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Opera/9.80 (X11; FreeBSD 8.0-RELEASE i386; U; en) Presto/2.2.15 Version/10.10</sample>
+				</agent>
+				<agent os="mac">
+					<regex>Macintosh</regex>
+					<sample>Opera/9.80 (Macintosh; Intel Mac OS X; U; en) Presto/2.5.24 Version/10.53</sample>
+				</agent>
+			</group>
+			<group version="9">
+				<regex>^Opera/9\.</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Opera/9.61 (Windows NT 5.1; U; en) Presto/2.1.1</sample>
+				</agent>
+				<agent os="mac">
+					<regex>Macintosh</regex>
+					<sample>Opera/9.63 (Macintosh; Intel Mac OS X; U; en) Presto/2.1.1</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Opera/9.70 (X11; Linux x86_64; U; en) Presto/2.5.24 Version/9.70</sample>
+				</agent>
+			</group>
+			<!-- Opera versions before 9 usually used a stupid user agent (as below) -->
+		</group>
+		
+		<group engine="presto" name="opera">
+			<regex>^Mozilla/4.0 \(compatible;.* Opera </regex>
+			<group version="10">
+				<regex>Opera 10</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 10.01</sample>
+				</agent>
+			</group>
+			<group version="9">
+				<regex>Opera 9</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 9.0</sample>
+				</agent>
+				<agent os="mac">
+					<regex>Macintosh|Mac_</regex>
+					<sample>Mozilla/4.0 (compatible; MSIE 6.0; Mac_PowerPC; fr) Opera 9.52</sample>
+				</agent>
+			</group>
+			<group version="8">
+				<regex>Opera 8</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; ru) Opera 8.01</sample>
+				</agent>
+			</group>
+			<group version="7">
+				<regex>Opera 7</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.0) Opera 7.02 Bork-edition [en]</sample>
+					<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows ME) Opera 7.11	[en]</sample>
+				</agent>
+				<agent os="mac">
+					<regex> Mac_</regex>
+					<sample>Mozilla/4.0 (compatible; MSIE 5.23; Mac_PowerPC) Opera 7.54</sample>
+				</agent>
+			</group>
+			<group version="6">
+				<regex>Opera 6</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/4.0 (compatible; MSIE 5.0; Windows 95) Opera 6.01  [en]</sample>
+				</agent>
+			</group>
+			<group version="5">
+				<regex>Opera 5</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/4.0 (compatible; MSIE 5.0; Windows ME) Opera 5.11</sample>
+				</agent>
+			</group>
+		</group>
+
+		<group engine="trident" name="ie" os="win">
+			<regex>^Mozilla/4\.0 \(compatible; MSIE [0-9]+\.[0-9]+;.*Windows(?! CE)</regex>
+			<!--
+				Versions are listed in reverse order because some IE8 browsers have
+				broken user-agents due to dubious registry information. See
+				http://techpatterns.com/forums/about1228.html - as this is likely to
+				be broken old code, it's likely that the newer version is correct.
+				-->
+			<agent version="8.0">
+				<regex>MSIE 8\.0</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30618)</sample>
+				<sample>Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Win64; x64; Trident/4.0; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; .NET CLR 2.0.50727; SLCC2; .NET CLR 3.5.30729; .NET CLR 3.0.30729)</sample>
+			</agent>
+			<agent version="7.0">
+				<regex>MSIE 7\.0</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727)</sample>
+			</agent>
+			<agent version="6.0">
+				<regex>MSIE 6\.0</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 6.0; AOL 9.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322; Media Center PC 4.0)</sample>
+			</agent>
+			<agent version="5.5">
+				<regex>MSIE 5\.5</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)</sample>
+			</agent>
+			<agent version="5.0">
+				<regex>MSIE 5\.0</regex>
+				<sample>Mozilla/4.0 (compatible; MSIE 5.0; Windows 98)</sample>
+			</agent>
+			<agent version="4.0">
+			  <regex>MSIE 4\.0</regex>
+			  <sample>Mozilla/4.0 (compatible; MSIE 4.01; Windows 95)</sample>
+			</agent>
+		</group>
+
+		<!-- Netscape, remember that? -->
+		<group engine="gecko" name="netscape">
+			<regex>^Mozilla/5\.0.* Gecko/.* Netscape/</regex>
+			<group version="7">
+				<regex>Netscape/7</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.4) Gecko/20030624 Netscape/7.1</sample>
+				</agent>
+			</group>
+			<group version="8">
+				<regex>Netscape/8</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.5) Gecko/20070321 Netscape/8.1.3</sample>
+				</agent>
+			</group>
+		</group>
+
+		<group engine="gecko" name="firefox">
+			<!-- Iceweasel = Debian version of Firefox; Minefield, Shiretoko = dev builds -->
+			<regex>^Mozilla/5\.0.* Gecko/.* (Firefox|Iceweasel|Minefield|Shiretoko)/.*</regex>
+			<group version="1.0">
+				<regex>Firefox/1\.0</regex>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.12; ips-agent) Gecko/20050922 Fedora/1.0.7-1.1.fc4 Firefox/1.0.7</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.6) Gecko/20050317 Firefox/1.0.2</sample>
+				</agent>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; U; PPC Mac OS X Mach-O; en-US; rv:1.7.6) Gecko/20050225 Firefox/1.0.1</sample>
+				</agent>
+			</group>
+			<group version="1.5">
+				<!-- Note: There wasn't a 1.6. I think it was fairly early so calling it 1.5 here -->
+				<regex>(Firefox|Iceweasel)/1\.[56]</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.0.4) Gecko/20060508 Firefox/1.5.0.4</sample>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.6</sample>
+				</agent>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.0.3) Gecko/20060426 Firefox/1.5.0.3</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.0.12) Gecko/20070718 Red Hat/1.5.0.12-3.el5 Firefox/1.5.0.12</sample>
+				</agent>
+			</group>
+			<group version="2.0">
+				<regex>(Firefox|Iceweasel)/2\.0</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.8.1.20) Gecko/20081217 Firefox/2.0.0.20</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.8.1.16) Gecko/20080702 Iceweasel/2.0.0.16 (Debian-2.0.0.16-0etch1)</sample>
+					<sample>Mozilla/5.0 (X11; U; SunOS sun4u; en-US; rv:1.8.1.4) Gecko/20070531 Firefox/2.0.0.4</sample>
+				</agent>
+			</group>
+			<group version="3.0">
+				<regex>(Firefox|Iceweasel|Minefield)/3\.0</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10.4; en-GB; rv:1.9.0.4) Gecko/2008102920 Firefox/3.0.4</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.0; en-GB; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6</sample>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.9) Gecko/2009040821 Firefox/3.0.9 (.NET CLR 3.5.30729)</sample>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.9.0.1) Gecko/2008070208 Firefox/3.0.1</sample>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)</sample>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10 (.NET CLR 3.5.30729)</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; U; Linux i686; en-GB; rv:1.9.0.7) Gecko/2009030422 Ubuntu/8.10 (intrepid) Firefox/3.0.7</sample>
+					<sample>Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9a1) Gecko/20070308 Minefield/3.0a1</sample>
+				</agent>
+			</group>
+			<group version="3.5">
+				<!-- Note: Firefox 3.1 was renumbered to 3.5 -->
+				<regex>(Firefox|Iceweasel|Shiretoko)/3\.(5|1)</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-GB; rv:1.9.1) Gecko/20090624 Firefox/3.5</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.1) Gecko/20090624 Firefox/3.5</sample>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1b3) Gecko/20090305 Firefox/3.1b3</sample>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6pre) Gecko/2009011606 Firefox/3.1</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+				</agent>
+			</group>
+			<group version="3.6">
+			  <!-- Note: Firefox 3.7 was folded back into 3.6. -->
+				<regex>(Firefox|Iceweasel|Shiretoko|Minefield)/3\.[67]</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.4) Gecko/20100611 Firefox/3.6.4</sample>
+					<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.3a2pre) Gecko/20100221 Minefield/3.7a2pre</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729)</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3</sample>
+				</agent>
+			</group>
+			<group version="4.0">
+				<regex>(Firefox|Iceweasel|Minefield)/4\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:2.0b1) Gecko/20100630 Firefox/4.0b1</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:2.0b1) Gecko/20100630 Firefox/4.0b1</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:2.0b2pre) Gecko/20100701 Minefield/4.0b2pre</sample>
+				</agent>
+			</group>
+		</group>
+
+		<group engine="gecko" name="seamonkey">
+			<regex>^Mozilla/5\.0.* Gecko/.* SeaMonkey/.*</regex>
+			<group version="2">
+				<regex>SeaMonkey/2\.</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.10) Gecko/20100504 SeaMonkey/2.0.5</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.1.7) Gecko/20100104 SeaMonkey/2.0.2</sample>
+				</agent>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.1.10) Gecko/20100504 SeaMonkey/2.0.5</sample>
+				</agent>
+			</group>
+			<group version="1">
+				<regex>SeaMonkey/1\.</regex>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; de-AT; rv:1.8.1.21) Gecko/20090403 SeaMonkey/1.1.16</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.23) Gecko/20090910 SeaMonkey/1.1.18</sample>
+				</agent>
+			</group>
+		</group>
+	</group>
+
+
+	<!--
+		Software frameworks or robot software that can be used by many people
+		for different tasks.
+		-->
+	<group type="software" os="" engine="" version="">
+		<agent name="java">
+			<regex>^Java/1\.[0-9._]+(-[a-z]+)?$</regex>
+			<sample>Java/1.6.0_13</sample>
+			<regex>Mozilla/4.0 .*Java/1\.[0-9._]+(-[a-z]+)?$</regex>
+			<sample>Mozilla/4.0 (Windows XP 5.1) Java/1.6.0_20</sample>
+		</agent>
+		<agent name="axis">
+			<regex>^Axis2</regex>
+			<sample>Axis2</sample>
+		</agent>
+		<agent name="perl">
+			<regex>^libwww-perl/</regex>
+			<sample>libwww-perl/5.805</sample>
+		</agent>
+		<agent name="python">
+			<regex>^Python-urllib/</regex>
+			<sample>Python-urllib/1.17</sample>
+		</agent>
+		<agent name="dotnet">
+			<regex>MS Web Services Client Protocol</regex>
+			<sample>Mozilla/4.0 (compatible; MSIE 6.0; MS Web Services Client Protocol 2.0.50727.42)</sample>
+		</agent>
+		<agent name="nagios">
+			<regex>^check_http/</regex>
+			<sample>check_http/v1.4.14 (nagios-plugins 1.4.14)</sample>
+		</agent>
+	</group>
+
+</agentlist>

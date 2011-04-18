@@ -1,0 +1,254 @@
+Command-line arguments: [options] [input file(s)]
+
+The system writes output files with the same name as the input file, except
+with '.csv' or '.summary' extension. (This will replace an existing 
+'.knownagents' extension if present, otherwise will be appended.)
+
+The output file is in UTF-8 encoding. Some spreadsheets do not support UTF-8
+format .csv files; if this is a concern, use only ASCII characters for group
+names. This system itself will not generate any non-ASCII characters.
+
+Input options
+-------------
+
+-stdin
+  Read data from stdin instead of files. (Implies -stdout.)
+
+-include {conditions}
+  Excludes non-matching agents from consideration.
+  See 'Agent and group processing' below.
+
+-exclude {conditions}
+  Excludes matching agents from consideration.
+  See 'Agent and group processing' below.
+
+-group {name} {conditions}
+  Assigns matching agents into a named group. If you don't specify this
+  option, then all agents not excluded will be sorted into groups as if
+  "-autogroup agent" was specified.
+  See 'Agent and group processing' below.
+
+-autogroup {fields}
+  Specifies automatic grouping. Example: "-autogroup os" or
+  "-autogroup agent os".
+  See 'Agent and group processing' below.
+
+-autoversion {type} {name}
+  For the given group name (actually a regular expression, so can apply to
+  all groups by specifying .+ for name), automatically partitions the group
+  into sub-groups based on the version number. The partitioning uses the
+  following logic according to the type parameter:
+
+  full+ - creates a new group for every version that has at least 5% of the
+    total usage of this group; other values (if any) go into a new 'other'
+    group for the group
+  full - same as full+, but other values are discarded into the generic 'other'
+    group
+  min+ - finds the highest version number for which 95% of the total usage of
+    this group is that version or later; other values go into a new 'other'
+    group for the group
+  min - same as min+, but other values are discarded into the generic 'other'
+    group
+
+-preventother
+  If specified, all agents must mach a -exclude or -group condition; any
+  non-matching agents will cause an error. (Useful for ensuring that you notice
+  if the rules need updating for newer browsers.)
+
+  If you don't include this parameter, an 'Other' category will be created with
+  all other usage.
+
+-test showgroups
+  Prints list of agents from input which have been combined into each output
+  category (including excluded), then exits without writing files.
+
+--
+  Indicate that this is the end of the options section.
+
+  NOTE: This is required if the first input file name starts with -, or if the
+  last option is -include, -exclude, -group, or -autogroup.
+
+@{file}
+  Read arguments from a file instead of the command line. You can combine
+  this usage with command-line options. Using a file is highly recommended if
+  you need to specify any of the complex options with regular expressions in.
+
+  When arguments are specified in a file, one single argument must be specified
+  per line of the file. For example, "-format tomcat" must be written on two
+  lines. You can include # at the start of a line for comments; blank lines
+  are OK.
+
+Output options
+--------------
+
+-format {csv|xml}
+  By default, the output file is saved in XML format, which is used by the
+  graph drawing tool. (XML output files have the extension .summary.) You can
+  also output CSV format for further processing in a spreadsheet or other
+  software. If you want both formats, use two -format parameters.
+
+-category {category}
+  If specified, only counts from the given category will be included in output.
+  (By default, there will be one column for each category, or two if using
+  percentages.)
+
+  This option has no effect on XML output, which always includes raw data.
+
+-showpercentages
+  If specified, each output category will have two columns, number and
+  percentage. The percentage is calculated out of the total shown (i.e. not
+  including counts to excluded agents). Percentages are shown to 1 decimal
+  place.
+
+  This option has no effect on XML output, which always includes raw data.
+
+-noheaders
+  If you include this option, the header line will be omitted from the start
+  of the CSV file.
+
+  This option has no effect on XML output, which always includes raw data.
+
+-nototal
+  If you include this option, the total line will be omitted from the bottom
+  of the CSV file.
+
+  This option has no effect on XML output, which always includes raw data.
+
+-noexcluded
+  If you include this option, the excluded line will be omitted from the bottom
+  of the CSV file.
+
+  This option has no effect on XML output, which always includes raw data.
+
+-suffix {suffix}
+  If specified, this suffix will be included in the filename. For example,
+  if you set the suffix to frog, then the output filename will end in .frog.csv
+  or .frog.summary instead of just .csv or .summary.
+
+-stdout
+  Write output to standard output instead of to a file. This does not need
+  to be specified if you specify -stdin.
+
+-folder {folder}
+  Place output files in the specified folder instead of in the same folder as
+  input files.
+
+-overwrite
+  Overwrite existing output files. (Without specifying this option, if the
+  system would otherwise overwrite an existing file, it exits with an error.)
+
+Agent and group processing
+--------------------------
+
+Processing:
+
+All -include, -exclude and -group parameters are processed in the given order.
+When the system considers each agent, it assigns it according to the first
+matching parameter.
+
+Automatic groups:
+
+If automatic groups are enabled (by default they are enabled if you don't
+specify any -group manually), these will apply after the defined -include,
+-exclude, and -group parameters to any agents that weren't matched by the
+defined groups.
+
+You specify which fields are considered when creating automatic groups (default
+is just the agent name). For example, if you specify '-autogroup os agent',
+then the system will create one group for each combination of OS and browser.
+
+Automatic groups are created in alphabetical order.
+
+Unless you specify the -preventother flag, the system doesn't create automatic
+groups where these would have less than 0.5% of the count in every input file
+for the categories being considered. These are classified as 'other'.
+
+Groups:
+
+You can specify the same named group multiple times if you like; agents
+matching any such parameter will be assigned to the same group in output.
+
+The output will include one row for each group, in the order that the groups
+are first specified.
+
+Conditions:
+
+You can include zero or more conditions in one -include, -exclude, or -group.
+In order for the parameter to match, all conditions must match. The following
+conditions are available:
+
+type {regexp}
+os {regexp}
+engine {regexp}
+agent {regexp}
+version {regexp}
+version {versionoperator} {number}
+
+Each condition may be used only once in a parameter; for instance, you can't
+specify 'agent' twice.
+
+Regular expressions:
+
+The type, os, engine, agent, and version parameters are processed as regular
+expressions. The regular expression may not begin with - (if you really need it
+to, start it with [-]).
+
+Numeric versions:
+
+When using numeric version comparions, choose versionoperator from this list:
+
+gt greater than
+lt less than
+ge greater than or equal
+le less than or equal
+ne not equal
+eq equal
+
+When this format is chosen, the next parameter must be a decimal number such
+as 6 or 4.5. The system will give an error if the parameter isn't a number,
+or if the agent version for an otherwise-matching agent isn't a number.
+
+Examples:
+
+If you want to compare use of Internet Explorer versions only:
+
+-include agent ie -group "Before 6" version lt 6 -group "6" version eq 6
+    -group "7" version eq 7 -group "8+" version ge 8 -- *.knownagents
+
+To compare browsers versus other access:
+
+-group "Browsers" type browser -- *.knownagents
+
+To compare operating systems, excluding all requests not from a desktop
+operating system:
+
+-group "Windows" os win -group "Mac" os mac -group "Linux" os linux
+    -exclude -- *.knownagents
+
+A real-life example that counts popular browsers (formatted with extra line
+feeds; you either need to remove these if using on the command line, or add
+extra ones if using an @ options files):
+
+-include type browser
+-group IE engine trident
+-group Firefox agent firefox
+-group Opera agent opera
+-group Safari agent safari
+-group Chrome agent chrome
+-autoversion full+ IE
+-autoversion min Firefox
+-autoversion min Safari
+-autoversion min Opera
+-autoversion min Chrome
+
+This shows counts for desktop browsers only, excluding mobile devices, RSS
+readers, etc. Browsers not specifically listed will be counted in 'Other', as
+will old versions of Firefox, Safari, Opera, and Chrome. IE will show a full
+version breakdown for each versions with at least 5% of requests, plus
+IE (Other) for other versions.
+
+Stick -test showgroups on the command line to print (to standard output) what
+agents will be included in each group.
+
+To check names used for agent type, agents, operating systems, etc., see
+agents.xml. from the agent Identify tool.

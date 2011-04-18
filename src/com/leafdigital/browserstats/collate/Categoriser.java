@@ -16,35 +16,41 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.util.xml;
+package com.leafdigital.browserstats.collate;
 
-import java.io.IOException;
+import java.util.LinkedList;
 
-/** Exception used for XML errors */
-public class XMLException extends IOException
+/** Class that categorises log lines according to one or more rules. */
+public class Categoriser
 {
-	/**
-	 * @param message
-	 */
-	public XMLException(String message)
+	private LinkedList<Category> categories = new LinkedList<Category>();
+
+	void addCategory(Category c)
 	{
-		super(message);
+		categories.addLast(c);
 	}
+
 	/**
-	 * @param cause
+	 * @param line Log line
+	 * @return Category for line (Category.NONE if none match)
 	 */
-	public XMLException(Throwable cause)
+	public Category categorise(LogLine line)
 	{
-		super("Invalid XML");
-		initCause(cause);
+		for(Category c : categories)
+		{
+			if(c.match(line))
+			{
+				return c;
+			}
+		}
+		return Category.NONE;
 	}
+
 	/**
-	 * @param message
-	 * @param cause
+	 * @return All categories
 	 */
-	public XMLException(String message,Throwable cause)
+	public Category[] getCategories()
 	{
-		super(message);
-		initCause(cause);
+		return categories.toArray(new Category[categories.size()]);
 	}
 }

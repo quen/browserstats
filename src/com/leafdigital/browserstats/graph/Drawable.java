@@ -16,35 +16,24 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.util.xml;
+package com.leafdigital.browserstats.graph;
 
-import java.io.IOException;
+import java.awt.*;
 
-/** Exception used for XML errors */
-public class XMLException extends IOException
+/**
+ * Base class for things that can be drawn in SVG or in Java.
+ */
+public abstract class Drawable
 {
 	/**
-	 * @param message
+	 * Draws this shape to a graphics context.
+	 * @param g Graphics context
 	 */
-	public XMLException(String message)
-	{
-		super(message);
-	}
+	public abstract void draw(Graphics2D g);
+
 	/**
-	 * @param cause
+	 * Draws this shape to SVG file.
+	 * @param svg String for SVG output.
 	 */
-	public XMLException(Throwable cause)
-	{
-		super("Invalid XML");
-		initCause(cause);
-	}
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public XMLException(String message,Throwable cause)
-	{
-		super(message);
-		initCause(cause);
-	}
+	public abstract void draw(StringBuilder svg);
 }

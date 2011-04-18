@@ -16,35 +16,23 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.util.xml;
+package com.leafdigital.browserstats.identify;
 
-import java.io.IOException;
+import org.w3c.dom.Element;
 
-/** Exception used for XML errors */
-public class XMLException extends IOException
+/** Information required to detect a group of browsers. */
+public class Group extends MatchElement
 {
 	/**
-	 * @param message
+	 * Constructs from XML.
+	 * @param parent Parent match element
+	 * @param e Browser element
+	 * @throws InvalidElementException If the input format is wrong
 	 */
-	public XMLException(String message)
+	Group(MatchElement parent, Element e) throws InvalidElementException
 	{
-		super(message);
-	}
-	/**
-	 * @param cause
-	 */
-	public XMLException(Throwable cause)
-	{
-		super("Invalid XML");
-		initCause(cause);
-	}
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public XMLException(String message,Throwable cause)
-	{
-		super(message);
-		initCause(cause);
+		super(parent);
+		initSelf(e);
+		initChildren(e);
 	}
 }

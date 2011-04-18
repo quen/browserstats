@@ -16,35 +16,38 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.util.xml;
+package com.leafdigital.browserstats.identify;
 
-import java.io.IOException;
+import java.io.*;
 
-/** Exception used for XML errors */
-public class XMLException extends IOException
+import org.w3c.dom.Element;
+
+import com.leafdigital.util.xml.XML;
+
+/** Used to indicate that a particular element is invalid. */
+public class InvalidElementException extends Exception
 {
-	/**
-	 * @param message
-	 */
-	public XMLException(String message)
+	private Element e;
+
+	InvalidElementException(Element e, String message)
 	{
 		super(message);
+		this.e = e;
 	}
-	/**
-	 * @param cause
-	 */
-	public XMLException(Throwable cause)
+
+	@Override
+	public String toString()
 	{
-		super("Invalid XML");
-		initCause(cause);
-	}
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public XMLException(String message,Throwable cause)
-	{
-		super(message);
-		initCause(cause);
+		StringWriter writer = new StringWriter();
+		try
+		{
+			XML.fastSave(XML.MODE_XML, e, writer);
+		}
+		catch(IOException e)
+		{
+			// Can't get IOException when writing to StringWriter
+			throw new Error(e);
+		}
+		return super.toString() + "\n" + writer.toString();
 	}
 }

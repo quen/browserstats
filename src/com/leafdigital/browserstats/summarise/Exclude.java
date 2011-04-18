@@ -16,35 +16,28 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.util.xml;
+package com.leafdigital.browserstats.summarise;
 
-import java.io.IOException;
+import com.leafdigital.browserstats.shared.SpecialNames;
 
-/** Exception used for XML errors */
-public class XMLException extends IOException
+/**
+ * Represents the -exclude command-line parameter.
+ */
+class Exclude extends Conditions
 {
 	/**
-	 * @param message
+	 * Initialises conditions from command-line arguments.
+	 * @param args Arguments
+	 * @param i Position of first condition
 	 */
-	public XMLException(String message)
+	protected Exclude(String[] args, int i)
 	{
-		super(message);
+		super(args, i);
 	}
-	/**
-	 * @param cause
-	 */
-	public XMLException(Throwable cause)
+
+	@Override
+	protected String getName()
 	{
-		super("Invalid XML");
-		initCause(cause);
-	}
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public XMLException(String message,Throwable cause)
-	{
-		super(message);
-		initCause(cause);
+		return SpecialNames.GROUP_EXCLUDED;
 	}
 }

@@ -16,35 +16,37 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.util.xml;
+package com.leafdigital.browserstats.summarise;
 
-import java.io.IOException;
+import com.leafdigital.browserstats.shared.SpecialNames;
 
-/** Exception used for XML errors */
-public class XMLException extends IOException
+/**
+ * Represents automatically-generated 'other' entries; these are all summed
+ * together to result in the 'other' total at bottom.
+ */
+class Other extends Conditions
 {
 	/**
-	 * @param message
+	 * Creates generic 'other' matcher.
 	 */
-	public XMLException(String message)
+	protected Other()
 	{
-		super(message);
+		super(null, null, null, null, null, null, 0);
 	}
+
 	/**
-	 * @param cause
+	 * Creates 'other' matcher for unwanted items that match a previous group.
+	 * @param original Original group
 	 */
-	public XMLException(Throwable cause)
+	protected Other(Group original)
 	{
-		super("Invalid XML");
-		initCause(cause);
+		super(original.getType(), original.getOs(), original.getEngine(), original.getAgent(),
+			null, null, 0);
 	}
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public XMLException(String message,Throwable cause)
+
+	@Override
+	protected String getName()
 	{
-		super(message);
-		initCause(cause);
+		return SpecialNames.GROUP_OTHER;
 	}
 }

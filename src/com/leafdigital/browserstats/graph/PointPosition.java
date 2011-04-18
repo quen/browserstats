@@ -16,35 +16,45 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.util.xml;
+package com.leafdigital.browserstats.graph;
 
-import java.io.IOException;
-
-/** Exception used for XML errors */
-public class XMLException extends IOException
+/**
+ * Stores co-ordinate information for each graph point.
+ */
+class PointPosition
 {
-	/**
-	 * @param message
-	 */
-	public XMLException(String message)
+	private final static int POINT_CURVE_THRESHOLD = 20;
+	final static int POINT_CURVE_SIZE = 5;
+	double start, end;
+	boolean curve;
+
+	PointPosition(double start, double end, boolean last)
 	{
-		super(message);
+		this.start = start;
+		this.end = end;
+		curve = last ? false : end - start > POINT_CURVE_THRESHOLD;
 	}
+
 	/**
-	 * @param cause
+	 * @return True if this point gets a curve after it.
 	 */
-	public XMLException(Throwable cause)
+	boolean hasCurve()
 	{
-		super("Invalid XML");
-		initCause(cause);
+		return curve;
 	}
+
 	/**
-	 * @param message
-	 * @param cause
+	 * @return Midpoint co-ordinate for text labels
 	 */
-	public XMLException(String message,Throwable cause)
+	double getMiddle()
 	{
-		super(message);
-		initCause(cause);
+		if(curve)
+		{
+			return ((end - POINT_CURVE_SIZE) + start) / 2.0;
+		}
+		else
+		{
+			return (end + start) / 2.0;
+		}
 	}
 }

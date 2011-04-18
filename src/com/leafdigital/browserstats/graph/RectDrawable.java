@@ -16,35 +16,30 @@ along with browserstats.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright 2010 Samuel Marshall.
 */
-package com.leafdigital.util.xml;
+package com.leafdigital.browserstats.graph;
 
-import java.io.IOException;
+import java.awt.Color;
 
-/** Exception used for XML errors */
-public class XMLException extends IOException
+/**
+ * A rectangle that can be drawn to PNG or SVG.
+ */
+public class RectDrawable extends ShapeDrawable
 {
 	/**
-	 * @param message
+	 * @param startX X of top left
+	 * @param startY Y of top left
+	 * @param width Width of box
+	 * @param height Height of box
+	 * @param color Colour
 	 */
-	public XMLException(String message)
+	public RectDrawable(double startX, double startY, double width, double height,
+		Color color)
 	{
-		super(message);
+		super(startX, startY, color);
+		lineTo(startX + width, startY);
+		lineTo(startX + width, startY + height);
+		lineTo(startX, startY + height);
+		finish();
 	}
-	/**
-	 * @param cause
-	 */
-	public XMLException(Throwable cause)
-	{
-		super("Invalid XML");
-		initCause(cause);
-	}
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public XMLException(String message,Throwable cause)
-	{
-		super(message);
-		initCause(cause);
-	}
+
 }
