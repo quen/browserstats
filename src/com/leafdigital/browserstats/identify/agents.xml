@@ -375,10 +375,36 @@ List used to detect user agents.
 		  </agent>			
 		</group>
 
-		<agent name="android" engine="webkit">
+		<group name="android" engine="webkit">
 			<regex> Android.* AppleWebKit/</regex>
-			<sample>Mozilla/5.0 (Linux; U; Android 1.0; en-us; dream) AppleWebKit/525.10+ (KHTML, like Gecko) Version/3.0.4 Mobile Safari/523.12.2</sample>
-		</agent>
+			<agent version="1.0">
+				<regex>Android 1.0</regex>
+				<sample>Mozilla/5.0 (Linux; U; Android 1.0; en-us; dream) AppleWebKit/525.10+ (KHTML, like Gecko) Version/3.0.4 Mobile Safari/523.12.2</sample>
+			</agent>
+			<agent version="1.5">
+				<regex>Android 1.5</regex>
+				<sample>MOT-MB200/Blur_Version.1.3.19.MB200.Orange.en.GB Mozilla/5.0 (Linux; U; Android 1.5; en-gb; MB200 Build/CUPCAKE) AppleWebKit/528.5  (KHTML, like Gecko) Version/3.1.2 Mobile Safari/525.20.1</sample>
+			</agent>
+			<agent version="1.6">
+				<regex>Android 1.6</regex>
+				<sample>Mozilla/5.0 (Linux; U; Android 1.6; en-gb; SonyEricssonE10iv Build/1.2.A.1.174) AppleWebKit/528.5  (KHTML, like Gecko) Version/3.1.2 Mobile Safari/525.20.1</sample>
+			</agent>
+			<agent version="2.1">
+				<regex>Android 2.1</regex>
+				<sample>Mozilla/5.0 (Linux; U; Android 2.1-update1; en-gb; E10i Build/2.0.A.0.504) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17</sample>
+			</agent>
+			<agent version="2.2">
+				<regex>Android 2.2</regex>
+				<sample>Mozilla/5.0 (Linux; U; Android 2.2; en-gb; ZTE Blade Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1</sample>
+			</agent>
+			<agent version="3.0">
+				<regex>Android 3.0</regex>
+				<sample>Mozilla/5.0 (Linux; U; Android 3.0.1; en-gb; LG-V900 Build/HRI66) AppleWebKit/534.13 (KHTML, like Gecko) Version/4.0 Safari/534.13</sample>
+			</agent>
+			<agent version="0.1"><!-- Actually unknown -->
+				<sample>Mozilla/5.0 (Linux; U; Android VillainROM-v13; en-gb; HTC Hero Build/ERE27) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17</sample>
+			</agent>
+		</group>
 
 		<agent name="imode">
 			<regex>^DoCoMo/</regex>
@@ -475,8 +501,10 @@ List used to detect user agents.
 
 		<agent name="symbianwebkit" engine="webkit">
 			<regex>\(SymbianOS/.*AppleWebKit/</regex>
+			<regex>^Nokia.*Safari</regex>
 			<sample>Mozilla/5.0 (SymbianOS/9.4; Series60/5.0 NokiaX6-00/20.0.005; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/525 (KHTML, like Gecko) Version/3.0 BrowserNG/7.2.3</sample>
 			<sample>SonyEricssonU1i/R2AA; Mozilla/5.0 (SymbianOS/9.4; U; Series60/5.0 Profile/MIDP-2.1 Configuration/CLDC-1.1) AppleWebKit/525 (KHTML, like Gecko) Version/3.0 Safari/525</sample>
+			<sample>Nokia6303classic/2.0 (09.10) Profile/MIDP-2.1 Configuration/CLDC-1.1 Mozilla/5.0 AppleWebKit/420  (KHTML, like Gecko) Safari/420</sample>
 		</agent>
 	</group>
 
