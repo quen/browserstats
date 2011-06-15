@@ -14,7 +14,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with browserstats.	If not, see <http://www.gnu.org/licenses/>.
 
-Copyright 2010 Samuel Marshall.
+Copyright 2010-2011 Samuel Marshall.
 
 
 List used to detect user agents.
@@ -601,6 +601,22 @@ List used to detect user agents.
 				<!-- 'Iron' is a de-googled version of Chrome from the same source -->
 				<regex>(Chrome|Iron)/</regex>
 
+        <group version="12">
+            <regex>(Chrome|Iron)/12\.</regex>
+            <agent os="win">
+                <regex>Windows(?! CE)</regex>
+                <sample>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30</sample>
+            </agent>
+            <agent os="linux">
+                <regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+                <sample>Mozilla/5.0 (X11; Linux i686) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30</sample>
+            </agent>
+            <agent os="mac">
+                <regex>Macintosh</regex>
+                <sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30</sample>
+            </agent>
+        </group>
+
 				<group version="11">
 					<regex>(Chrome|Iron)/11\.</regex>
 					<agent os="win">
@@ -1066,6 +1082,20 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 					<sample>Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:2.0b2pre) Gecko/20100701 Minefield/4.0b2pre</sample>
 				</agent>
 			</group>
+      <group version="5.0">
+        <regex>(Firefox|Iceweasel|Minefield)/5\.</regex>
+        <agent os="mac">
+          <regex>Mac OS X</regex>
+          <sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:5.0) Gecko/20100101 Firefox/5.0</sample>
+        </agent>
+        <agent os="win">
+          <regex>Windows(?! CE)</regex>
+          <sample>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0</sample>
+        </agent>
+        <agent os="linux">
+           <regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+        </agent>
+      </group>
 		</group>
 
 		<group engine="gecko" name="seamonkey">
