@@ -376,7 +376,27 @@ List used to detect user agents.
 				<regex>\(iP(hone|od); U; CPU like Mac OS X</regex>
 				<sample>Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3</sample>
 				<sample>Mozilla/5.0 (iPod; U; CPU like Mac OS X; en) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/4B1 Safari/419.3</sample>
-		  </agent>			
+		  </agent>
+		</group>
+
+		<group name="fennec" engine="gecko">
+			<regex> Fennec/</regex>
+			<agent version="8.0">
+				<regex>Fennec/8\.0</regex>
+				<sample>Mozilla/5.0 (Android; Linux armv7l; rv:8.0) Gecko/20111019 Firefox/8.0 Fennec/8.0</sample>
+		  </agent>
+		</group>
+
+		<group name="dolfin">
+			<regex> Dolfin/</regex>
+			<agent version="2.0" engine="webkit">
+				<regex>Dolfin/2\.0</regex>
+				<sample>Mozilla/5.0 (SAMSUNG; SAMSUNG-GT-S8500/S8500BIKB1; U; Bada/1.0; en-us) AppleWebKit/533.1 (KHTML, like Gecko) Dolfin/2.0 Mobile WVGA SMM-MMS/1.2.0 NexPlayer/3.0 profile/MIDP-2.1 configuration/CLDC-1.1 OPN-B</sample>
+		  </agent>
+			<agent version="2.2" engine="webkit">
+				<regex>Dolfin/2\.2</regex>
+				<sample>Mozilla/5.0 (SAMSUNG; SAMSUNG-GT-S8500/S8500XXJL2; U; Bada/1.2; en-us) AppleWebKit/533.1 (KHTML, like Gecko) Dolfin/2.2 Mobile WVGA SMM-MMS/1.2.0 OPN-B</sample>
+		  </agent>
 		</group>
 
 		<group name="android" engine="webkit">
@@ -504,11 +524,12 @@ List used to detect user agents.
 		</agent>
 
 		<agent name="symbianwebkit" engine="webkit">
-			<regex>\(SymbianOS/.*AppleWebKit/</regex>
+			<regex>\(Symbian(OS)?/.*AppleWebKit/</regex>
 			<regex>^Nokia.*Safari</regex>
 			<sample>Mozilla/5.0 (SymbianOS/9.4; Series60/5.0 NokiaX6-00/20.0.005; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/525 (KHTML, like Gecko) Version/3.0 BrowserNG/7.2.3</sample>
 			<sample>SonyEricssonU1i/R2AA; Mozilla/5.0 (SymbianOS/9.4; U; Series60/5.0 Profile/MIDP-2.1 Configuration/CLDC-1.1) AppleWebKit/525 (KHTML, like Gecko) Version/3.0 Safari/525</sample>
 			<sample>Nokia6303classic/2.0 (09.10) Profile/MIDP-2.1 Configuration/CLDC-1.1 Mozilla/5.0 AppleWebKit/420  (KHTML, like Gecko) Safari/420</sample>
+			<sample>Mozilla/5.0 (Symbian/3; Series60/5.2 NokiaC7-00/012.003; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/525 (KHTML, like Gecko) Version/3.0 BrowserNG/7.2.7.3 3gpp-gba</sample>
 		</agent>
 	</group>
 
