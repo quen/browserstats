@@ -329,7 +329,7 @@ List used to detect user agents.
 		</group>
 
 		<group name="apple" engine="webkit">
-		  <regex>iP(hone|od|ad)[ ;]</regex>
+		  <regex>iP(hone|od|ad|od touch)[ ;]</regex>
 		  <group>
 				<regex>CPU( iPhone)? OS.* AppleWebKit/</regex>
 				<agent version="2.1">
@@ -369,6 +369,12 @@ List used to detect user agents.
 					<regex>OS 4_3</regex>
 					<sample>Mozilla/5.0 (iPad; U; CPU OS 4_3_1 like Mac OS X; en-gb) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8G4 Safari/6533.18.5</sample>
 					<sample>Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_1 like Mac OS X; en-gb) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8G4 Safari/6533.18.5</sample>
+				</agent>
+				<agent version="5.0">
+					<regex>OS 5_0</regex>
+					<sample>Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko)
+Version/5.1 Mobile/9A334 Safari/7534.48.3</sample>
+					<sample>Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3</sample>
 				</agent>
 			</group>
 			<agent version="1">
