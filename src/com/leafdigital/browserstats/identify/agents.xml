@@ -395,6 +395,11 @@ Version/5.1 Mobile/9A334 Safari/7534.48.3</sample>
 
 		<group name="dolfin">
 			<regex> Dolfin/</regex>
+			<agent version="1.5" engine="">
+				<regex>Dolfin/1\.5</regex>
+				<sample>SAMSUNG-GT-B5310/B5310ACIL4 SHP/VPP/R5 Dolfin/1.5 Nextreaming SMM-MMS/1.2.0 profile/MIDP-2.1
+configuration/CLDC-1.1</sample>
+		  </agent>
 			<agent version="2.0" engine="webkit">
 				<regex>Dolfin/2\.0</regex>
 				<sample>Mozilla/5.0 (SAMSUNG; SAMSUNG-GT-S8500/S8500BIKB1; U; Bada/1.0; en-us) AppleWebKit/533.1 (KHTML, like Gecko) Dolfin/2.0 Mobile WVGA SMM-MMS/1.2.0 NexPlayer/3.0 profile/MIDP-2.1 configuration/CLDC-1.1 OPN-B</sample>
@@ -441,9 +446,10 @@ Version/5.1 Mobile/9A334 Safari/7534.48.3</sample>
 			<sample>DoCoMo/2.0 P90liS(c100;TB;W20H10)</sample>
 		</agent>
 
-		<agent name="pre" engine="webkit">
-			<regex>\(webOS/.*AppleWebKit/</regex>
+		<agent name="webos" engine="webkit">
+			<regex>(\(web|; hpw)OS/.*AppleWebKit/</regex>
 			<sample>Mozilla/5.0 (webOS/1.0; U; en-US) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/1.0 Safari/525.27.1 Pre/1.0</sample>
+			<sample>Mozilla/5.0 (hp-tablet; Linux; hpwOS/3.0.4; U; en-GB) AppleWebKit/534.6 (KHTML, like Gecko) wOSBrowser/234.76 Safari/534.6 TouchPad/1.0</sample>
 		</agent>
 
 		<agent name="palm">
@@ -520,8 +526,9 @@ Version/5.1 Mobile/9A334 Safari/7534.48.3</sample>
 		</agent>
 
 		<agent name="blackberrywebkit" engine="webkit">
-			<regex>^Mozilla/5.0 \(BlackBerry.*AppleWebKit</regex>
+			<regex>^Mozilla/5.0 \((PlayBook|BlackBerry).*AppleWebKit</regex>
 			<sample>Mozilla/5.0 (BlackBerry; U; BlackBerry 9800; en-GB) AppleWebKit/534.1  (KHTML, like Gecko) Version/6.0.0.246 Mobile Safari/534.1</sample>
+			<sample>Mozilla/5.0 (PlayBook; U; RIM Tablet OS 1.0.0; en-US) AppleWebKit/534.11  (KHTML, like Gecko) Version/7.1.0.7 Safari/534.11</sample>
 		</agent>
 
 		<agent name="googletranscode">
@@ -626,6 +633,10 @@ Version/5.1 Mobile/9A334 Safari/7534.48.3</sample>
 		<agent name="netnewswire">
 			<regex>^NetNewsWire/</regex>
 			<sample>NetNewsWire/3.2.15 (Mac OS X; http://netnewswireapp.com/mac/; gzip-happy)</sample>
+		</agent>
+		<agent name="rssbandit">
+			<regex>^RssBandit/</regex>
+			<sample>RssBandit/1.9.0.1002 (.NET CLR 2.0.50727.5448; WinNT 6.1.7601 Service Pack 1; http://www.rssbandit.org)</sample>
 		</agent>
 	</group>
 
@@ -871,10 +882,23 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 				</group>
 			</group>
 
+			<!--
+				Some ways to call up, effectively, Safari apparently leave out the useragent.
+				See https://discussions.apple.com/thread/3392902?start=0&tstart=0
+			-->
+			<group name="safari" os="mac">
+				<regex>Intel Mac OS X.* AppleWebKit/(?!.*Safari/)</regex>
+				<agent version="5">
+					<regex>AppleWebKit/534.51.22</regex>
+					<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.51.22 (KHTML, like Gecko)</sample>
+				</agent>
+			</group>
+
 			<group name="safari">
 				<regex>Safari/</regex>
 				<group version="5">
 					<regex>Version/5\.</regex>
+					<regex>Intel Mac OSAppleWebKit/534.51.22</regex>
 					<agent os="mac">
 						<regex>\(Macintosh;</regex>
 						<sample>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_4; de-de) AppleWebKit/533.16
