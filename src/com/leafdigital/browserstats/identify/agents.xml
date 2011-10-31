@@ -611,10 +611,47 @@ List used to detect user agents.
 
 			<group name="chrome">
 				<!-- 'Iron' is a de-googled version of Chrome from the same source -->
-				<regex>(Chrome|Iron)/</regex>
+				<regex>(Chrom(e|ium)|Iron)/</regex>
+
+				<group version="16">
+					<regex>(Chrom(e|ium)|Iron)/16\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.904.0 Safari/535.7</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.904.0 Safari/535.7</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.904.0 Safari/535.7</sample>
+					</agent>
+					<agent os="chromeos">
+						<regex>CrOS</regex>
+						<sample>Mozilla/5.0 (X11; CrOS i686 1193.15.0) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.10 Safari/535.7</sample>
+					</agent>
+				</group>
+
+				<group version="15">
+					<regex>(Chrom(e|ium)|Iron)/15\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+					</agent>
+					<agent os="chromeos">
+						<regex>CrOS</regex>
+						<sample>Mozilla/5.0 (X11; CrOS i686 15.1011.62) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.83 Safari/535.2</sample>
+					</agent>
+				</group>
 
 				<group version="14">
-					<regex>(Chrome|Iron)/14\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/14\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.126 Safari/535.1</sample>
@@ -625,10 +662,14 @@ List used to detect user agents.
 					<agent os="mac">
 						<regex>Macintosh</regex>
 					</agent>
+					<agent os="chromeos">
+						<regex>CrOS</regex>
+						<sample>Mozilla/5.0 (X11; CrOS i686 14.811.154) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.204 Safari/535.1</sample>
+					</agent>
 				</group>
 
 				<group version="13">
-					<regex>(Chrome|Iron)/13\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/13\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.220 Safari/535.1</sample>
@@ -644,7 +685,7 @@ List used to detect user agents.
 				</group>
 
 				<group version="12">
-					<regex>(Chrome|Iron)/12\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/12\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30</sample>
@@ -660,7 +701,7 @@ List used to detect user agents.
 				</group>
 
 				<group version="11">
-					<regex>(Chrome|Iron)/11\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/11\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.34 Safari/534.24</sample>
@@ -675,7 +716,7 @@ List used to detect user agents.
 				</group>
 
 				<group version="10">
-					<regex>(Chrome|Iron)/10\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/10\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 					</agent>
@@ -691,7 +732,7 @@ List used to detect user agents.
 				</group>
 
 				<group version="9">
-					<regex>(Chrome|Iron)/9\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/9\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Chrome/9.0.597.98 Safari/534.13</sample>
@@ -705,7 +746,7 @@ List used to detect user agents.
 				</group>
 
 				<group version="8">
-					<regex>(Chrome|Iron)/8\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/8\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 					</agent>
@@ -718,7 +759,7 @@ List used to detect user agents.
 				</group>
 
 				<group version="7">
-					<regex>(Chrome|Iron)/7\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/7\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 					</agent>
@@ -731,7 +772,7 @@ List used to detect user agents.
 				</group>
 
 				<group version="6">
-					<regex>(Chrome|Iron)/6\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/6\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/534.2 (KHTML, like Gecko) Chrome/6.0.447.0 Safari/534.2</sample>
@@ -746,7 +787,7 @@ List used to detect user agents.
 					</agent>
 				</group>
 				<group version="5">
-					<regex>(Chrome|Iron)/5\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/5\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.70 Safari/533.4</sample>
@@ -761,7 +802,7 @@ List used to detect user agents.
 					</agent>
 				</group>
 				<group version="4">
-					<regex>(Chrome|Iron)/4\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/4\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (K
@@ -777,7 +818,7 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 					</agent>
 				</group>
 				<group version="3">
-					<regex>(Chrome|Iron)/3\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/3\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/531.2 (KHTML, like Gecko) Chrome/3.0.191.0 Safari/531.2</sample>
@@ -788,14 +829,14 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 					</agent>
 				</group>
 				<group version="2">
-					<regex>(Chrome|Iron)/2\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/2\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.33 Safari/530.5</sample>
 					</agent>
 				</group>
 				<group version="1">
-					<regex>(Chrome|Iron)/1\.</regex>
+					<regex>(Chrom(e|ium)|Iron)/1\.</regex>
 					<agent os="win">
 						<regex>Windows(?! CE)</regex>
 						<sample>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.48 Safari/525.19</sample>
