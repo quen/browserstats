@@ -1238,6 +1238,50 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
 				</agent>
 			</group>
+			<group version="8.0">
+				<regex>(Firefox|Iceweasel|Minefield)/8\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.5; rv:8.0) Gecko/20100101 Firefox/8.0</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows NT 5.1; rv:8.0) Gecko/20100101 Firefox/8.0</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (Ubuntu; X11; Linux i686; rv:8.0) Gecko/20100101 Firefox/8.0</sample>
+				</agent>
+			</group>
+			<group version="9.0">
+				<regex>(Firefox|Iceweasel|Minefield)/9\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:9.0a1) Gecko/20110828 Firefox/9.0a1</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows NT 6.0; WOW64; rv:9.0a2) Gecko/20111025 Firefox/9.0a2</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (Ubuntu; X11; Linux i686; rv:9.0a2) Gecko/20111013 Firefox/9.0a2</sample>
+				</agent>
+			</group>
+			<group version="10.0">
+				<regex>(Firefox|Iceweasel|Minefield)/10\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0a1) Gecko/20111024 Firefox/10.0a1</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0a1) Gecko/20111025 Firefox/10.0a1</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+				</agent>
+			</group>
 		</group>
 
 		<group engine="gecko" name="seamonkey">
