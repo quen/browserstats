@@ -1380,7 +1380,9 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 		<agent name="dataaccess">
 			<!-- iPhone data access -->
 			<regex>^DataAccess/</regex>
+			<regex>^iOS/.*dataaccessd/</regex>
 			<sample>DataAccess/1.0 (8L1)</sample>
+			<sample>iOS/5.0 (9A334) dataaccessd/1.0</sample>
 		</agent>
 	</group>
 
