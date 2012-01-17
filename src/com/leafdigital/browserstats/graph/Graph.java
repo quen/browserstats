@@ -181,6 +181,18 @@ public class Graph extends CommandLineTool
 			foreground = ColorUtils.fromString(args[i+1]);
 			return 2;
 		}
+		if(args[i].equals("-group"))
+		{
+			checkArgs(args, i, 3);
+			System.err.println("+1 " + args[i+1]); 
+			System.err.println("+2 " + args[i+2]); 
+			System.err.println("+3 " + args[i+3]); 
+			String group = args[i+1];
+			Color main = ColorUtils.fromString(args[i+2]),
+				text = ColorUtils.fromString(args[i+3]);
+			groupColours.put(group, new GroupColours(main, text));
+			return 4;
+		}
 		if(args[i].equals("-font"))
 		{
 			checkArgs(args, i, 1);
