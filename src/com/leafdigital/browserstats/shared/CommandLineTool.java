@@ -103,7 +103,7 @@ public abstract class CommandLineTool
 				}
 
 				line = line.trim();
-				if(line.equals("") || line.startsWith("#"))
+				if(line.equals("") || (line.startsWith("#") && !line.matches("#[0-9a-f]{6}")))
 				{
 					// Skip blank lines and comments
 					continue;
