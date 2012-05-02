@@ -32,7 +32,7 @@
 	<!-- Compile Java source and write the version file -->
 	<target name="compile" depends="init">
 		<mkdir dir="${build}/classes" />
-		<javac destdir="${build}/classes"
+		<javac destdir="${build}/classes" includeantruntime="false"
 			source="1.6" target="1.6" encoding="UTF-8" debug="true">
 			<src>
 			  <pathelement path="src"/>

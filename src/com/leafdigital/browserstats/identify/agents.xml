@@ -736,6 +736,27 @@ configuration/CLDC-1.1</sample>
 				<!-- 'Iron' is a de-googled version of Chrome from the same source -->
 				<regex>(Chrom(e|ium)|Iron)/</regex>
 
+				<group version="20">
+					<regex>(Chrom(e|ium)|Iron)/20\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.9 (KHTML, like Gecko) Chrome/20.0.1115.1
+Safari/536.9</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.9 (KHTML, like Gecko) Chrome/20.0.1115.1 Safari/536.9</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/536.8 (KHTML, like Gecko) Chrome/20.0.1105.0 Safari/536.8</sample>
+					</agent>
+					<agent os="chromeos">
+						<regex>CrOS</regex>
+						<sample>Mozilla/5.0 (X11; CrOS x86_64 2183.0.0) AppleWebKit/536.9 (KHTML, like Gecko) Chrome/20.0.1114.0 Safari/536.9</sample>
+					</agent>
+				</group>
+
 				<group version="19">
 					<regex>(Chrom(e|ium)|Iron)/19\.</regex>
 					<agent os="win">
@@ -1548,6 +1569,36 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 				<agent os="linux">
 					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
 					<sample>Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20120304 Firefox/13.0a1</sample>
+				</agent>
+			</group>
+			<group version="14.0">
+				<regex>(Firefox|Iceweasel|Minefield)/14\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:14.0) Gecko/20120427 Firefox/14.0a2</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20120425 Firefox/14.0a2</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; Linux x86_64; rv:14.0) Gecko/20120424 Firefox/14.0a1</sample>
+				</agent>
+			</group>
+			<group version="15.0">
+				<regex>(Firefox|Iceweasel|Minefield)/15\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:15.0) Gecko/20120427 Firefox/15.0a1</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:15.0) Gecko/20120427 Firefox/15.0a1</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20120425 Firefox/15.0a1</sample>
 				</agent>
 			</group>
 		</group>
