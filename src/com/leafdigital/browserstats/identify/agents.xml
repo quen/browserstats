@@ -192,6 +192,8 @@ List used to detect user agents.
 			<agent name="yandex">
 				<regex>^Yandex/</regex>
 				<sample>Yandex/1.01.001 (compatible; Win16; I)</sample>
+				<regex>^Mozilla/5\.0 \(compatible; YandexBot/</regex>
+				<sample>Mozilla/5.0 (compatible; YandexBot/3.0;  http://yandex.com/bots)</sample>
 			</agent>
 			<agent name="gais">
 				<regex>^Gaisbot/</regex>
