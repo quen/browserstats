@@ -738,6 +738,25 @@ configuration/CLDC-1.1</sample>
 				<!-- 'Iron' is a de-googled version of Chrome from the same source -->
 				<regex>(Chrom(e|ium)|Iron)/</regex>
 
+				<group version="21">
+					<regex>(Chrom(e|ium)|Iron)/21\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1145.0 Safari/537.1</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.0 Safari/537.1</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1171.0 Safari/537.1</sample>
+					</agent>
+					<agent os="chromeos">
+						<regex>CrOS</regex>
+					</agent>
+				</group>
+
 				<group version="20">
 					<regex>(Chrom(e|ium)|Iron)/20\.</regex>
 					<agent os="win">
@@ -1601,6 +1620,20 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 				<agent os="linux">
 					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
 					<sample>Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20120425 Firefox/15.0a1</sample>
+				</agent>
+			</group>
+			<group version="16.0">
+				<regex>(Firefox|Iceweasel|Minefield)/16\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:16.0) Gecko/16.0 Firefox/16.0a1</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; Linux x86_64; rv:16.0) Gecko/16.0 Firefox/16.0</sample>
 				</agent>
 			</group>
 		</group>
