@@ -56,6 +56,8 @@ List used to detect user agents.
 			<sample>renlifangbot/1.0 (+http://search.msn.com/msnbot.htm)</sample>
 			<regex>^librabot/</regex>
 			<sample>librabot/1.0 (+http://search.msn.com/msnbot.htm)</sample>
+			<regex>^msnbot-UDiscovery/</regex>
+			<sample>msnbot-UDiscovery/2.0b ( http://search.msn.com/msnbot.htm)</sample>
 		</agent>
 			<agent name="google">
 				<regex>^Mozilla/5.0 \(compatible; Googlebot/</regex>
@@ -300,6 +302,10 @@ List used to detect user agents.
 		<agent name="bluecoat">
 			<regex>^Mozilla/4.0 \(compatible;\)$</regex>
 			<sample>Mozilla/4.0 (compatible;)</sample>
+		</agent>
+		<agent name="moodlefilemanager">
+			<regex>^MoodleFileManager/</regex>
+			<sample>MoodleFileManager/3.0</sample>
 		</agent>
 	</group>
 
@@ -724,6 +730,10 @@ configuration/CLDC-1.1</sample>
 		<agent name="summify">
 			<regex>^Summify</regex>
 			<sample>Summify (Summify/1.0.1;  http://summify.com)</sample>
+		</agent>
+		<agent name="rssgrowler">
+			<regex>^Rss%20Growler/</regex>
+			<sample>Rss%20Growler/22 CFNetwork/454.12.4 Darwin/10.8.0 (i386) (MacBook1%2C1)</sample>
 		</agent>
 	</group>
 
@@ -1708,6 +1718,14 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 			<sample>DataAccess/1.0 (8L1)</sample>
 			<sample>iOS/5.0 (9A334) dataaccessd/1.0</sample>
 		</agent>
+		<agent name="wget">
+			<regex>^Wget/</regex>
+			<sample>Wget/1.12 (linux-gnu)</sample>
+		</agent>
+		<agent name="curl">
+			<regex>^curl/</regex>
+			<sample>curl/7.19.7 (i386-redhat-linux-gnu) libcurl/7.19.7 NSS/3.13.1.0 zlib/1.2.3 libidn/1.18 libssh2/1.2.2</sample>
+		</agent>
 	</group>
 
 	<!--
@@ -1721,9 +1739,14 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 			<sample>Microsoft Office Protocol Discovery</sample>
 		</agent>
 		<agent name="mswebdav">
-		  <regex>^Microsoft-WebDAV-MiniRedir/</regex>
-		  <sample>Microsoft-WebDAV-MiniRedir/6.0.6002</sample>
-		  <sample>Microsoft-WebDAV-MiniRedir/6.1.7600</sample>
+			<regex>^Microsoft-WebDAV-MiniRedir/</regex>
+			<sample>Microsoft-WebDAV-MiniRedir/6.0.6002</sample>
+			<sample>Microsoft-WebDAV-MiniRedir/6.1.7600</sample>
+		</agent>
+		<agent name="mswebdav">
+			<!-- Requests from this could be Office app if used, otherwise vulnerability scanning -->
+			<regex>^Microsoft Data Access </regex>
+			<sample>Microsoft Data Access Internet Publishing Provider Protocol Discovery</sample>
 		</agent>
 	</group>
 
