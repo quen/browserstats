@@ -410,6 +410,13 @@ Version/5.1 Mobile/9A334 Safari/7534.48.3</sample>
 					<sample>Mozilla/5.0 (iPhone; CPU iPhone OS 5_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko)
 Version/5.1 Mobile/9B5141a Safari/7534.48.3</sample>
 				</agent>
+				<agent version="6.0">
+					<regex>OS 6_0</regex>
+					<sample>Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Mobile/10A403</sample>
+					<sample>Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A403 Safari/8536.25</sample>
+					<sample>Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko)
+Mobile/10A403</sample>
+				</agent>
 			</group>
 			<agent version="1">
 				<!-- Ancient version -->
@@ -438,6 +445,24 @@ Version/5.1 Mobile/9B5141a Safari/7534.48.3</sample>
 				<sample>Mozilla/5.0 (Android; Linux armv7l; rv:7.0.1) Gecko/20110928 Firefox/7.0.1 Fennec/7.0.1</sample>
 			</agent>
 		</group>
+		
+		<group name="firefoxandroid" engine="gecko">
+		<regex>^Mozilla/5\.0 \(Android; </regex>
+		<agent version="14.0">
+			<regex>Firefox/14</regex>
+			<sample>Mozilla/5.0 (Android; Mobile; rv:14.0) Gecko/14.0 Firefox/14.0.1</sample>
+		</agent>
+		<agent version="15.0">
+			<regex>Firefox/15</regex>
+			<sample>Mozilla/5.0 (Android; Mobile; rv:15.0) Gecko/15.0 Firefox/15.0.1</sample>
+			<sample>Mozilla/5.0 (Android; Tablet; rv:15.0) Gecko/15.0 Firefox/15.0.1</sample>
+		</agent>
+		<agent version="16.0">
+			<regex>Firefox/16</regex>
+			<sample>Mozilla/5.0 (Android; Mobile; rv:16.0) Gecko/16.0 Firefox/16.0</sample>
+			<sample>Mozilla/5.0 (Android; Tablet; rv:16.0) Gecko/16.0 Firefox/16.0</sample>
+		</agent>
+		</group>
 
 		<group name="dolfin">
 			<regex> Dolfin/</regex>
@@ -457,6 +482,14 @@ configuration/CLDC-1.1</sample>
 			<agent version="3.0" engine="webkit">
 				<regex>Dolfin/3\.0</regex>
 				<sample>Mozilla/5.0 (SAMSUNG; SAMSUNG-GT-S8530/S8530XXLA1; U; Bada/2.0; en-us) AppleWebKit/534.20 (KHTML, like Gecko) Dolfin/3.0 Mobile WVGA SMM-MMS/1.2.0 OPN-B</sample>
+			</agent>
+		</group>
+
+		<group name="chromeandroid" engine="webkit">
+			<regex> Android.* AppleWebKit.* Chrome/</regex>
+			<agent version="18">
+				<regex>Chrome/18</regex>
+				<sample>Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19</sample>
 			</agent>
 		</group>
 
@@ -505,6 +538,10 @@ configuration/CLDC-1.1</sample>
 			<agent version="4.0">
 				<regex>Android 4.0</regex>
 				<sample>Mozilla/5.0 (Linux; U; Android 4.0.3; en-gb; Nexus S Build/IML74K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30</sample>
+			</agent>
+			<agent version="4.1">
+				<regex>Android 4.1</regex>
+				<sample>Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; GT-I9100 Build/JRO03L; CyanogenMod-10) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30</sample>
 			</agent>
 			<agent version="0.1"><!-- Actually unknown -->
 				<regex>Android [^0-9]</regex>
@@ -747,6 +784,64 @@ configuration/CLDC-1.1</sample>
 			<group name="chrome">
 				<!-- 'Iron' is a de-googled version of Chrome from the same source -->
 				<regex>(Chrom(e|ium)|Iron)/</regex>
+
+				<group version="24">
+					<regex>(Chrom(e|ium)|Iron)/24\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/24.0.1272.0 Safari/537.11</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.12 (KHTML, like Gecko) Chrome/24.0.1277.0 Safari/537.12</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_1) AppleWebKit/537.12 (KHTML, like Gecko) Chrome/24.0.1276.1 Safari/537.12</sample>
+					</agent>
+					<agent os="chromeos">
+						<regex>CrOS</regex>
+					</agent>
+				</group>
+
+				<group version="23">
+					<regex>(Chrom(e|ium)|Iron)/23\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.1 Safari/537.11</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.8 (KHTML, like Gecko) Chrome/23.0.1246.0 Safari/537.8</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.1 Safari/537.11</sample>
+					</agent>
+					<agent os="chromeos">
+						<regex>CrOS</regex>
+					</agent>
+				</group>
+
+				<group version="22">
+					<regex>(Chrom(e|ium)|Iron)/22\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows NT 6.0; WOW64) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.56 Safari/537.4</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.64 Safari/537.4</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_1) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.56 Safari/537.4</sample>
+					</agent>
+					<agent os="chromeos">
+						<regex>CrOS</regex>
+						<sample>Mozilla/5.0 (X11; CrOS i686 2723.63.0) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.33 Safari/537.4</sample>
+					</agent>
+				</group>
 
 				<group version="21">
 					<regex>(Chrom(e|ium)|Iron)/21\.</regex>
@@ -1111,6 +1206,16 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 
 			<group name="safari">
 				<regex>Safari/</regex>
+				<group version="6">
+					<regex>Version/6\.</regex>
+					<agent os="mac">
+						<regex>\(Macintosh;</regex>
+						<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.25 (KHTML, like Gecko) Version/6.0 Safari/536.25</sample>
+					</agent>
+					<agent os="win">
+						<regex>\(Windows</regex>
+					</agent>
+				</group>
 				<group version="5">
 					<regex>Version/5\.</regex>
 					<regex>Intel Mac OSAppleWebKit/534.51.22</regex>
@@ -1285,6 +1390,10 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 				<regex>MSIE 9\.0</regex>
 				<sample>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0)</sample>
 				<sample>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; WOW64; Trident/5.0)</sample>
+			</agent>
+			<agent version="8.0">
+				<regex>MSIE 8\.0</regex>
+				<sample>Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; SLCC1; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 1.1.4322)</sample>
 			</agent>
 		</group>
 
@@ -1644,6 +1753,34 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 				<agent os="linux">
 					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
 					<sample>Mozilla/5.0 (X11; Linux x86_64; rv:16.0) Gecko/16.0 Firefox/16.0</sample>
+				</agent>
+			</group>
+			<group version="17.0">
+				<regex>(Firefox|Iceweasel|Minefield)/17\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:17.0) Gecko/17.0 Firefox/17.0</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:17.0) Gecko/17.0 Firefox/17.0</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+				</agent>
+			</group>
+			<group version="18.0">
+				<regex>(Firefox|Iceweasel|Minefield)/18\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows NT 6.1; rv:18.0) Gecko/18.0 Firefox/18.0</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; Linux x86_64; rv:18.0) Gecko/18.0 Firefox/18.0</sample>
 				</agent>
 			</group>
 		</group>
