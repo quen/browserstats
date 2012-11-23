@@ -33,6 +33,32 @@ formats used for date and time fields, and one or more samples.
 	<sample name="Apache 2 (odd request 2)">111.1.11.11 - - [31/Jan/2005:11:21:42 -0500] "GET / onmousedown=\"return clk(this,'res',184)\" HTTP/1.1" 400 299 "-" "-"</sample>
 </format>
 
+<!-- nginx -->
+<!-- This format definition will work with the standard nginx 'combined' access
+     log format as defined in http://wiki.nginx.org/HttpLogModule#log_format.
+
+     This format may also work with some variations upon this theme so long as:
+     * the IP address is the first field
+     * the date/time are the only values stored in square braces
+     * the request path is the first double-quoted field
+     * the status code immediately follows the path (separated by a space)
+     * the referer follows in the second double-quoted field
+     * the user agent is in the third double-quoted field
+
+     This flexibility means that it is possible to add additional fields (such
+     as $request_time) at various points and still use the standard nginx format
+     for processing.
+-->
+<format name="nginx" ip="1" date="3" time="4" path="5" agent="9" status="6"
+	dateformat="dd/MMM/yyyy" timeformat="HH:mm:ss">
+	<line>^([^ ]*)([^\x5b]*+)\[([^:]*+):([^ ]*+) [^\x5d]*+][^"]*"(?:(?:[A-Z]+ ([^"\\]*(?:\\.[^"\\]*)*) HTTP/[0-9.]+")|(?:[^"]*+")) ([0-9]+) ([^"\\]*)"([^"\\]*(?:\\.[^"\\]*)*)" "([^"\\]*(?:\\.[^"\\]*)*)".*$</line>
+	<sample name="Valid request 1">192.168.1.10 - - [20/Nov/2012:06:25:22 +0000]  "GET /mod/resource/view.php?id=65242 HTTP/1.1" 303 447 0.207 "https://modules.lancs.ac.uk/course/view.php?id=1661" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"</sample>
+	<sample name="Valid request 2">10.32.77.212 - - [17/Oct/2012:13:51:23 +0100] "GET /pluginfile.php/6335/user/icon/luvle/f2?rev=1 HTTP/1.1" 200 2883 "https://modules.lancs.ac.uk/message/index.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_1) AppleWebKit/536.25 (KHTML, like Gecko) Version/6.0 Safari/536.25"</sample>
+  <sample name="Valid request 3">192.168.1.10 - - [17/Oct/2012:13:51:00 +0100] "POST /mnet/xmlrpc/server.php HTTP/1.1" 200 3280 "-" "Mahara"</sample>
+	<sample name="nagios check">10.43.18.31 - - [11/Oct/2012:06:27:27 +0100] "GET / HTTP/1.1" 200 23 "-" "check_http/v1.4.15 (nagios-plugins 1.4.15)"</sample>
+	<sample name="Odd Request 1">10.43.18.31 - - [11/Oct/2012:08:52:12 +0100] "-" 400 0 "-" "-"</sample>
+</format>
+
 <!-- NetScaler -->
 <!-- Note that this format specification doesn't include the arguments to the 
      path (anything after a ?) because it puts those in a separate field.
