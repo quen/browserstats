@@ -347,6 +347,11 @@ List used to detect user agents.
 				<regex>Opera Mini/1</regex>
 				<sample>Opera/8.01 (J2ME/MIDP; Opera Mini/1.1.2277/lofi/nordic/int; O2 Xda II; en; U; ssr)</sample>
 			</agent>
+			<!-- Unspecified version, call it 4 by nearest Opera version -->
+			<agent version="4">
+				<regex>Opera/9.50</regex>
+				<sample>Opera/9.50 (J2ME/MIDP; Opera Mini; U; en)</sample>
+			</agent>
 		</group>
 
 		<agent name="webos" engine="webkit">
@@ -363,8 +368,14 @@ List used to detect user agents.
 
 		<group name="apple" engine="webkit">
 			<regex>iP(hone|od|ad|od touch)[ ;]</regex>
+			<agent version="1">
+				<!-- Ancient version -->
+				<regex>\(iP(hone|od); U; CPU like Mac OS X</regex>
+				<sample>Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3</sample>
+				<sample>Mozilla/5.0 (iPod; U; CPU like Mac OS X; en) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/4B1 Safari/419.3</sample>
+			</agent>
 			<group>
-				<regex>(^CalendarStore/|^AppleCoreMedia/|CPU( iP(hone|ad))? OS.* AppleWebKit)</regex>
+				<regex>(^CalendarStore/|^AppleCoreMedia/|CPU( iP(hone|ad|od))?[^)]*OS.*AppleWebKit|iOS )</regex>
 				<agent version="2.1">
 					<regex>iPhone OS 2_1</regex>
 					<sample>Mozilla/5.0 (iPod; U; CPU iPhone OS 2_1_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5F138 Safari/525.20</sample>
@@ -415,6 +426,7 @@ Version/5.1 Mobile/9A334 Safari/7534.48.3</sample>
 					<sample>Mozilla/5.0 (iPad; CPU OS 5_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B5141a Safari/7534.48.3</sample>
 					<sample>Mozilla/5.0 (iPhone; CPU iPhone OS 5_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko)
 Version/5.1 Mobile/9B5141a Safari/7534.48.3</sample>
+					<sample>Mozilla/5.0 (iPad;U;CPU OS 5_1_1 like Mac OS X; zh-cn)AppleWebKit/534.46.0(KHTML, like Gecko)CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3</sample>
 				</agent>
 				<agent version="6.0">
 					<regex>OS 6_0</regex>
@@ -430,18 +442,18 @@ Mobile/10A403</sample>
 					<sample>AppleCoreMedia/1.0.0.10B329 (iPad; U; CPU OS 6_1_3 like Mac OS X; en_us)</sample>
 				</agent>
 				<agent version="7.0">
-					<regex>OS 7_0</regex>
+					<regex>(OS 7_0|iOS 7\.0)</regex>
 					<sample>AppleCoreMedia/1.0.0.11A501 (iPad; U; CPU OS 7_0_2 like Mac OS X; en_us)</sample>
 					<sample>AppleCoreMedia/1.0.0.11A501 (iPhone; U; CPU OS 7_0_2 like Mac OS X; en_gb)</sample>
 					<sample>AppleCoreMedia/1.0.0.11A501 (iPod touch; U; CPU OS 7_0_2 like Mac OS X; en_us)</sample>
+					<sample>OUAnywhere/2.02 (iPhone; iOS 7.0.4; Scale/2.00)</sample>
+				</agent>
+				<agent version="7.1">
+					<regex>(OS 7_1|iOS 7\.1)</regex>
+					<sample>Mozilla/5.0 (iPad; CPU OS 7_1 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11D5134c Safari/9537.53</sample>
+					<sample>OUAnywhere/2.02 (iPhone; iOS 7.1; Scale/2.00)</sample>
 				</agent>
 			</group>
-			<agent version="1">
-				<!-- Ancient version -->
-				<regex>\(iP(hone|od); U; CPU like Mac OS X</regex>
-				<sample>Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3</sample>
-				<sample>Mozilla/5.0 (iPod; U; CPU like Mac OS X; en) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/4B1 Safari/419.3</sample>
-		  </agent>
 		</group>
 
 		<group name="fennec" engine="gecko">
@@ -520,6 +532,14 @@ Mobile/10A403</sample>
 				<regex>Firefox/26</regex>
 				<sample>Mozilla/5.0 (Android; Tablet; rv:26.0) Gecko/26.0 Firefox/26.0</sample>
 			</agent>
+			<agent version="27.0">
+				<regex>Firefox/27</regex>
+				<sample>Mozilla/5.0 (Android; Tablet; rv:27.0) Gecko/27.0 Firefox/27.0</sample>
+			</agent>
+			<agent version="28.0">
+				<regex>Firefox/28</regex>
+				<sample>Mozilla/5.0 (Android; Tablet; rv:28.0) Gecko/28.0 Firefox/28.0</sample>
+			</agent>
 		</group>
 
 		<group name="dolfin">
@@ -591,6 +611,26 @@ configuration/CLDC-1.1</sample>
 				<regex>Chrome/30</regex>
 				<sample>Mozilla/5.0 (Linux; Android 4.0.4; BNTV400 Build/IMM76L) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.82 Safari/537.36</sample>
 			</agent>
+			<agent version="31">
+				<regex>Chrome/31</regex>
+				<sample>Mozilla/5.0 (Linux; Android 4.0.4; BNTV600 Build/IMM76L) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.59 Safari/537.36</sample>
+			</agent>
+			<agent version="32">
+				<regex>Chrome/32</regex>
+				<sample>Mozilla/5.0 (Linux; Android 4.0.4; MZ604 Build/I.7.1-45) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.99 Safari/537.36</sample>
+			</agent>
+			<agent version="33">
+				<regex>Chrome/33</regex>
+				<sample>Mozilla/5.0 (Linux; Android 4.1.2; GT-N7000 Build/JZO54K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.48 Mobile Safari/537.36</sample>
+			</agent>
+		</group>
+
+		<group name="kindle">
+			<agent version="3">
+				<regex>^Mozilla/5.0 \([^(]*Linux.* Kindle/3.0</regex>
+				<sample>Mozilla/5.0 (Linux; U; en-US) AppleWebKit/528.5  (KHTML, like Gecko, Safari/528.5 ) Version/4.0 Kindle/3.0 (screen 600x800; rotate)</sample>
+				<sample>Mozilla/5.0 (X11; U; Linux armv7l like Android; en-us) AppleWebKit/531.2  (KHTML, like Gecko) Version/5.0 Safari/533.2  Kindle/3.0</sample>
+			</agent>
 		</group>
 
 		<group name="android" engine="webkit">
@@ -651,6 +691,10 @@ configuration/CLDC-1.1</sample>
 				<regex>Android 4.3</regex>
 				<sample>Mozilla/5.0 (Linux; U; Android 4.3.1; en-gb; Nexus 7 Build/JLS36I) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30</sample>
 			</agent>
+			<agent version="4.4">
+				<regex>Android 4.4</regex>
+				<sample>Mozilla/5.0 (Linux; U; Android 4.4.2; en-gb; Nexus 7 Build/KOT49H) AppleWebKit/537.16 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.16</sample>
+			</agent>
 			<agent version="0.1"><!-- Actually unknown -->
 				<regex>Android [^0-9]</regex>
 				<sample>Mozilla/5.0 (Linux; U; Android VillainROM-v13; en-gb; HTC Hero Build/ERE27) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17</sample>
@@ -665,11 +709,6 @@ configuration/CLDC-1.1</sample>
 		<agent name="palm">
 			<regex>Mozilla/4.0 \(compatible;.* Blazer/</regex>
 			<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; PalmSource/Palm-D060; Blazer/4.5) 16;320x320</sample>
-		</agent>
-
-		<agent name="kindle">
-			<regex>^Mozilla/5.0 \(Linux.* Kindle/3.0</regex>
-			<sample>Mozilla/5.0 (Linux; U; en-US) AppleWebKit/528.5  (KHTML, like Gecko, Safari/528.5 ) Version/4.0 Kindle/3.0 (screen 600x800; rotate)</sample>
 		</agent>
 
 		<!-- IE Mobile on Windows Phone 8 -->
@@ -766,6 +805,11 @@ configuration/CLDC-1.1</sample>
 			<sample>Mozilla/5.0 (BB10; Kbd) AppleWebKit/537.10  (KHTML, like Gecko) Version/10.1.0.4633 Mobile Safari/537.10</sample>
 		</agent>
 
+		<agent name="ucbrowser" engine="webkit">
+			<regex>UCBrowser/</regex>
+			<sample>Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; Desktop) AppleWebKit/534.13 (KHTML, like Gecko) UCBrowser/9.0.1.317</sample>
+		</agent>
+
 		<agent name="googletranscode">
 			<regex>Google Wireless Transcoder</regex>
 			<sample>Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; Google Wireless Transcoder;)</sample>
@@ -798,6 +842,14 @@ configuration/CLDC-1.1</sample>
 			<regex>^Mozilla/5.0 \(PLAYSTATION 3</regex>
 			<sample>Mozilla/5.0 (PLAYSTATION 3; 1.00)</sample>
 		</agent>
+		<agent name="ps4" engine="webkit">
+			<regex>^Mozilla/5.0 \(PlayStation 4</regex>
+			<sample>Mozilla/5.0 (PlayStation 4 1.52) AppleWebKit/536.26 (KHTML, like Gecko)</sample>
+		</agent>
+		<agent name="psv" engine="webkit">
+			<regex>^Mozilla/5.0 \(PlayStation Vita</regex>
+			<sample>Mozilla/5.0 (PlayStation Vita 3.01) AppleWebKit/536.26 (KHTML, like Gecko)</sample>
+		</agent>
 		<agent name="wii">
 			<regex>^Opera/.*\(Nintendo Wii;</regex>
 			<sample>Opera/9.30 (Nintendo Wii; U; ; 2047-7; en)</sample>
@@ -805,6 +857,10 @@ configuration/CLDC-1.1</sample>
 		<agent name="dsi">
 			<regex>^Opera/.*\(Nintendo DSi;</regex>
 			<sample>Opera/9.50 (Nintendo DSi; Opera/483; U; en-US)</sample>
+		</agent>
+		<agent name="wiiu" engine="webkit">
+			<regex>^Mozilla/5.0 \(Nintendo WiiU</regex>
+			<sample>Mozilla/5.0 (Nintendo WiiU) AppleWebKit/536.28 (KHTML, like Gecko) NX/3.0.3.12.6 NintendoBrowser/2.0.0.9362.EU</sample>
 		</agent>
 	</group>
 
@@ -936,7 +992,22 @@ configuration/CLDC-1.1</sample>
 			<regex>^Mozilla/5.0 \(compatible; BazQux</regex>
 			<sample>Mozilla/5.0 (compatible; BazQux/2.4;  https://bazqux.com/fetcher)</sample>
 		</agent>
-
+		<agent name="feeddemon">
+			<regex>^FeedDemon/</regex>
+			<sample>FeedDemon/4.5 (http://www.feeddemon.com/; Microsoft Windows)</sample>
+		</agent>
+		<agent name="feedy">
+			<regex>^Feedy/</regex>
+			<sample>Feedy/1.0 (Build 1015)</sample>
+		</agent>
+		<agent name="monotony">
+			<regex>^Monotony/</regex>
+			<sample>Monotony/17 CFNetwork/673.0.3 Darwin/13.0.0 (x86_64) (MacBookPro8%2C2)</sample>
+		</agent>
+		<agent name="rssnotifier">
+			<regex>^RSS%20Notifier/</regex>
+			<sample>RSS%20Notifier/10 CFNetwork/673.0.3 Darwin/13.0.0 (x86_64) (MacBookPro6%2C2)</sample>
+		</agent>
 	</group>
 
 	<!--
@@ -983,6 +1054,45 @@ configuration/CLDC-1.1</sample>
 				<!-- 'Iron' is a de-googled version of Chrome from the same source -->
 				<regex>(Chrom(e|ium)|Iron)/</regex>
 
+				<group version="34">
+					<regex>(Chrom(e|ium)|Iron)/34\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1807.0 Safari/537.36</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1797.2 Safari/537.36</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1788.0 Safari/537.36</sample>
+					</agent>
+					<agent os="chromeos">
+						<regex>CrOS</regex>
+						<sample>Mozilla/5.0 (X11; CrOS x86_64 5270.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1792.1 Safari/537.36</sample>
+					</agent>
+				</group>
+
+				<group version="33">
+					<regex>(Chrom(e|ium)|Iron)/33\.</regex>
+					<agent os="win">
+						<regex>Windows(?! CE)</regex>
+						<sample>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.46 Safari/537.36</sample>
+					</agent>
+					<agent os="linux">
+						<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+						<sample>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.46 Safari/537.36</sample>
+					</agent>
+					<agent os="mac">
+						<regex>Macintosh</regex>
+						<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.46 Safari/537.36</sample>
+					</agent>
+					<agent os="chromeos">
+						<regex>CrOS</regex>
+						<sample>Mozilla/5.0 (X11; CrOS x86_64 5116.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.51 Safari/537.36</sample>
+					</agent>
+				</group>
 
 				<group version="32">
 					<regex>(Chrom(e|ium)|Iron)/32\.</regex>
@@ -1747,11 +1857,12 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 
 		<!-- New IE versions without 'MSIE' -->
 		<group engine="trident" name="ie" os="win">
-			<regex>^Mozilla/5\.0 \(Windows.* Trident/.*rv:.*</regex>
+			<regex>^Mozilla/5\.0 \([^)]*Windows.* Trident/.*rv:.*</regex>
 			<agent version="11.0">
 				<!-- IE11 default, see http://blogs.msdn.com/b/ieinternals/archive/2013/09/21/internet-explorer-11-user-agent-string-ua-string-sniffing-compatibility-with-gecko-webkit.aspx -->
 				<regex>rv:11\.0</regex>
 				<sample>Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko</sample>
+				<sample>Mozilla/5.0 (MSIE 9.0; Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko</sample>
 			</agent>
 		</group>
 
@@ -2295,6 +2406,36 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 					<sample>Mozilla/5.0 (X11; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0</sample>
 				</agent>
 			</group>
+			<group version="28.0">
+				<regex>(Firefox|Iceweasel|Minefield)/28\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:28.0) Gecko/20100101 Firefox/28.0</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0 Iceweasel/28.0a2</sample>
+				</agent>
+			</group>
+			<group version="29.0">
+				<regex>(Firefox|Iceweasel|Minefield)/29\.</regex>
+				<agent os="mac">
+					<regex>Mac OS X</regex>
+					<sample>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:29.0) Gecko/20100101 Firefox/29.0</sample>
+				</agent>
+				<agent os="win">
+					<regex>Windows(?! CE)</regex>
+					<sample>Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:29.0) Gecko/20100101 Firefox/29.0</sample>
+				</agent>
+				<agent os="linux">
+					<regex>Linux|SunOS|FreeBSD|OpenBSD</regex>
+					<sample>Mozilla/5.0 (X11; Linux x86_64; rv:29.0) Gecko/20100101 Firefox/29.0</sample>
+				</agent>
+			</group>
 		</group>
 
 		<group engine="gecko" name="seamonkey">
@@ -2387,6 +2528,10 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 			<regex>^SilverStripe/</regex>
 			<sample>SilverStripe/3.0.5</sample>
 		</agent>
+		<agent name="phpsoap">
+			<regex>^PHP-SOAP/</regex>
+			<sample>PHP-SOAP/5.3.18</sample>
+		</agent>
 	</group>
 
 	<!--
@@ -2394,6 +2539,10 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 		making web requests.
 		-->
 	<group type="misclocal" os="" engine="" version="">
+		<agent name="windowsmediaplayer">
+			<regex>^NSPlayer/.*WMFSDK</regex>
+			<sample>NSPlayer/12.00.7601.17514 WMFSDK/12.00.7601.17514</sample>
+		</agent>
 		<agent name="msoffice">
 			<regex>^Microsoft Office (Existence|Protocol) Discovery$</regex>
 			<sample>Microsoft Office Existence Discovery</sample>
@@ -2410,6 +2559,10 @@ o) Chrome/4.0.249.11 Safari/532.5</sample>
 			<!-- Requests from this could be Office app if used, otherwise vulnerability scanning -->
 			<regex>^Microsoft Data Access </regex>
 			<sample>Microsoft Data Access Internet Publishing Provider Protocol Discovery</sample>
+		</agent>
+		<agent name="calendaragent">
+			<regex>^Mac_OS_X/.*CalendarAgent/</regex>
+			<sample>Mac_OS_X/10.9.1 (13B42) CalendarAgent/174</sample>
 		</agent>
 		<agent name="libreoffice">
 			<regex>^LibreOffice</regex>

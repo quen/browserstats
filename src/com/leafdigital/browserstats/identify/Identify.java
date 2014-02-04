@@ -35,7 +35,7 @@ public class Identify extends CommandLineTool implements UserAgentReader.Handler
 
 	private TestType test = TestType.NONE;
 	private String[] testParams = null;
-	private int minCount, matched, unmatched, matchedCount, unmatchedCount;
+	private long minCount, matched, unmatched, matchedCount, unmatchedCount;
 
 	private IdentifyResults results;
 
